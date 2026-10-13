@@ -1,0 +1,62 @@
+[
+  {
+    "folder": "atm.button",
+    "semanticId": "primary-button",
+    "tier": "atm",
+    "description": "Base interactive button primitive with variants"
+  },
+  {
+    "folder": "atm.input",
+    "semanticId": "text-input",
+    "tier": "atm",
+    "description": "Base HTML input element"
+  },
+  {
+    "folder": "atm.badge",
+    "semanticId": "status-badge",
+    "tier": "atm",
+    "description": "Status badge label primitive"
+  },
+  {
+    "folder": "atm.skeleton",
+    "semanticId": "loading-skeleton",
+    "tier": "atm",
+    "description": "Placeholder loading skeleton primitive"
+  },
+  {
+    "folder": "mol.search-bar",
+    "semanticId": "search-bar",
+    "tier": "mol",
+    "description": "Search input paired with icon and clear action"
+  },
+  {
+    "folder": "mol.stat-card",
+    "semanticId": "stat-card",
+    "tier": "mol",
+    "description": "Metric card paired with icon, value, and label"
+  },
+  {
+    "folder": "obj.form",
+    "semanticId": "form-container",
+    "tier": "obj",
+    "description": "Zero-useState form state manager & layout"
+  },
+  {
+    "folder": "obj.modal",
+    "semanticId": "dialog-modal",
+    "tier": "obj",
+    "description": "Accessible dialog modal container"
+  },
+  {
+    "folder": "obj.data-table",
+    "semanticId": "data-table",
+    "tier": "obj",
+    "description": "Generic data table with search and pagination"
+  },
+  {
+    "folder": "org.sidebar",
+    "semanticId": "app-sidebar",
+    "tier": "org",
+    "description": "Portal navigation sidebar"
+  }
+]

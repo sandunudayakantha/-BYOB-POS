@@ -1,0 +1,36 @@
+[tool.black]
+line-length = 100
+target-version = ["py313"]
+
+[tool.isort]
+profile = "black"
+line_length = 100
+
+[tool.mypy]
+python_version = "3.13"
+strict = false
+ignore_missing_imports = true
+explicit_package_bases = true
+mypy_path = "."
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "UP"]
+ignore = ["E203"]
+exclude = ["alembic/versions/*"]
+
+[tool.ruff.lint.per-file-ignores]
+"app/scripts/*.py" = ["E402"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+filterwarnings = [
+    "ignore::DeprecationWarning:passlib.*:",
+    "ignore::DeprecationWarning:pydantic.*:",
+]
