@@ -12,6 +12,7 @@ import {
   FireIcon,
   QrCodeIcon,
   UserCircleIcon,
+  ArchiveBoxIcon,
   SunIcon,
   MoonIcon,
   ArrowRightOnRectangleIcon,
@@ -33,15 +34,31 @@ const OwnerLayout = () => {
     navigate('/login');
   };
 
-  const navLinks = [
-    { name: 'Dashboard', path: '/dashboard', icon: Squares2X2Icon },
-    { name: 'Branches', path: '/branches', icon: BuildingOffice2Icon },
-    { name: 'Categories', path: '/categories', icon: TagIcon },
-    { name: 'Product Catalog', path: '/products', icon: ShoppingBagIcon },
-    { name: 'Menus', path: '/menus', icon: DocumentTextIcon },
-    { name: 'Featured Sections', path: '/featured', icon: FireIcon },
-    { name: 'QR Codes Studio', path: '/qr-codes', icon: QrCodeIcon },
-    { name: 'My Profile', path: '/profile', icon: UserCircleIcon }
+  const navSections = [
+    {
+      title: 'Operations',
+      items: [
+        { name: 'Dashboard', path: '/dashboard', icon: Squares2X2Icon },
+        { name: 'Branches', path: '/branches', icon: BuildingOffice2Icon },
+        { name: 'Product Catalog', path: '/catalog', icon: ShoppingBagIcon },
+        { name: 'Inventory & Kitchen', path: '/inventory', icon: ArchiveBoxIcon },
+      ]
+    },
+    {
+      title: 'QR Menu Suite',
+      badge: 'Digital Menu',
+      items: [
+        { name: 'Menus', path: '/menus', icon: DocumentTextIcon },
+        { name: 'Featured Sections', path: '/featured', icon: FireIcon },
+        { name: 'QR Codes Studio', path: '/qr-codes', icon: QrCodeIcon },
+      ]
+    },
+    {
+      title: 'Account',
+      items: [
+        { name: 'My Profile', path: '/profile', icon: UserCircleIcon }
+      ]
+    }
   ];
 
   return (
@@ -60,9 +77,9 @@ const OwnerLayout = () => {
           mobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
         }`}
       >
-        <div>
+        <div className="overflow-y-auto">
           {/* Logo Header */}
-          <div className="h-16 px-6 flex items-center justify-between border-b border-slate-100 dark:border-slate-800">
+          <div className="h-16 px-6 flex items-center justify-between border-b border-slate-100 dark:border-slate-800 sticky top-0 bg-white dark:bg-slate-900 z-10">
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-xl bg-emerald-600 flex items-center justify-center text-white font-bold text-lg shadow-md shadow-emerald-500/20">
                 QR
@@ -79,29 +96,46 @@ const OwnerLayout = () => {
             </button>
           </div>
 
-          {/* Navigation Links */}
-          <nav className="p-4 space-y-1">
-            {navLinks.map((item) => {
-              const Icon = item.icon;
-              return (
-                <NavLink
-                  key={item.path}
-                  to={item.path}
-                  end={item.path === '/dashboard'}
-                  onClick={() => setMobileOpen(false)}
-                  className={({ isActive }) =>
-                    `flex items-center gap-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all ${
-                      isActive
-                        ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 font-semibold shadow-sm'
-                        : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white'
-                    }`
-                  }
-                >
-                  <Icon className="w-5 h-5" />
-                  {item.name}
-                </NavLink>
-              );
-            })}
+          {/* Navigation Links Grouped by Section */}
+          <nav className="p-4 space-y-5">
+            {navSections.map((section, idx) => (
+              <div key={section.title || idx} className="space-y-1">
+                <div className="flex items-center justify-between px-3 pb-1.5">
+                  <span className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 dark:text-slate-500">
+                    {section.title}
+                  </span>
+                  {section.badge && (
+                    <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/80">
+                      {section.badge}
+                    </span>
+                  )}
+                </div>
+
+                <div className="space-y-1">
+                  {section.items.map((item) => {
+                    const Icon = item.icon;
+                    return (
+                      <NavLink
+                        key={item.path}
+                        to={item.path}
+                        end={item.path === '/dashboard'}
+                        onClick={() => setMobileOpen(false)}
+                        className={({ isActive }) =>
+                          `flex items-center gap-3 px-3.5 py-2 rounded-xl font-medium text-sm transition-all ${
+                            isActive
+                              ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 font-semibold shadow-sm'
+                              : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white'
+                          }`
+                        }
+                      >
+                        <Icon className="w-4 h-4 flex-shrink-0" />
+                        <span>{item.name}</span>
+                      </NavLink>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
           </nav>
         </div>
 

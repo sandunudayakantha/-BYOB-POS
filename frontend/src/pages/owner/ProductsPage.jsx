@@ -11,22 +11,26 @@ import {
   PencilIcon,
   PhotoIcon,
   EyeIcon,
+  BeakerIcon,
 } from '@heroicons/react/24/outline';
 
 import { ProductViewModal } from '@/app/components/products/product-view-modal.component';
 import { ProductFeatureModal } from '@/app/components/products/product-feature-modal.component';
 import { ProductFormModal } from '@/app/components/products/product-form-modal.component';
+import { ProductRecipeModal } from '@/app/components/products/product-recipe-modal.component';
 
-const ProductsPage = () => {
+const ProductsPage = ({ embedded = false }) => {
   const queryClient = useQueryClient();
   const { activeBranch } = useBranch();
   const [modalOpen, setModalOpen] = useState(false);
   const [viewModalOpen, setViewModalOpen] = useState(false);
   const [featureModalOpen, setFeatureModalOpen] = useState(false);
+  const [recipeModalOpen, setRecipeModalOpen] = useState(false);
 
   const [editingProduct, setEditingProduct] = useState(null);
   const [viewingProduct, setViewingProduct] = useState(null);
   const [featuringProduct, setFeaturingProduct] = useState(null);
+  const [recipeProduct, setRecipeProduct] = useState(null);
 
   // Pagination & Filter state
   const [currentPage, setCurrentPage] = useState(1);
@@ -254,6 +258,17 @@ const ProductsPage = () => {
               <EyeIcon className="w-4 h-4" />
             </button>
             <button
+              onClick={() => {
+                setRecipeProduct(row);
+                setRecipeModalOpen(true);
+              }}
+              className="py-1.5 px-2.5 rounded-lg font-bold text-xs flex items-center gap-1 transition bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 hover:bg-emerald-100"
+              title="Configure Ingredients, Kitchen Preps and Food Cost"
+            >
+              <BeakerIcon className="w-3.5 h-3.5" />
+              <span>Recipe</span>
+            </button>
+            <button
               onClick={() => handleOpenFeature(row)}
               className={`py-1.5 px-2.5 rounded-lg font-bold text-xs flex items-center gap-1 transition ${
                 featuredInCount > 0
@@ -290,12 +305,21 @@ const ProductsPage = () => {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white">
-            Global Product Catalog ({activeBranch?.name})
-          </h2>
-          <p className="text-sm text-slate-500">
-            View product specs or feature items on promo banners directly from this catalog.
-          </p>
+          {!embedded && (
+            <>
+              <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white">
+                Global Product Catalog ({activeBranch?.name})
+              </h2>
+              <p className="text-sm text-slate-500">
+                View product specs or feature items on promo banners directly from this catalog.
+              </p>
+            </>
+          )}
+          {embedded && (
+            <p className="text-xs font-semibold text-slate-500">
+              Dishes & beverages available for orders and menus in {activeBranch?.name}.
+            </p>
+          )}
         </div>
         <button
           onClick={() => handleOpenEdit()}
@@ -356,6 +380,16 @@ const ProductsPage = () => {
           saveMutation.mutate(formData);
         }}
         isSubmitting={saveMutation.isPending}
+      />
+
+      <ProductRecipeModal
+        isOpen={recipeModalOpen}
+        onClose={() => {
+          setRecipeModalOpen(false);
+          setRecipeProduct(null);
+        }}
+        product={recipeProduct}
+        branchId={activeBranch?._id || ''}
       />
     </div>
   );

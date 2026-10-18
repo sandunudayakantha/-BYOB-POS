@@ -6,6 +6,7 @@ from app.api.v1.routes import (
     categories,
     featured,
     health,
+    inventory,
     menu_items,
     menus,
     owner,
@@ -25,8 +26,10 @@ v1_router.include_router(restaurants.router, prefix="/restaurants", tags=["Resta
 v1_router.include_router(branches.router, prefix="/branches", tags=["Branches"])
 v1_router.include_router(categories.router, prefix="/categories", tags=["Categories"])
 v1_router.include_router(products.router, prefix="/products", tags=["Products"])
+v1_router.include_router(inventory.router, prefix="/inventory", tags=["Inventory & Kitchen"])
 v1_router.include_router(menus.router, prefix="/menus", tags=["Menus"])
 v1_router.include_router(menu_items.router, prefix="/menu-items", tags=["Menu Items"])
 v1_router.include_router(qr.router, prefix="/qr", tags=["QR Codes"])
 v1_router.include_router(featured.router, prefix="/featured", tags=["Featured Sections"])
 v1_router.include_router(public.router, prefix="/public", tags=["Public Menu"])
+

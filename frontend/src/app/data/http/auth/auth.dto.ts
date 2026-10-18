@@ -25,6 +25,23 @@ export interface RefreshResponseDto {
   refresh_token?: string;
 }
 
+export interface ChangePasswordRequestDto {
+  current_password?: string;
+  currentPassword?: string;
+  new_password?: string;
+  newPassword?: string;
+}
+
+export function mapChangePasswordInputToDto(input: {
+  currentPassword?: string;
+  newPassword?: string;
+}): { currentPassword?: string; newPassword?: string } {
+  return {
+    currentPassword: input.currentPassword,
+    newPassword: input.newPassword,
+  };
+}
+
 export function mapLoginInputToDto(input: { email: string; password: string }): LoginRequestDto {
   return {
     email: input.email.trim().toLowerCase(),

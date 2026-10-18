@@ -9,6 +9,7 @@ if TYPE_CHECKING:
     from app.models.branch import Branch
     from app.models.category import Category
     from app.models.featured import FeaturedSectionProduct
+    from app.models.inventory import ProductRecipeItem
     from app.models.menu import MenuItem
     from app.models.restaurant import Restaurant
 
@@ -33,3 +34,7 @@ class Product(IntegerPrimaryKeyMixin, TimestampMixin, SoftDeleteMixin, Base):
     featured_associations: Mapped[list[FeaturedSectionProduct]] = relationship(
         back_populates="product", cascade="all, delete-orphan"
     )
+    recipe_items: Mapped[list[ProductRecipeItem]] = relationship(
+        back_populates="product", cascade="all, delete-orphan"
+    )
+

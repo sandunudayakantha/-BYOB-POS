@@ -7,22 +7,23 @@ import { BranchProvider } from '../contexts/BranchContext';
 import AdminLayout from '../layouts/AdminLayout';
 import OwnerLayout from '../layouts/OwnerLayout';
 
-// Pages
-import LoginPage from '../pages/auth/LoginPage';
-import AdminDashboardPage from '../pages/admin/AdminDashboardPage';
-import AdminRestaurantsPage from '../pages/admin/AdminRestaurantsPage';
+// DDD Application Pages
+import { LoginPage } from '../app/pages/auth/login.page';
+import { AdminDashboardPage } from '../app/pages/admin/admin-dashboard.page';
+import { AdminRestaurantsPage } from '../app/pages/admin/admin-restaurants.page';
 
-import OwnerDashboardPage from '../pages/owner/OwnerDashboardPage';
-import BranchesPage from '../pages/owner/BranchesPage';
-import CategoriesPage from '../pages/owner/CategoriesPage';
-import ProductsPage from '../pages/owner/ProductsPage';
-import MenusPage from '../pages/owner/MenusPage';
-import MenuBuilderPage from '../pages/owner/MenuBuilderPage';
-import FeaturedPage from '../pages/owner/FeaturedPage';
-import QRCodesPage from '../pages/owner/QRCodesPage';
-import ProfilePage from '../pages/owner/ProfilePage';
+import { OwnerDashboardPage } from '../app/pages/owner/owner-dashboard.page';
+import { BranchesPage } from '../app/pages/owner/branches.page';
+import { CatalogPage } from '../app/pages/owner/catalog.page';
+import { InventoryPage } from '../app/pages/owner/inventory.page';
+import { MenusPage } from '../app/pages/owner/menus.page';
+import { MenuBuilderPage } from '../app/pages/owner/menu-builder.page';
+import { FeaturedPage } from '../app/pages/owner/featured.page';
+import { QRCodesPage } from '../app/pages/owner/qrcodes.page';
+import { ProfilePage } from '../app/pages/owner/profile.page';
 
-import CustomerMenuPage from '../pages/public/CustomerMenuPage';
+import { CustomerMenuPage } from '../app/pages/public/customer-menu.page';
+
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const { user, loading } = useAuth();
@@ -106,8 +107,10 @@ const AppRoutes = () => {
           <Route index element={<Navigate to="/dashboard" replace />} />
           <Route path="dashboard" element={<OwnerDashboardPage />} />
           <Route path="branches" element={<BranchesPage />} />
-          <Route path="categories" element={<CategoriesPage />} />
-          <Route path="products" element={<ProductsPage />} />
+          <Route path="catalog" element={<CatalogPage />} />
+          <Route path="inventory" element={<InventoryPage />} />
+          <Route path="products" element={<Navigate to="/catalog?tab=products" replace />} />
+          <Route path="categories" element={<Navigate to="/catalog?tab=categories" replace />} />
           <Route path="menus" element={<MenusPage />} />
           <Route path="menus/:menuId/builder" element={<MenuBuilderPage />} />
           <Route path="featured" element={<FeaturedPage />} />

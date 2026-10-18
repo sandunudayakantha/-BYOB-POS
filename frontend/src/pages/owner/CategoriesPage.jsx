@@ -9,7 +9,7 @@ import { FormInput } from '../../components/FormFields';
 import toast from 'react-hot-toast';
 import { PlusIcon, TrashIcon, PencilIcon } from '@heroicons/react/24/outline';
 
-const CategoriesPage = () => {
+const CategoriesPage = ({ embedded = false }) => {
   const queryClient = useQueryClient();
   const { activeBranch } = useBranch();
   const [modalOpen, setModalOpen] = useState(false);
@@ -108,12 +108,21 @@ const CategoriesPage = () => {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white">
-            Menu Categories ({activeBranch?.name})
-          </h2>
-          <p className="text-sm text-slate-500">
-            Organize products into groups for customer navigation.
-          </p>
+          {!embedded && (
+            <>
+              <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white">
+                Menu Categories ({activeBranch?.name})
+              </h2>
+              <p className="text-sm text-slate-500">
+                Organize products into groups for customer navigation.
+              </p>
+            </>
+          )}
+          {embedded && (
+            <p className="text-xs font-semibold text-slate-500">
+              Customer navigation groups (e.g. Appetizers, Mains, Drinks) for {activeBranch?.name}.
+            </p>
+          )}
         </div>
         <button
           onClick={() => handleOpen()}
