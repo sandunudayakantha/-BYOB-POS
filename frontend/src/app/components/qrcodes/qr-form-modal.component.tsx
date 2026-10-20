@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import Modal from '@/components/Modal';
 import { FormInput, FormSelect } from '@/components/FormFields';
 
@@ -24,6 +24,20 @@ export const QRFormModal: React.FC<QRFormModalProps> = ({
   onSubmit,
   isSubmitting,
 }) => {
+  const availableMenus = useMemo(() => {
+    return (menus || []).filter((m) => m.status !== 'INACTIVE');
+  }, [menus]);
+
+  const menuOptions = useMemo(() => {
+    if (availableMenus.length === 0) {
+      return [{ value: '', label: 'No active menus available' }];
+    }
+    return availableMenus.map((m) => ({
+      value: String(m.id || m._id),
+      label: `${m.name}${m.isBaseMenu ? ' (Base Menu)' : ''}`,
+    }));
+  }, [availableMenus]);
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Generate Permanent QR Code">
       <form onSubmit={onSubmit} className="space-y-4">
@@ -34,11 +48,14 @@ export const QRFormModal: React.FC<QRFormModalProps> = ({
           label="Assigned Branch Menu"
           value={formData.menuId}
           onChange={(e: any) => setFormData({ ...formData, menuId: e.target.value })}
-          options={[
-            { value: '', label: 'Default Live Menu' },
-            ...menus.map((m) => ({ value: m.id || m._id, label: `${m.name} ${m.isBaseMenu ? '(Base)' : ''}` })),
-          ]}
+          options={menuOptions}
+          disabled={availableMenus.length === 0}
         />
+        {availableMenus.length === 0 && (
+          <p className="text-xs text-rose-500">
+            Please create an active menu in Menus before generating QR codes.
+          </p>
+        )}
         <FormInput
           label="Table Identifier (Optional)"
           placeholder="e.g. Table 04, VIP Patio, Bar Stool 2"
@@ -47,7 +64,7 @@ export const QRFormModal: React.FC<QRFormModalProps> = ({
         />
         <button
           type="submit"
-          disabled={isSubmitting}
+          disabled={isSubmitting || availableMenus.length === 0 || !formData.menuId}
           className="w-full py-2.5 rounded-xl bg-emerald-600 text-white font-bold text-sm shadow-md hover:bg-emerald-700 transition disabled:opacity-50"
         >
           {isSubmitting ? 'Generating...' : 'Generate QR Code'}

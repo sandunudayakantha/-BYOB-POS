@@ -11,12 +11,14 @@ import {
 } from '@heroicons/react/24/outline';
 
 export interface QRTableColumnsProps {
+  menus?: any[];
   onView: (qr: QRCodeModel) => void;
   onToggleStatus: (qr: QRCodeModel) => void;
   onDelete: (qr: QRCodeModel) => void;
 }
 
 export function buildQRColumns({
+  menus,
   onView,
   onToggleStatus,
   onDelete,
@@ -25,26 +27,33 @@ export function buildQRColumns({
     {
       key: 'token',
       header: 'QR Token & Table',
-      render: (row) => (
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-extrabold text-xs border border-indigo-200 dark:border-indigo-800">
-            QR
-          </div>
-          <div>
-            <div className="font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              <span>Token: {row.token}</span>
-              {row.tableName && (
-                <span className="text-xs bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded font-normal text-slate-600 dark:text-slate-300">
-                  {row.tableName}
-                </span>
-              )}
+      render: (row) => {
+        const assignedMenuName =
+          row.menu?.name ||
+          menus?.find((m: any) => String(m.id || m._id) === String(row.menuId))?.name ||
+          'Standard Menu';
+
+        return (
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-extrabold text-xs border border-indigo-200 dark:border-indigo-800">
+              QR
             </div>
-            <div className="text-xs text-slate-400">
-              Assigned Menu: {row.menu?.name || 'Standard Menu'}
+            <div>
+              <div className="font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <span>Token: {row.token}</span>
+                {row.tableName && (
+                  <span className="text-xs bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded font-normal text-slate-600 dark:text-slate-300">
+                    {row.tableName}
+                  </span>
+                )}
+              </div>
+              <div className="text-xs text-slate-400">
+                Assigned Menu: {assignedMenuName}
+              </div>
             </div>
           </div>
-        </div>
-      ),
+        );
+      },
     },
     {
       key: 'targetLink',

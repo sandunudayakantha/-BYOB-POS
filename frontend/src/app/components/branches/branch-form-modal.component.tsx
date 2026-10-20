@@ -27,6 +27,8 @@ export interface BranchFormModalProps {
   setCoverPreview: (url: string) => void;
   handleLogoChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleCoverChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  errors?: Record<string, string>;
+  setErrors?: React.Dispatch<React.SetStateAction<Record<string, string>>>;
   onSubmit: (e: React.FormEvent) => void;
   isSubmitting: boolean;
 }
@@ -41,6 +43,8 @@ export const BranchFormModal: React.FC<BranchFormModalProps> = ({
   coverPreview,
   handleLogoChange,
   handleCoverChange,
+  errors = {},
+  setErrors,
   onSubmit,
   isSubmitting,
 }) => {
@@ -55,21 +59,39 @@ export const BranchFormModal: React.FC<BranchFormModalProps> = ({
           label="Branch Name"
           placeholder="e.g. Colombo Central Outlet"
           value={formData.name}
-          onChange={(e: any) => setFormData({ ...formData, name: e.target.value })}
+          error={errors.name}
+          onChange={(e: any) => {
+            setFormData({ ...formData, name: e.target.value });
+            if (setErrors && errors.name) {
+              setErrors((prev) => ({ ...prev, name: '' }));
+            }
+          }}
           required
         />
         <FormInput
           label="Address"
           placeholder="e.g. 123 Galle Road, Colombo 03"
           value={formData.address}
-          onChange={(e: any) => setFormData({ ...formData, address: e.target.value })}
+          error={errors.address}
+          onChange={(e: any) => {
+            setFormData({ ...formData, address: e.target.value });
+            if (setErrors && errors.address) {
+              setErrors((prev) => ({ ...prev, address: '' }));
+            }
+          }}
           required
         />
         <FormInput
           label="Phone Number"
           placeholder="e.g. +94 11 234 5678"
           value={formData.phone}
-          onChange={(e: any) => setFormData({ ...formData, phone: e.target.value })}
+          error={errors.phone}
+          onChange={(e: any) => {
+            setFormData({ ...formData, phone: e.target.value });
+            if (setErrors && errors.phone) {
+              setErrors((prev) => ({ ...prev, phone: '' }));
+            }
+          }}
           required
         />
 

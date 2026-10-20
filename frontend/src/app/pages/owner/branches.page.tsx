@@ -1,5 +1,4 @@
 import React, { useState, useMemo } from 'react';
-import { useBranch } from '@/contexts/BranchContext';
 import { useBranchesUseCase } from '@/app/domain/branches/use-branches.use-case';
 import { useCreateBranchUseCase } from '@/app/domain/branches/use-create-branch.use-case';
 import { useUpdateBranchUseCase } from '@/app/domain/branches/use-update-branch.use-case';
@@ -12,11 +11,12 @@ import { DataTable } from '@/atomic/obj.data-table';
 import toast from 'react-hot-toast';
 import type { BranchModel } from '@/app/models/branch.model';
 import { PlusIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
+import { extractValidationErrors } from '@/utils/errors';
 
 export const BranchesPage: React.FC = () => {
-  const { fetchBranches } = useBranch();
   const [modalOpen, setModalOpen] = useState(false);
   const [editingBranch, setEditingBranch] = useState<BranchModel | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   const [importModalOpen, setImportModalOpen] = useState(false);
   const [importData, setImportData] = useState({
@@ -68,12 +68,14 @@ export const BranchesPage: React.FC = () => {
       setLogoPreview('');
       setCoverPreview('');
     }
+    setFieldErrors({});
     setModalOpen(true);
   };
 
   const handleClose = () => {
     setModalOpen(false);
     setEditingBranch(null);
+    setFieldErrors({});
     setLogoFile(null);
     setLogoPreview('');
     setCoverFile(null);
@@ -106,6 +108,7 @@ export const BranchesPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setFieldErrors({});
     try {
       if (editingBranch) {
         await updateBranch({
@@ -133,10 +136,15 @@ export const BranchesPage: React.FC = () => {
         });
         toast.success('Branch created successfully!');
       }
-      fetchBranches();
       handleClose();
     } catch (err: any) {
-      toast.error(err?.message || 'Failed to save branch.');
+      const valErrors = extractValidationErrors(err);
+      if (Object.keys(valErrors).length > 0) {
+        setFieldErrors(valErrors);
+        toast.error('Please fix the errors shown below.');
+      } else {
+        toast.error(err?.message || 'Failed to save branch.');
+      }
     }
   };
 
@@ -145,7 +153,6 @@ export const BranchesPage: React.FC = () => {
     try {
       await deleteBranch({ branchId: branch.id });
       toast.success('Branch deleted successfully.');
-      fetchBranches();
     } catch (err: any) {
       toast.error(err?.message || 'Failed to delete branch.');
     }
@@ -239,6 +246,8 @@ export const BranchesPage: React.FC = () => {
         setCoverPreview={setCoverPreview}
         handleLogoChange={handleLogoChange}
         handleCoverChange={handleCoverChange}
+        errors={fieldErrors}
+        setErrors={setFieldErrors}
         onSubmit={handleSubmit}
         isSubmitting={isCreating || isUpdating}
       />

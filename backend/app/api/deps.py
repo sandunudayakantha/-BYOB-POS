@@ -66,19 +66,56 @@ def require_restaurant_owner(current_user: User = Depends(get_current_user)) -> 
         raise AuthorizationException("Restaurant Owner privileges required")
     return current_user
 
+def _check_user_permission(db: Session, user: User, permission_area: str) -> bool:
+    if user.role == UserRole.SUPER_ADMIN.value:
+        return True
+    if user.role == UserRole.RESTAURANT_OWNER.value:
+        # Restaurant owners have full access to tenant operations except system-level platform settings
+        return permission_area != "system.settings"
+
+    # For BRANCH_MANAGER and STAFF, check assigned permissions in DB
+    from app.models.rbac import Permission, Role, RolePermission
+
+    role_id = user.role_id
+    if not role_id and user.role:
+        role = db.query(Role).filter(Role.name == user.role, Role.is_deleted.is_(False)).first()
+        if role:
+            role_id = role.id
+
+    if not role_id:
+        return False
+
+    perm_exists = (
+        db.query(RolePermission)
+        .join(Permission, Permission.id == RolePermission.permission_id)
+        .filter(
+            RolePermission.role_id == role_id,
+            Permission.area == permission_area,
+            RolePermission.is_deleted.is_(False),
+            Permission.is_deleted.is_(False),
+        )
+        .first()
+    )
+    return perm_exists is not None
+
+
 def require_exact_permission(permission_area: str):
-    def dependency(user: User = Depends(get_current_user)) -> User:
-        if user.role == UserRole.SUPER_ADMIN.value:
-            return user
-        # Allow restaurant owners to manage their domain
-        if user.role == UserRole.RESTAURANT_OWNER.value:
-            return user
-        raise AuthorizationException(f"Missing required permission: {permission_area}")
+    def dependency(
+        db: Session = Depends(get_db),
+        user: User = Depends(get_current_user),
+    ) -> User:
+        if not _check_user_permission(db, user, permission_area):
+            raise AuthorizationException(f"Missing required permission: {permission_area}")
+        return user
     return dependency
 
+
 def require_any_permission(*permission_areas: str):
-    def dependency(user: User = Depends(get_current_user)) -> User:
-        if user.role == UserRole.SUPER_ADMIN.value or user.role == UserRole.RESTAURANT_OWNER.value:
-            return user
-        raise AuthorizationException("Missing required permissions")
+    def dependency(
+        db: Session = Depends(get_db),
+        user: User = Depends(get_current_user),
+    ) -> User:
+        if not any(_check_user_permission(db, user, area) for area in permission_areas):
+            raise AuthorizationException("Missing required permissions")
+        return user
     return dependency

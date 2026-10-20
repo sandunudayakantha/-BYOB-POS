@@ -1,5 +1,6 @@
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 from app.schemas.category import CategoryResponse
+from app.utils.validators import validate_safe_url
 
 class ProductBase(BaseModel):
     model_config = ConfigDict(str_strip_whitespace=True)
@@ -10,6 +11,11 @@ class ProductBase(BaseModel):
     prep_time: str | None = Field(default="15-20 mins", max_length=50)
     available: bool = True
     featured_image: str | None = Field(default="", max_length=500)
+
+    @field_validator("image", "featured_image")
+    @classmethod
+    def check_safe_urls(cls, v: str | None) -> str | None:
+        return validate_safe_url(v)
 
     @model_validator(mode="before")
     @classmethod
@@ -63,6 +69,11 @@ class ProductUpdate(BaseModel):
     featured_image: str | None = Field(default=None, max_length=500)
     category_id: int | None = Field(default=None, gt=0)
 
+    @field_validator("image", "featured_image")
+    @classmethod
+    def check_safe_urls(cls, v: str | None) -> str | None:
+        return validate_safe_url(v)
+
     @model_validator(mode="before")
     @classmethod
     def map_update_fields(cls, data: any) -> any:
@@ -97,6 +108,8 @@ class ProductResponse(BaseModel):
     featured_image: str | None = ""
     featuredImage: str | None = None
     category: CategoryResponse | None = None
+    category_name: str | None = None
+    categoryName: str | None = None
 
     @model_validator(mode="after")
     def sync_aliases(self) -> "ProductResponse":
@@ -106,4 +119,7 @@ class ProductResponse(BaseModel):
         self.categoryId = self.category_id
         self.prepTime = self.prep_time
         self.featuredImage = self.featured_image
+        if self.category:
+            self.category_name = self.category.name
+            self.categoryName = self.category.name
         return self

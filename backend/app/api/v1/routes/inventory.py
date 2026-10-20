@@ -1,7 +1,9 @@
 from typing import Optional
 from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy.orm import Session
-from app.api.deps import get_current_user, get_db
+from app.api.deps import get_db
+from app.api.route_guards import require_inventory_manage
+from app.core.exceptions import BadRequestException
 from app.models.user import User
 from app.schemas.common import APIResponse
 from app.schemas.inventory import (
@@ -24,27 +26,34 @@ from app.schemas.inventory import (
     UnitOfMeasureResponse,
 )
 from app.services.inventory_service import InventoryService
+from app.services.tenant_resolver import resolve_tenant_restaurant_id, verify_branch_access
 
 router = APIRouter()
 inventory_service = InventoryService()
+
 
 # ----------------- Units of Measure (UOM) -----------------
 @router.get("/uoms", response_model=APIResponse[list[UnitOfMeasureResponse]])
 def get_uoms(
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_inventory_manage),
 ):
-    restaurant_id = current_user.restaurant_id
+    restaurant_id = resolve_tenant_restaurant_id(db, current_user)
+    if not restaurant_id:
+        return APIResponse(data=[], message="No tenant restaurant resolved")
     uoms = inventory_service.list_uoms(db, restaurant_id)
     return APIResponse(data=uoms, message="Units of measure loaded")
+
 
 @router.post("/uoms", response_model=APIResponse[UnitOfMeasureResponse], status_code=status.HTTP_201_CREATED)
 def create_uom(
     payload: UnitOfMeasureCreate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_inventory_manage),
 ):
-    restaurant_id = current_user.restaurant_id
+    restaurant_id = resolve_tenant_restaurant_id(db, current_user)
+    if not restaurant_id:
+        raise BadRequestException("Could not resolve restaurant for user")
     uom = inventory_service.create_uom(db, restaurant_id, payload)
     return APIResponse(data=uom, message="Unit of measure created successfully")
 
@@ -54,39 +63,56 @@ def create_uom(
 def get_suppliers(
     branchId: int = Query(...),
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_inventory_manage),
 ):
+    verify_branch_access(db, current_user, branchId)
     suppliers = inventory_service.list_suppliers(db, branchId)
     return APIResponse(data=suppliers, message="Suppliers loaded")
+
 
 @router.post("/suppliers", response_model=APIResponse[SupplierResponse], status_code=status.HTTP_201_CREATED)
 def create_supplier(
     payload: SupplierCreate,
     branchId: int = Query(...),
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_inventory_manage),
 ):
-    restaurant_id = current_user.restaurant_id
-    supplier = inventory_service.create_supplier(db, restaurant_id, branchId, payload)
+    branch = verify_branch_access(db, current_user, branchId)
+    supplier = inventory_service.create_supplier(db, branch.restaurant_id, branchId, payload)
     return APIResponse(data=supplier, message="Supplier added successfully")
+
 
 @router.put("/suppliers/{supplier_id}", response_model=APIResponse[SupplierResponse])
 def update_supplier(
     supplier_id: int,
     payload: SupplierUpdate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_inventory_manage),
 ):
-    supplier = inventory_service.update_supplier(db, supplier_id, payload)
+    restaurant_id = resolve_tenant_restaurant_id(db, current_user)
+    supplier = inventory_service.update_supplier(
+        db,
+        supplier_id,
+        payload,
+        restaurant_id=restaurant_id,
+        is_super_admin=(current_user.role == "SUPER_ADMIN"),
+    )
     return APIResponse(data=supplier, message="Supplier updated successfully")
+
 
 @router.delete("/suppliers/{supplier_id}", response_model=APIResponse[None])
 def delete_supplier(
     supplier_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_inventory_manage),
 ):
-    inventory_service.delete_supplier(db, supplier_id)
+    restaurant_id = resolve_tenant_restaurant_id(db, current_user)
+    inventory_service.delete_supplier(
+        db,
+        supplier_id,
+        restaurant_id=restaurant_id,
+        is_super_admin=(current_user.role == "SUPER_ADMIN"),
+    )
     return APIResponse(data=None, message="Supplier deleted successfully")
 
 
@@ -96,39 +122,56 @@ def get_inventory_items(
     branchId: int = Query(...),
     itemType: Optional[str] = Query(None),
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_inventory_manage),
 ):
+    verify_branch_access(db, current_user, branchId)
     items = inventory_service.list_inventory_items(db, branchId, itemType)
     return APIResponse(data=items, message="Inventory items loaded")
+
 
 @router.post("/items", response_model=APIResponse[InventoryItemResponse], status_code=status.HTTP_201_CREATED)
 def create_inventory_item(
     payload: InventoryItemCreate,
     branchId: int = Query(...),
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_inventory_manage),
 ):
-    restaurant_id = current_user.restaurant_id
-    item = inventory_service.create_inventory_item(db, restaurant_id, branchId, payload)
+    branch = verify_branch_access(db, current_user, branchId)
+    item = inventory_service.create_inventory_item(db, branch.restaurant_id, branchId, payload)
     return APIResponse(data=item, message="Inventory item added successfully")
+
 
 @router.put("/items/{item_id}", response_model=APIResponse[InventoryItemResponse])
 def update_inventory_item(
     item_id: int,
     payload: InventoryItemUpdate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_inventory_manage),
 ):
-    item = inventory_service.update_inventory_item(db, item_id, payload)
+    restaurant_id = resolve_tenant_restaurant_id(db, current_user)
+    item = inventory_service.update_inventory_item(
+        db,
+        item_id,
+        payload,
+        restaurant_id=restaurant_id,
+        is_super_admin=(current_user.role == "SUPER_ADMIN"),
+    )
     return APIResponse(data=item, message="Inventory item updated successfully")
+
 
 @router.delete("/items/{item_id}", response_model=APIResponse[None])
 def delete_inventory_item(
     item_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_inventory_manage),
 ):
-    inventory_service.delete_inventory_item(db, item_id)
+    restaurant_id = resolve_tenant_restaurant_id(db, current_user)
+    inventory_service.delete_inventory_item(
+        db,
+        item_id,
+        restaurant_id=restaurant_id,
+        is_super_admin=(current_user.role == "SUPER_ADMIN"),
+    )
     return APIResponse(data=None, message="Inventory item deleted successfully")
 
 
@@ -139,8 +182,9 @@ def add_item_stock_batch(
     payload: RawInventoryBatchCreate,
     branchId: int = Query(...),
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_inventory_manage),
 ):
+    verify_branch_access(db, current_user, branchId)
     batch = inventory_service.add_stock_batch(db, branchId, item_id, payload)
     return APIResponse(
         data={
@@ -162,13 +206,20 @@ def add_item_stock_batch(
         message="Stock batch inwarded successfully"
     )
 
+
 @router.get("/items/{item_id}/batches", response_model=APIResponse[list[RawInventoryBatchResponse]])
 def get_item_batches(
     item_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_inventory_manage),
 ):
-    batches = inventory_service.list_item_batches(db, item_id)
+    restaurant_id = resolve_tenant_restaurant_id(db, current_user)
+    batches = inventory_service.list_item_batches(
+        db,
+        item_id,
+        restaurant_id=restaurant_id,
+        is_super_admin=(current_user.role == "SUPER_ADMIN"),
+    )
     return APIResponse(data=batches, message="Batches loaded successfully")
 
 
@@ -178,39 +229,56 @@ def get_prep_definitions(
     branchId: int = Query(...),
     rawItemId: Optional[int] = Query(None),
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_inventory_manage),
 ):
+    verify_branch_access(db, current_user, branchId)
     preps = inventory_service.list_prep_definitions(db, branchId, rawItemId)
     return APIResponse(data=preps, message="Kitchen prep definitions loaded")
+
 
 @router.post("/preps/definitions", response_model=APIResponse[KitchenPrepDefinitionResponse], status_code=status.HTTP_201_CREATED)
 def create_prep_definition(
     payload: KitchenPrepDefinitionCreate,
     branchId: int = Query(...),
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_inventory_manage),
 ):
-    restaurant_id = current_user.restaurant_id
-    prep = inventory_service.create_prep_definition(db, restaurant_id, branchId, payload)
+    branch = verify_branch_access(db, current_user, branchId)
+    prep = inventory_service.create_prep_definition(db, branch.restaurant_id, branchId, payload)
     return APIResponse(data=prep, message="Kitchen prep definition created successfully")
+
 
 @router.put("/preps/definitions/{prep_id}", response_model=APIResponse[KitchenPrepDefinitionResponse])
 def update_prep_definition(
     prep_id: int,
     payload: KitchenPrepDefinitionUpdate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_inventory_manage),
 ):
-    prep = inventory_service.update_prep_definition(db, prep_id, payload)
+    restaurant_id = resolve_tenant_restaurant_id(db, current_user)
+    prep = inventory_service.update_prep_definition(
+        db,
+        prep_id,
+        payload,
+        restaurant_id=restaurant_id,
+        is_super_admin=(current_user.role == "SUPER_ADMIN"),
+    )
     return APIResponse(data=prep, message="Kitchen prep definition updated successfully")
+
 
 @router.delete("/preps/definitions/{prep_id}", response_model=APIResponse[None])
 def delete_prep_definition(
     prep_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_inventory_manage),
 ):
-    inventory_service.delete_prep_definition(db, prep_id)
+    restaurant_id = resolve_tenant_restaurant_id(db, current_user)
+    inventory_service.delete_prep_definition(
+        db,
+        prep_id,
+        restaurant_id=restaurant_id,
+        is_super_admin=(current_user.role == "SUPER_ADMIN"),
+    )
     return APIResponse(data=None, message="Kitchen prep definition deleted successfully")
 
 
@@ -219,18 +287,21 @@ def delete_prep_definition(
 def get_prep_batches(
     branchId: int = Query(...),
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_inventory_manage),
 ):
+    verify_branch_access(db, current_user, branchId)
     batches = inventory_service.list_prep_batches(db, branchId)
     return APIResponse(data=batches, message="Kitchen prep batches loaded")
+
 
 @router.post("/preps/batches", response_model=APIResponse[KitchenPrepBatchResponse], status_code=status.HTTP_201_CREATED)
 def log_prep_batch(
     payload: KitchenPrepBatchCreate,
     branchId: int = Query(...),
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_inventory_manage),
 ):
+    verify_branch_access(db, current_user, branchId)
     batch = inventory_service.log_prep_batch(db, branchId, current_user.id, payload)
     return APIResponse(
         data={
@@ -259,17 +330,31 @@ def log_prep_batch(
 def get_product_recipe(
     product_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_inventory_manage),
 ):
-    recipe = inventory_service.get_product_recipe(db, product_id)
+    restaurant_id = resolve_tenant_restaurant_id(db, current_user)
+    recipe = inventory_service.get_product_recipe(
+        db,
+        product_id,
+        restaurant_id=restaurant_id,
+        is_super_admin=(current_user.role == "SUPER_ADMIN"),
+    )
     return APIResponse(data=recipe, message="Product recipe retrieved")
+
 
 @router.post("/recipes/products/{product_id}", response_model=APIResponse[list[ProductRecipeItemResponse]])
 def save_product_recipe(
     product_id: int,
     payload: ProductRecipeSaveRequest,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_inventory_manage),
 ):
-    recipe = inventory_service.save_product_recipe(db, product_id, payload)
+    restaurant_id = resolve_tenant_restaurant_id(db, current_user)
+    recipe = inventory_service.save_product_recipe(
+        db,
+        product_id,
+        payload,
+        restaurant_id=restaurant_id,
+        is_super_admin=(current_user.role == "SUPER_ADMIN"),
+    )
     return APIResponse(data=recipe, message="Product recipe and food cost saved successfully")

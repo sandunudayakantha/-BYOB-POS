@@ -31,5 +31,6 @@ export async function updateProductMutation(input: UpdateProductMutationInput): 
     headers: { "Content-Type": "multipart/form-data" },
   });
 
-  return mapProductDtoToModel(response.data?.data);
+  const raw = (response as any)?.data?.data || (response as any)?.data || response;
+  return mapProductDtoToModel(raw);
 }

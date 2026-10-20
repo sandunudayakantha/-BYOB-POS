@@ -66,4 +66,4 @@ class Token(BaseModel):
 class TokenRefresh(BaseModel):
     model_config = ConfigDict(str_strip_whitespace=True)
 
-    refresh_token: str = Field(..., min_length=20, max_length=1000)
+    refresh_token: str | None = Field(default=None, max_length=1000)

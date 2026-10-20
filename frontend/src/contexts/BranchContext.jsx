@@ -1,48 +1,34 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import api from '../services/api';
 import { useAuth } from './AuthContext';
+import { useBranchesUseCase } from '@/app/domain/branches/use-branches.use-case';
 
 const BranchContext = createContext(null);
 
 export const BranchProvider = ({ children }) => {
   const { user } = useAuth();
-  const [branches, setBranches] = useState([]);
+  const isEligible = Boolean(user && user.role !== 'CUSTOMER');
+  const { branches, isLoading: loading, refetch: fetchBranches } = useBranchesUseCase({ enabled: isEligible });
   const [activeBranch, setActiveBranch] = useState(null);
-  const [loading, setLoading] = useState(false);
-
-  const fetchBranches = async () => {
-    if (user && user.role === 'RESTAURANT_OWNER') {
-      setLoading(true);
-      try {
-        const res = await api.get('/branches');
-        const branchList = res.data || [];
-        setBranches(branchList);
-
-        if (branchList.length > 0) {
-          const savedBranchId = localStorage.getItem('activeBranchId');
-          const matched = branchList.find(b => b._id === savedBranchId);
-          const defaultBranch = matched || branchList.find(b => b.isMain) || branchList[0];
-          setActiveBranch(defaultBranch);
-          localStorage.setItem('activeBranchId', defaultBranch._id);
-        }
-      } catch (err) {
-        console.error('Failed to fetch branches:', err);
-      } finally {
-        setLoading(false);
-      }
-    } else {
-      setBranches([]);
-      setActiveBranch(null);
-    }
-  };
 
   useEffect(() => {
-    fetchBranches();
-  }, [user]);
+    if (branches && branches.length > 0) {
+      const savedBranchId = localStorage.getItem('activeBranchId');
+      const matched = branches.find(b => String(b._id || b.id) === String(savedBranchId));
+      const defaultBranch = matched || branches.find(b => b.isMain) || branches[0];
+      setActiveBranch(defaultBranch);
+      if (defaultBranch) {
+        localStorage.setItem('activeBranchId', String(defaultBranch._id || defaultBranch.id));
+      }
+    } else if (!loading) {
+      setActiveBranch(null);
+    }
+  }, [branches, loading]);
 
   const switchBranch = (branch) => {
     setActiveBranch(branch);
-    localStorage.setItem('activeBranchId', branch._id);
+    if (branch) {
+      localStorage.setItem('activeBranchId', String(branch._id || branch.id));
+    }
   };
 
   return (

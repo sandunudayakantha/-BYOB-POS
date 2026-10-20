@@ -6,6 +6,7 @@ export function useSuppliersUseCase(branchId?: number) {
   const query = useQuery<SupplierModel[]>({
     queryKey: ["suppliers", branchId],
     queryFn: () => suppliersQuery(branchId),
+    enabled: Boolean(branchId && branchId > 0),
   });
 
   return {

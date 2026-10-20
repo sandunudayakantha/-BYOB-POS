@@ -1,12 +1,13 @@
 import React from 'react';
 import type { KitchenPrepDefinitionModel } from '@/app/models/inventory.model';
-import { BeakerIcon, PencilSquareIcon } from '@heroicons/react/24/outline';
+import { BeakerIcon, PencilSquareIcon, PlusIcon } from '@heroicons/react/24/outline';
 
 export interface KitchenPrepsTabProps {
   prepDefinitions: KitchenPrepDefinitionModel[];
   isLoading: boolean;
   onEditPrep: (prep: KitchenPrepDefinitionModel) => void;
   onLogBatch: (prep: KitchenPrepDefinitionModel) => void;
+  onOpenAddPrep?: () => void;
 }
 
 export const KitchenPrepsTab: React.FC<KitchenPrepsTabProps> = ({
@@ -14,6 +15,7 @@ export const KitchenPrepsTab: React.FC<KitchenPrepsTabProps> = ({
   isLoading,
   onEditPrep,
   onLogBatch,
+  onOpenAddPrep,
 }) => {
   const [searchTerm, setSearchTerm] = React.useState('');
 
@@ -29,11 +31,23 @@ export const KitchenPrepsTab: React.FC<KitchenPrepsTabProps> = ({
 
   return (
     <div className="space-y-4">
-      <div>
-        <h3 className="font-extrabold text-lg text-slate-900 dark:text-white">Admin Prep Sub-Recipes</h3>
-        <p className="text-xs text-slate-500">
-          All intermediate preps configured under raw materials, including yield percentages, photo evidence, and wastage rules.
-        </p>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+        <div>
+          <h3 className="font-extrabold text-lg text-slate-900 dark:text-white">Admin Prep Sub-Recipes</h3>
+          <p className="text-xs text-slate-500">
+            All intermediate preps configured under raw materials, including yield percentages, photo evidence, and wastage rules.
+          </p>
+        </div>
+        {onOpenAddPrep && (
+          <button
+            type="button"
+            onClick={onOpenAddPrep}
+            className="flex items-center gap-2 py-2 px-4 rounded-xl bg-emerald-600 text-white font-bold text-xs shadow-md hover:bg-emerald-700 transition"
+          >
+            <PlusIcon className="w-4 h-4" />
+            <span>Define Prep</span>
+          </button>
+        )}
       </div>
 
       <div className="relative max-w-sm">

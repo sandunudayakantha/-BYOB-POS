@@ -2,7 +2,7 @@ from datetime import date, datetime
 from decimal import Decimal
 from typing import Optional
 from sqlalchemy.orm import Session
-from app.core.exceptions import BadRequestException, NotFoundException
+from app.core.exceptions import AuthorizationException, BadRequestException, NotFoundException
 from app.models.enums import BatchStatus, InventoryItemType, InventoryTransactionType, PrepBatchStatus
 from app.models.inventory import (
     InventoryItem,
@@ -28,34 +28,42 @@ from app.schemas.inventory import (
     UnitOfMeasureCreate,
 )
 
+import logging
+from app.repositories.uom_repo import UnitOfMeasureRepository
+from app.repositories.supplier_repo import SupplierRepository
+from app.repositories.inventory_item_repo import InventoryItemRepository
+
+logger = logging.getLogger(__name__)
+
 class InventoryService:
+    def __init__(self) -> None:
+        self.uom_repo = UnitOfMeasureRepository()
+        self.supplier_repo = SupplierRepository()
+        self.item_repo = InventoryItemRepository()
+
     # ----------------- UOM Operations -----------------
     def list_uoms(self, db: Session, restaurant_id: int) -> list[UnitOfMeasure]:
-        return db.query(UnitOfMeasure).filter(
-            UnitOfMeasure.restaurant_id == restaurant_id,
-            UnitOfMeasure.is_deleted == False
+        return self.uom_repo._active_query(db).filter(
+            UnitOfMeasure.restaurant_id == restaurant_id
         ).order_by(UnitOfMeasure.name.asc()).all()
 
     def create_uom(self, db: Session, restaurant_id: int, payload: UnitOfMeasureCreate) -> UnitOfMeasure:
-        uom = UnitOfMeasure(
-            restaurant_id=restaurant_id,
-            name=payload.name,
-            symbol=payload.symbol,
-            uom_type=payload.uom_type,
-            base_unit_id=payload.base_unit_id,
-            conversion_factor=payload.conversion_factor,
-        )
-        db.add(uom)
-        db.commit()
-        db.refresh(uom)
-        return uom
+        data = {
+            "restaurant_id": restaurant_id,
+            "name": payload.name,
+            "symbol": payload.symbol,
+            "uom_type": payload.uom_type,
+            "base_unit_id": payload.base_unit_id,
+            "conversion_factor": payload.conversion_factor,
+        }
+        return self.uom_repo.create(db, data)
 
     # ----------------- Supplier Operations -----------------
     def list_suppliers(self, db: Session, branch_id: int) -> list[Supplier]:
-        return db.query(Supplier).filter(
-            Supplier.branch_id == branch_id,
-            Supplier.is_deleted == False
+        return self.supplier_repo._active_query(db).filter(
+            Supplier.branch_id == branch_id
         ).order_by(Supplier.name.asc()).all()
+
 
     def create_supplier(self, db: Session, restaurant_id: int, branch_id: int, payload: SupplierCreate) -> Supplier:
         supplier = Supplier(
@@ -73,20 +81,37 @@ class InventoryService:
         db.refresh(supplier)
         return supplier
 
-    def update_supplier(self, db: Session, supplier_id: int, payload: SupplierUpdate) -> Supplier:
+    def update_supplier(
+        self,
+        db: Session,
+        supplier_id: int,
+        payload: SupplierUpdate,
+        restaurant_id: int | None = None,
+        is_super_admin: bool = False,
+    ) -> Supplier:
         supplier = db.query(Supplier).filter(Supplier.id == supplier_id, Supplier.is_deleted == False).first()
         if not supplier:
             raise NotFoundException("Supplier not found")
+        if not is_super_admin and restaurant_id is not None and supplier.restaurant_id != restaurant_id:
+            raise AuthorizationException("Not authorized to modify this supplier")
         for k, v in payload.model_dump(exclude_unset=True).items():
             setattr(supplier, k, v)
         db.commit()
         db.refresh(supplier)
         return supplier
 
-    def delete_supplier(self, db: Session, supplier_id: int) -> None:
+    def delete_supplier(
+        self,
+        db: Session,
+        supplier_id: int,
+        restaurant_id: int | None = None,
+        is_super_admin: bool = False,
+    ) -> None:
         supplier = db.query(Supplier).filter(Supplier.id == supplier_id, Supplier.is_deleted == False).first()
         if not supplier:
             raise NotFoundException("Supplier not found")
+        if not is_super_admin and restaurant_id is not None and supplier.restaurant_id != restaurant_id:
+            raise AuthorizationException("Not authorized to delete this supplier")
         supplier.is_deleted = True
         db.commit()
 
@@ -169,10 +194,19 @@ class InventoryService:
 
         return item
 
-    def update_inventory_item(self, db: Session, item_id: int, payload: InventoryItemUpdate) -> InventoryItem:
+    def update_inventory_item(
+        self,
+        db: Session,
+        item_id: int,
+        payload: InventoryItemUpdate,
+        restaurant_id: int | None = None,
+        is_super_admin: bool = False,
+    ) -> InventoryItem:
         item = db.query(InventoryItem).filter(InventoryItem.id == item_id, InventoryItem.is_deleted == False).first()
         if not item:
             raise NotFoundException("Inventory item not found")
+        if not is_super_admin and restaurant_id is not None and item.restaurant_id != restaurant_id:
+            raise AuthorizationException("Not authorized to modify this inventory item")
 
         old_stock = item.current_stock
         for k, v in payload.model_dump(exclude_unset=True).items():
@@ -196,10 +230,18 @@ class InventoryService:
         db.refresh(item)
         return item
 
-    def delete_inventory_item(self, db: Session, item_id: int) -> None:
+    def delete_inventory_item(
+        self,
+        db: Session,
+        item_id: int,
+        restaurant_id: int | None = None,
+        is_super_admin: bool = False,
+    ) -> None:
         item = db.query(InventoryItem).filter(InventoryItem.id == item_id, InventoryItem.is_deleted == False).first()
         if not item:
             raise NotFoundException("Inventory item not found")
+        if not is_super_admin and restaurant_id is not None and item.restaurant_id != restaurant_id:
+            raise AuthorizationException("Not authorized to delete this inventory item")
         item.is_deleted = True
         db.commit()
 
@@ -278,7 +320,19 @@ class InventoryService:
         db.refresh(batch)
         return batch
 
-    def list_item_batches(self, db: Session, item_id: int) -> list[dict]:
+    def list_item_batches(
+        self,
+        db: Session,
+        item_id: int,
+        restaurant_id: int | None = None,
+        is_super_admin: bool = False,
+    ) -> list[dict]:
+        item = db.query(InventoryItem).filter(InventoryItem.id == item_id, InventoryItem.is_deleted == False).first()
+        if not item:
+            raise NotFoundException("Inventory item not found")
+        if not is_super_admin and restaurant_id is not None and item.restaurant_id != restaurant_id:
+            raise AuthorizationException("Not authorized to view batches for this inventory item")
+
         batches = db.query(RawInventoryBatch).filter(
             RawInventoryBatch.inventory_item_id == item_id,
             RawInventoryBatch.is_deleted == False
@@ -380,25 +434,40 @@ class InventoryService:
         return prep
 
     def update_prep_definition(
-        self, db: Session, prep_id: int, payload: KitchenPrepDefinitionUpdate
+        self,
+        db: Session,
+        prep_id: int,
+        payload: KitchenPrepDefinitionUpdate,
+        restaurant_id: int | None = None,
+        is_super_admin: bool = False,
     ) -> KitchenPrepDefinition:
         prep = db.query(KitchenPrepDefinition).filter(
             KitchenPrepDefinition.id == prep_id, KitchenPrepDefinition.is_deleted == False
         ).first()
         if not prep:
             raise NotFoundException("Kitchen prep definition not found")
+        if not is_super_admin and restaurant_id is not None and prep.restaurant_id != restaurant_id:
+            raise AuthorizationException("Not authorized to modify this prep definition")
         for k, v in payload.model_dump(exclude_unset=True).items():
             setattr(prep, k, v)
         db.commit()
         db.refresh(prep)
         return prep
 
-    def delete_prep_definition(self, db: Session, prep_id: int) -> None:
+    def delete_prep_definition(
+        self,
+        db: Session,
+        prep_id: int,
+        restaurant_id: int | None = None,
+        is_super_admin: bool = False,
+    ) -> None:
         prep = db.query(KitchenPrepDefinition).filter(
             KitchenPrepDefinition.id == prep_id, KitchenPrepDefinition.is_deleted == False
         ).first()
         if not prep:
             raise NotFoundException("Kitchen prep definition not found")
+        if not is_super_admin and restaurant_id is not None and prep.restaurant_id != restaurant_id:
+            raise AuthorizationException("Not authorized to delete this prep definition")
         prep.is_deleted = True
         db.commit()
 
@@ -553,7 +622,19 @@ class InventoryService:
         return results
 
     # ----------------- Product Recipe Operations -----------------
-    def get_product_recipe(self, db: Session, product_id: int) -> list[dict]:
+    def get_product_recipe(
+        self,
+        db: Session,
+        product_id: int,
+        restaurant_id: int | None = None,
+        is_super_admin: bool = False,
+    ) -> list[dict]:
+        prod = db.query(Product).filter(Product.id == product_id, Product.is_deleted == False).first()
+        if not prod:
+            raise NotFoundException("Product not found")
+        if not is_super_admin and restaurant_id is not None and prod.restaurant_id != restaurant_id:
+            raise AuthorizationException("Not authorized to view recipe for this product")
+
         items = db.query(ProductRecipeItem).filter(
             ProductRecipeItem.product_id == product_id,
             ProductRecipeItem.is_deleted == False
@@ -587,11 +668,18 @@ class InventoryService:
         return results
 
     def save_product_recipe(
-        self, db: Session, product_id: int, payload: ProductRecipeSaveRequest
+        self,
+        db: Session,
+        product_id: int,
+        payload: ProductRecipeSaveRequest,
+        restaurant_id: int | None = None,
+        is_super_admin: bool = False,
     ) -> list[dict]:
         prod = db.query(Product).filter(Product.id == product_id, Product.is_deleted == False).first()
         if not prod:
             raise NotFoundException("Product not found")
+        if not is_super_admin and restaurant_id is not None and prod.restaurant_id != restaurant_id:
+            raise AuthorizationException("Not authorized to modify recipe for this product")
 
         # Soft delete existing recipe items
         db.query(ProductRecipeItem).filter(
@@ -611,4 +699,4 @@ class InventoryService:
             db.add(recipe_item)
 
         db.commit()
-        return self.get_product_recipe(db, product_id)
+        return self.get_product_recipe(db, product_id, restaurant_id=restaurant_id, is_super_admin=is_super_admin)

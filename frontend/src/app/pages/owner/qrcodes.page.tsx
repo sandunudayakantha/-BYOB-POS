@@ -32,12 +32,36 @@ export const QRCodesPage: React.FC = () => {
   const { toggleStatus } = useToggleQRStatusUseCase();
   const { deleteQRCode } = useDeleteQRCodeUseCase();
 
+  const handleOpenCreate = () => {
+    const active = (menus || []).filter((m: any) => m.status !== 'INACTIVE');
+    const baseMenu = active.find((m: any) => m.isBaseMenu) || active[0];
+    setFormData({
+      menuId: baseMenu ? String(baseMenu.id || baseMenu._id) : '',
+      tableName: '',
+    });
+    setCreateModalOpen(true);
+  };
+
+  React.useEffect(() => {
+    if (createModalOpen && !formData.menuId && menus && menus.length > 0) {
+      const active = menus.filter((m: any) => m.status !== 'INACTIVE');
+      const baseMenu = active.find((m: any) => m.isBaseMenu) || active[0];
+      if (baseMenu) {
+        setFormData((prev) => ({ ...prev, menuId: String(baseMenu.id || baseMenu._id) }));
+      }
+    }
+  }, [createModalOpen, menus, formData.menuId]);
+
   const handleCreateSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formData.menuId) {
+      toast.error('Please select an active menu for this QR code.');
+      return;
+    }
     try {
       await createQRCode({
         branchId,
-        menuId: formData.menuId || undefined,
+        menuId: formData.menuId,
         tableName: formData.tableName || undefined,
       });
       toast.success('Permanent QR Code generated!');
@@ -72,11 +96,12 @@ export const QRCodesPage: React.FC = () => {
 
   const columns = useMemo(() => {
     return buildQRColumns({
+      menus,
       onView: (qr) => setViewQR(qr),
       onToggleStatus: handleToggleStatus,
       onDelete: handleDelete,
     });
-  }, [qrCodes]);
+  }, [qrCodes, menus]);
 
   return (
     <div className="space-y-6">
@@ -91,7 +116,7 @@ export const QRCodesPage: React.FC = () => {
         </div>
         <button
           type="button"
-          onClick={() => setCreateModalOpen(true)}
+          onClick={handleOpenCreate}
           className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-emerald-600 text-white font-bold text-sm shadow-md hover:bg-emerald-700 transition"
         >
           <PlusIcon className="w-5 h-5" />
@@ -121,7 +146,10 @@ export const QRCodesPage: React.FC = () => {
         <QRModal
           isOpen={Boolean(viewQR)}
           onClose={() => setViewQR(null)}
+          qrCode={viewQR}
           qrData={viewQR}
+          logoUrl={activeBranch?.logo}
+          brandName={activeBranch?.name}
         />
       )}
     </div>

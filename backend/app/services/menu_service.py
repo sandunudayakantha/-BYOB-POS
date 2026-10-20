@@ -5,7 +5,7 @@ from app.core.exceptions import BadRequestException
 from app.models.menu import Menu, MenuItem
 from app.models.user import User
 from app.repositories.menu_repo import MenuItemRepository, MenuRepository
-from app.schemas.menu import MenuCreate
+from app.schemas.menu import MenuCreate, MenuItemCreate
 from app.services.base import BaseCRUDService
 from app.services.tenant_resolver import resolve_tenant_restaurant_id
 
@@ -177,7 +177,7 @@ class MenuService(BaseCRUDService[Menu]):
 
         existing_items = (
             db.query(MenuItem)
-            .filter(MenuItem.menu_id == target_menu.id, MenuItem.is_deleted.is_(False))
+            .filter(MenuItem.menu_id == target_menu.id)
             .all()
         )
         existing_map = {item.product_id: item for item in existing_items}
@@ -190,8 +190,14 @@ class MenuService(BaseCRUDService[Menu]):
             decimal_price = Decimal(str(max(0.0, new_price)))
 
             if prod_id in existing_map:
-                if overwrite_existing:
-                    existing_map[prod_id].price = decimal_price
+                existing_item = existing_map[prod_id]
+                if existing_item.is_deleted:
+                    existing_item.is_deleted = False
+                    existing_item.price = decimal_price
+                    existing_item.available = True
+                    added_count += 1
+                elif overwrite_existing:
+                    existing_item.price = decimal_price
                     updated_count += 1
             else:
                 new_item = MenuItem(
@@ -336,3 +342,25 @@ class MenuService(BaseCRUDService[Menu]):
 class MenuItemService(BaseCRUDService[MenuItem]):
     def __init__(self) -> None:
         super().__init__(MenuItemRepository(), entity_name="MenuItem", resource_name="menu_item")
+
+    def create_or_restore(self, db: Session, data: MenuItemCreate) -> MenuItem:
+        existing = (
+            db.query(MenuItem)
+            .filter(
+                MenuItem.menu_id == data.menu_id,
+                MenuItem.product_id == data.product_id,
+            )
+            .first()
+        )
+        if existing:
+            existing.price = data.price
+            if data.available is not None:
+                existing.available = data.available
+            if data.sort_order is not None:
+                existing.sort_order = data.sort_order
+            existing.is_deleted = False
+            db.commit()
+            db.refresh(existing)
+            return existing
+
+        return self.create(db, data)

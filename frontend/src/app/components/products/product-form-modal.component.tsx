@@ -22,6 +22,8 @@ interface ProductFormModalProps {
   imagePreview: string;
   setImagePreview: (url: string) => void;
   handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  errors?: Record<string, string>;
+  setErrors?: React.Dispatch<React.SetStateAction<Record<string, string>>>;
   onSubmit: (e: React.FormEvent) => void;
   isSubmitting: boolean;
 }
@@ -38,6 +40,8 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
   imagePreview,
   setImagePreview,
   handleFileChange,
+  errors = {},
+  setErrors,
   onSubmit,
   isSubmitting,
 }) => {
@@ -48,14 +52,24 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
           label="Product Name"
           placeholder="e.g. Truffle Wagyu Burger"
           value={formData.name}
-          onChange={(e: any) => setFormData({ ...formData, name: e.target.value })}
+          error={errors.name}
+          onChange={(e: any) => {
+            setFormData({ ...formData, name: e.target.value });
+            if (setErrors && errors.name) setErrors((prev) => ({ ...prev, name: '' }));
+          }}
           required
         />
 
         <FormSelect
           label="Category"
           value={formData.categoryId}
-          onChange={(e: any) => setFormData({ ...formData, categoryId: e.target.value })}
+          error={errors.categoryId || errors.category_id}
+          onChange={(e: any) => {
+            setFormData({ ...formData, categoryId: e.target.value });
+            if (setErrors && (errors.categoryId || errors.category_id)) {
+              setErrors((prev) => ({ ...prev, categoryId: '', category_id: '' }));
+            }
+          }}
           options={categories.map((c) => ({ value: c._id, label: c.name }))}
           required
         />
@@ -64,7 +78,11 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
           label="Description"
           placeholder="Detailed description of ingredients and flavors..."
           value={formData.description}
-          onChange={(e: any) => setFormData({ ...formData, description: e.target.value })}
+          error={errors.description}
+          onChange={(e: any) => {
+            setFormData({ ...formData, description: e.target.value });
+            if (setErrors && errors.description) setErrors((prev) => ({ ...prev, description: '' }));
+          }}
         />
 
         <div className="space-y-2">

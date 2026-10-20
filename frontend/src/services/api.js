@@ -27,18 +27,12 @@ let refreshPromise = null;
 
 const requestRefreshToken = async () => {
   if (!refreshPromise) {
-    const storedRefreshToken = localStorage.getItem('refreshToken');
-    if (!storedRefreshToken) throw new Error('No refresh token');
-
-    refreshPromise = axios.post(`${API_BASE_URL}/auth/refresh`, {
-      refresh_token: storedRefreshToken
+    refreshPromise = axios.post(`${API_BASE_URL}/auth/refresh`, {}, {
+      withCredentials: true
     }).then(res => {
       const newAccessToken = res.data?.data?.access_token || res.data?.access_token;
-      const newRefreshToken = res.data?.data?.refresh_token || res.data?.refresh_token;
-
       if (newAccessToken) {
         setAccessToken(newAccessToken);
-        if (newRefreshToken) localStorage.setItem('refreshToken', newRefreshToken);
       }
       return newAccessToken;
     }).finally(() => {
@@ -53,7 +47,14 @@ api.interceptors.response.use(
   (response) => {
     const resData = response.data;
     if (resData && typeof resData === 'object' && 'data' in resData) {
-      if (resData.data && Array.isArray(resData.data.items)) {
+      if (
+        resData.data &&
+        typeof resData.data === 'object' &&
+        Array.isArray(resData.data.items) &&
+        typeof resData.data.total === 'number' &&
+        !('menu' in resData.data) &&
+        !('categories' in resData.data)
+      ) {
         const paginatedList = resData.data.items.map(item => ({
           ...item,
           _id: item._id || item.id

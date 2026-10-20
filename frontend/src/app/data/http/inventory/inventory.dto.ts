@@ -128,7 +128,8 @@ export interface UpdateRawItemRequestDto {
 }
 
 export interface InwardStockBatchRequestDto {
-  quantity_received: number;
+  quantity: number;
+  quantity_received?: number;
   unit_cost: number;
   received_date?: string;
   expiry_date?: string;
@@ -195,6 +196,7 @@ export function mapSupplierDtoToModel(dto: SupplierDto): SupplierModel {
 }
 
 export function mapInventoryItemDtoToModel(dto: InventoryItemDto): InventoryItemModel {
+  if (!dto) return {} as InventoryItemModel;
   return {
     id: dto.id,
     restaurantId: dto.restaurant_id,
@@ -204,10 +206,10 @@ export function mapInventoryItemDtoToModel(dto: InventoryItemDto): InventoryItem
     name: dto.name,
     sku: dto.sku ?? undefined,
     itemType: dto.item_type as InventoryItemModel['itemType'],
-    currentStock: Number(dto.current_stock),
-    reorderThreshold: Number(dto.reorder_threshold),
-    unitCost: Number(dto.unit_cost),
-    isActive: dto.is_active,
+    currentStock: Number(dto.current_stock || 0),
+    reorderThreshold: Number(dto.reorder_threshold || 0),
+    unitCost: Number(dto.unit_cost || 0),
+    isActive: dto.is_active ?? true,
     uomName: dto.uom_name ?? undefined,
     uomSymbol: dto.uom_symbol ?? undefined,
     supplierName: dto.supplier_name ?? undefined,
@@ -216,6 +218,7 @@ export function mapInventoryItemDtoToModel(dto: InventoryItemDto): InventoryItem
 }
 
 export function mapRawInventoryBatchDtoToModel(dto: RawInventoryBatchDto): RawInventoryBatchModel {
+  if (!dto) return {} as RawInventoryBatchModel;
   return {
     id: dto.id,
     inventoryItemId: dto.inventory_item_id,
@@ -223,9 +226,9 @@ export function mapRawInventoryBatchDtoToModel(dto: RawInventoryBatchDto): RawIn
     supplierId: dto.supplier_id ?? undefined,
     supplierName: dto.supplier_name ?? undefined,
     batchNumber: dto.batch_number,
-    quantityReceived: Number(dto.quantity_received),
-    quantityRemaining: Number(dto.quantity_remaining),
-    unitCost: Number(dto.unit_cost),
+    quantityReceived: Number(dto.quantity_received || 0),
+    quantityRemaining: Number(dto.quantity_remaining || 0),
+    unitCost: Number(dto.unit_cost || 0),
     receivedDate: dto.received_date,
     expiryDate: dto.expiry_date ?? undefined,
     status: dto.status as RawInventoryBatchModel['status'],
@@ -235,6 +238,7 @@ export function mapRawInventoryBatchDtoToModel(dto: RawInventoryBatchDto): RawIn
 }
 
 export function mapKitchenPrepDefinitionDtoToModel(dto: KitchenPrepDefinitionDto): KitchenPrepDefinitionModel {
+  if (!dto) return {} as KitchenPrepDefinitionModel;
   return {
     id: dto.id,
     restaurantId: dto.restaurant_id,
@@ -250,17 +254,18 @@ export function mapKitchenPrepDefinitionDtoToModel(dto: KitchenPrepDefinitionDto
     portionSizeUomSymbol: dto.portion_size_uom_symbol ?? undefined,
     name: dto.name,
     description: dto.description ?? undefined,
-    expectedYieldPercent: Number(dto.expected_yield_percent),
-    currentStock: Number(dto.current_stock),
+    expectedYieldPercent: Number(dto.expected_yield_percent || 0),
+    currentStock: Number(dto.current_stock || 0),
     requiresImageEvidence: dto.requires_image_evidence,
     trackWastage: dto.track_wastage,
     requiresWastageImage: dto.requires_wastage_image,
-    isActive: dto.is_active,
+    isActive: dto.is_active ?? true,
     createdAt: dto.created_at,
   };
 }
 
 export function mapKitchenPrepBatchDtoToModel(dto: KitchenPrepBatchDto): KitchenPrepBatchModel {
+  if (!dto) return {} as KitchenPrepBatchModel;
   return {
     id: dto.id,
     prepDefinitionId: dto.prep_definition_id,
@@ -269,14 +274,14 @@ export function mapKitchenPrepBatchDtoToModel(dto: KitchenPrepBatchDto): Kitchen
     branchId: dto.branch_id,
     preparedByUserId: dto.prepared_by_user_id,
     preparedByName: dto.prepared_by_name ?? undefined,
-    rawInputQuantity: Number(dto.raw_input_quantity),
-    actualYieldQuantity: Number(dto.actual_yield_quantity),
+    rawInputQuantity: Number(dto.raw_input_quantity || 0),
+    actualYieldQuantity: Number(dto.actual_yield_quantity || 0),
     outputUomSymbol: dto.output_uom_symbol ?? undefined,
-    wastageQuantity: Number(dto.wastage_quantity),
+    wastageQuantity: Number(dto.wastage_quantity || 0),
     wastageReason: dto.wastage_reason ?? undefined,
     prepImageUrl: dto.prep_image_url ?? undefined,
     wastageImageUrl: dto.wastage_image_url ?? undefined,
-    calculatedUnitCost: Number(dto.calculated_unit_cost),
+    calculatedUnitCost: Number(dto.calculated_unit_cost || 0),
     status: dto.status,
     createdAt: dto.created_at,
   };
@@ -334,6 +339,7 @@ export function mapInwardStockBatchInputToDto(input: {
   notes?: string;
 }): InwardStockBatchRequestDto {
   return {
+    quantity: input.quantityReceived,
     quantity_received: input.quantityReceived,
     unit_cost: input.unitCost,
     received_date: input.receivedDate,

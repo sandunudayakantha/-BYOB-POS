@@ -26,5 +26,6 @@ export async function updatePrepDefinitionMutation(input: UpdatePrepDefinitionMu
     `/inventory/preps/definitions/${input.prepId}`,
     payload
   );
-  return mapKitchenPrepDefinitionDtoToModel(response.data?.data);
+  const raw = (response as any)?.data?.data || (response as any)?.data || response;
+  return mapKitchenPrepDefinitionDtoToModel(raw);
 }

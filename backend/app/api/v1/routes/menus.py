@@ -136,7 +136,7 @@ def add_menu_item(
     db: Session = Depends(get_db),
     _: User = Depends(require_menu_manage),
 ):
-    return APIResponse(data=menu_item_service.create(db, data), message="Menu item added successfully")
+    return APIResponse(data=menu_item_service.create_or_restore(db, data), message="Menu item added successfully")
 
 @router.put("/items/{item_id}", response_model=APIResponse[MenuItemResponse])
 def update_menu_item(

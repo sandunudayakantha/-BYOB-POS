@@ -39,7 +39,7 @@ export function buildBranchColumns({
                 </span>
               )}
             </div>
-            <div className="text-xs text-slate-400">{row.phone || 'No phone'}</div>
+            <div className="text-xs text-slate-500 dark:text-slate-400 font-medium">{row.phone || 'No phone'}</div>
           </div>
         </div>
       ),
@@ -55,13 +55,13 @@ export function buildBranchColumns({
             className="w-24 h-10 rounded-xl object-cover ring-1 ring-slate-200 dark:ring-slate-700 shadow-sm"
           />
         ) : (
-          <span className="text-xs text-slate-400 italic">No Banner</span>
+          <span className="text-xs text-slate-400 dark:text-slate-500 italic">No Banner</span>
         ),
     },
     {
       key: 'address',
       header: 'Address',
-      render: (row) => <span>{row.address || '—'}</span>,
+      render: (row) => <span className="text-slate-700 dark:text-slate-300 font-medium">{row.address || '—'}</span>,
     },
     {
       key: 'status',
@@ -79,7 +79,7 @@ export function buildBranchColumns({
           <button
             type="button"
             onClick={() => onEdit(row)}
-            className="p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
+            className="p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-colors"
             title="Edit Branch & Branding"
           >
             <PencilIcon className="w-4 h-4" />
@@ -88,7 +88,7 @@ export function buildBranchColumns({
             <button
               type="button"
               onClick={() => onDelete(row)}
-              className="p-1.5 rounded-lg border border-rose-200 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40"
+              className="p-1.5 rounded-lg border border-rose-200 dark:border-rose-900/50 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors"
               title="Delete Branch"
             >
               <TrashIcon className="w-4 h-4" />

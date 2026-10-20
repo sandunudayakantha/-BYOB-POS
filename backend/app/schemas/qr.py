@@ -62,6 +62,18 @@ class QRCodeUpdate(BaseModel):
                 data["menu_id"] = data["menuId"]
         return data
 
+class QRMenuInfo(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    _id: int | None = None
+    name: str
+
+    @model_validator(mode="after")
+    def sync_aliases(self) -> "QRMenuInfo":
+        self._id = self.id
+        return self
+
 class QRCodeResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -78,6 +90,7 @@ class QRCodeResponse(BaseModel):
     tableName: str | None = None
     is_active: bool = True
     isActive: bool | None = None
+    menu: QRMenuInfo | None = None
 
     @model_validator(mode="after")
     def sync_aliases(self) -> "QRCodeResponse":

@@ -26,7 +26,7 @@ export const CustomerSearchBar: React.FC<CustomerSearchBarProps> = ({
             type="text"
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            placeholder="Search sushi, rolls, beverages..."
+            placeholder="Search dishes, drinks, ingredients..."
             className="w-full pl-12 pr-11 py-3 rounded-full bg-[#16161A] border border-slate-800 text-white placeholder-slate-500 focus:outline-none focus:border-orange-500/80 text-xs font-medium transition shadow-inner"
           />
           {searchQuery && (

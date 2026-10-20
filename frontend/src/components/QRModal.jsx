@@ -4,13 +4,14 @@ import QRCode from 'qrcode';
 import { ArrowDownTrayIcon, PrinterIcon } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 
-const QRModal = ({ isOpen, onClose, qrCode, logoUrl, brandName }) => {
+const QRModal = ({ isOpen, onClose, qrCode, qrData, logoUrl, brandName }) => {
   const qrRef = useRef(null);
+  const activeQr = qrCode || qrData;
 
-  if (!qrCode) return null;
+  if (!activeQr) return null;
 
   const clientUrl = window.location.origin;
-  const targetUrl = `${clientUrl}/q/${qrCode.token}`;
+  const targetUrl = `${clientUrl}/q/${activeQr.token}`;
 
   const generatePrintLayoutDataURL = () => {
     return new Promise((resolve) => {
@@ -64,7 +65,7 @@ const QRModal = ({ isOpen, onClose, qrCode, logoUrl, brandName }) => {
       if (ctx.letterSpacing !== undefined) {
         ctx.letterSpacing = '0px';
       }
-      ctx.fillText(qrCode.restaurant?.name || brandName || 'Restaurant', 200, 120);
+      ctx.fillText(activeQr.restaurant?.name || brandName || activeQr.branch?.name || 'Restaurant', 200, 120);
 
       // QR Image
       const img = new Image();
@@ -94,7 +95,7 @@ const QRModal = ({ isOpen, onClose, qrCode, logoUrl, brandName }) => {
         if (ctx.letterSpacing !== undefined) {
           ctx.letterSpacing = '0px';
         }
-        const tableNameText = qrCode.tableName ? `Table: ${qrCode.tableName}` : '';
+        const tableNameText = activeQr.tableName ? `Table: ${activeQr.tableName}` : '';
         if (tableNameText) {
           ctx.fillText(tableNameText, 200, 530);
         }
@@ -112,7 +113,7 @@ const QRModal = ({ isOpen, onClose, qrCode, logoUrl, brandName }) => {
       if (!dataUrl) return;
       const link = document.createElement('a');
       link.href = dataUrl;
-      link.download = `QR_${qrCode.token}_${qrCode.tableName || 'menu'}.png`;
+      link.download = `QR_${activeQr.token}_${activeQr.tableName || 'menu'}.png`;
       link.click();
       toast.success('Print-ready QR card downloaded!');
     } catch (err) {
@@ -132,7 +133,7 @@ const QRModal = ({ isOpen, onClose, qrCode, logoUrl, brandName }) => {
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `QR_${qrCode.token}_${qrCode.tableName || 'menu'}.svg`;
+      link.download = `QR_${activeQr.token}_${activeQr.tableName || 'menu'}.svg`;
       link.click();
       toast.success('SVG QR code downloaded!');
     } catch (err) {
@@ -144,13 +145,13 @@ const QRModal = ({ isOpen, onClose, qrCode, logoUrl, brandName }) => {
     const printWindow = window.open('', '_blank');
     const qrCanvas = qrRef.current?.querySelector('canvas');
     const dataUrl = qrCanvas ? qrCanvas.toDataURL('image/png') : '';
-    const tableNameText = qrCode.tableName ? `Table: ${qrCode.tableName}` : '';
-    const restName = qrCode.restaurant?.name || brandName || 'Restaurant';
+    const tableNameText = activeQr.tableName ? `Table: ${activeQr.tableName}` : '';
+    const restName = activeQr.restaurant?.name || brandName || activeQr.branch?.name || 'Restaurant';
 
     printWindow.document.write(`
       <html>
         <head>
-          <title>Print QR Code - ${qrCode.tableName || 'Menu Table'}</title>
+          <title>Print QR Code - ${activeQr.tableName || 'Menu Table'}</title>
           <style>
             body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; background: #fff; text-align: center; }
             .card { border: 2px solid #0f172a; padding: 6px; border-radius: 16px; width: 370px; height: 570px; box-sizing: border-box; }
@@ -188,16 +189,16 @@ const QRModal = ({ isOpen, onClose, qrCode, logoUrl, brandName }) => {
       <div className="flex flex-col items-center space-y-6">
         {/* QR Code Canvas with Embedded Logo */}
         <div ref={qrRef} className="p-5 bg-white rounded-2xl shadow-inner border border-slate-200 flex items-center justify-center">
-          <QRCodeCanvas url={targetUrl} logoUrl={logoUrl || qrCode.branch?.logo} brandName={brandName || qrCode.branch?.name} />
+          <QRCodeCanvas url={targetUrl} logoUrl={logoUrl || activeQr.branch?.logo} brandName={brandName || activeQr.branch?.name} />
         </div>
 
         {/* QR Meta */}
         <div className="text-center space-y-1">
           <h4 className="font-bold text-lg text-slate-900 dark:text-white">
-            {qrCode.tableName || 'General QR Code'}
+            {activeQr.tableName || 'General QR Code'}
           </h4>
           <p className="text-sm text-slate-500">
-            Menu: <span className="font-semibold text-emerald-600 dark:text-emerald-400">{qrCode.menu?.name}</span>
+            Menu: <span className="font-semibold text-emerald-600 dark:text-emerald-400">{activeQr.menu?.name}</span>
           </p>
           <p className="text-xs text-slate-400 break-all bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-lg">
             {targetUrl}

@@ -131,7 +131,9 @@ def get_public_menu(
     return APIResponse(
         data={
             "tableName": qr.table_name or "",
+            "table_name": qr.table_name or "",
             "restaurant": {
+
                 "_id": restaurant.id if restaurant else qr.restaurant_id,
                 "name": restaurant.name if restaurant else "",
                 "logo": restaurant.logo if restaurant else "",
@@ -178,7 +180,21 @@ def get_public_menu(
                 }
                 for item in paginated_menu_items
             ],
+            "items": [
+                {
+                    "id": item.product.id,
+                    "_id": item.product.id,
+                    "name": item.product.name,
+                    "description": item.product.description or "",
+                    "price": float(item.price),
+                    "image": item.product.image or "",
+                    "category": item.product.category_id,
+                }
+                for item in paginated_menu_items
+                if item.product
+            ],
             "featuredSections": featured_sections_data,
+
             "meta": {
                 "total": total_items,
                 "page": page,

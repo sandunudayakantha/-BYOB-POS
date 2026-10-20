@@ -1,6 +1,7 @@
 from datetime import datetime
-from pydantic import BaseModel, ConfigDict, EmailStr, Field, model_validator
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator, model_validator
 from app.models.enums import GeneralStatus
+from app.utils.validators import validate_password_strength
 
 class AdminRestaurantCreate(BaseModel):
     model_config = ConfigDict(str_strip_whitespace=True)
@@ -8,8 +9,13 @@ class AdminRestaurantCreate(BaseModel):
     name: str = Field(..., min_length=2, max_length=200)
     owner_name: str = Field(..., min_length=2, max_length=150)
     owner_email: EmailStr
-    owner_password: str = Field(..., min_length=6, max_length=128)
+    owner_password: str = Field(..., min_length=8, max_length=128)
     max_branches: int = Field(default=3, ge=1, le=100)
+
+    @field_validator("owner_password")
+    @classmethod
+    def check_owner_password(cls, v: str) -> str:
+        return validate_password_strength(v)
 
     @model_validator(mode="before")
     @classmethod
@@ -72,7 +78,12 @@ class AdminRestaurantBranchLimitUpdate(BaseModel):
         return data
 
 class AdminRestaurantResetPassword(BaseModel):
-    new_password: str = Field(..., min_length=6, max_length=128)
+    new_password: str = Field(..., min_length=8, max_length=128)
+
+    @field_validator("new_password")
+    @classmethod
+    def check_new_password(cls, v: str) -> str:
+        return validate_password_strength(v)
 
     @model_validator(mode="before")
     @classmethod

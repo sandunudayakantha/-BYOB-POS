@@ -1,4 +1,4 @@
-from pydantic import Field
+from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
@@ -18,10 +18,29 @@ class Settings(BaseSettings):
     DB_USER: str = "postgres"
     DB_PASSWORD: str = ""
 
-    JWT_SECRET_KEY: str = "change-me-secret-key-32-chars-minimum-token"
+    JWT_SECRET_KEY: str
     JWT_ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
+
+    @field_validator("JWT_SECRET_KEY")
+    @classmethod
+    def reject_insecure_secret(cls, v: str) -> str:
+        insecure_defaults = {
+            "change-me-secret-key-32-chars-minimum-token",
+            "secret",
+            "changeme",
+        }
+        if v.strip().lower() in {s.lower() for s in insecure_defaults}:
+            raise ValueError(
+                "JWT_SECRET_KEY is set to an insecure default. "
+                "Set a strong, random secret in your .env file."
+            )
+        if len(v) < 32:
+            raise ValueError(
+                "JWT_SECRET_KEY must be at least 32 characters long."
+            )
+        return v
 
     OVH_S3_ENDPOINT_URL: str = ""
     OVH_S3_BASE_URL: str = ""

@@ -1,6 +1,6 @@
 import logging
 from secrets import token_urlsafe
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from app.core.exceptions import BadRequestException
 from app.models.qr import QRCode
 from app.models.user import User
@@ -23,7 +23,7 @@ class QRCodeService(BaseCRUDService[QRCode]):
         skip: int = 0,
         limit: int = 100,
     ) -> tuple[int, list[QRCode]]:
-        query = db.query(QRCode).filter(QRCode.is_deleted.is_(False))
+        query = db.query(QRCode).options(joinedload(QRCode.menu)).filter(QRCode.is_deleted.is_(False))
         if branch_id:
             query = query.filter(QRCode.branch_id == branch_id)
         else:

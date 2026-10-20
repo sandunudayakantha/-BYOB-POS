@@ -1,6 +1,6 @@
 import React from 'react';
 import type { InventoryItemModel } from '@/app/models/inventory.model';
-import { PlusIcon, AdjustmentsHorizontalIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
+import { PlusIcon, AdjustmentsHorizontalIcon, ExclamationTriangleIcon, TrashIcon } from '@heroicons/react/24/outline';
 
 export interface RawMaterialsTabProps {
   items: InventoryItemModel[];
@@ -8,6 +8,7 @@ export interface RawMaterialsTabProps {
   onSelectItem: (item: InventoryItemModel) => void;
   onOpenAddModal: () => void;
   onOpenStockModal: (item: InventoryItemModel) => void;
+  onDeleteItem?: (item: InventoryItemModel) => void;
 }
 
 export const RawMaterialsTab: React.FC<RawMaterialsTabProps> = ({
@@ -16,6 +17,7 @@ export const RawMaterialsTab: React.FC<RawMaterialsTabProps> = ({
   onSelectItem,
   onOpenAddModal,
   onOpenStockModal,
+  onDeleteItem,
 }) => {
   const [searchTerm, setSearchTerm] = React.useState('');
 
@@ -126,6 +128,16 @@ export const RawMaterialsTab: React.FC<RawMaterialsTabProps> = ({
                           <AdjustmentsHorizontalIcon className="w-3.5 h-3.5 text-emerald-500" />
                           <span>View & Manage</span>
                         </button>
+                        {onDeleteItem && (
+                          <button
+                            type="button"
+                            onClick={() => onDeleteItem(row)}
+                            className="p-1.5 rounded-xl border border-rose-200 dark:border-rose-900/60 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition"
+                            title="Delete raw material"
+                          >
+                            <TrashIcon className="w-3.5 h-3.5" />
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>

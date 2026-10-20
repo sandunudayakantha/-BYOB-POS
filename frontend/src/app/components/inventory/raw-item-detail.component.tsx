@@ -15,6 +15,7 @@ import {
   ClockIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  TrashIcon,
 } from '@heroicons/react/24/outline';
 
 export interface RawItemDetailProps {
@@ -29,6 +30,7 @@ export interface RawItemDetailProps {
   onDefinePrep: () => void;
   onEditPrep: (prep: KitchenPrepDefinitionModel) => void;
   onLogPrepBatch: (prep: KitchenPrepDefinitionModel) => void;
+  onDeleteItem?: (item: InventoryItemModel) => void;
 }
 
 export const RawItemDetail: React.FC<RawItemDetailProps> = ({
@@ -43,6 +45,7 @@ export const RawItemDetail: React.FC<RawItemDetailProps> = ({
   onDefinePrep,
   onEditPrep,
   onLogPrepBatch,
+  onDeleteItem,
 }) => {
   const [prepsPage, setPrepsPage] = React.useState(1);
   const [batchesPage, setBatchesPage] = React.useState(1);
@@ -107,6 +110,17 @@ export const RawItemDetail: React.FC<RawItemDetailProps> = ({
         </div>
 
         <div className="flex items-center gap-2 self-start sm:self-auto">
+          {onDeleteItem && (
+            <button
+              type="button"
+              onClick={() => onDeleteItem(item)}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-rose-200 dark:border-rose-900/60 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 font-bold text-xs transition"
+              title="Delete raw material"
+            >
+              <TrashIcon className="w-3.5 h-3.5" />
+              <span>Delete Item</span>
+            </button>
+          )}
           <button
             type="button"
             onClick={onEditItem}

@@ -6,7 +6,7 @@ export function usePrepDefinitionsUseCase(params: PrepDefinitionsQueryParams) {
   const query = useQuery<KitchenPrepDefinitionModel[], Error>({
     queryKey: ["inventory", "preps", "definitions", params.branchId, params.rawItemId],
     queryFn: () => prepDefinitionsQuery(params),
-    enabled: Boolean(params.branchId),
+    enabled: Boolean(params.branchId && params.branchId > 0),
   });
 
   return {

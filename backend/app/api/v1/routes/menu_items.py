@@ -36,26 +36,8 @@ def add_menu_item(
     db: Session = Depends(get_db),
     _: User = Depends(require_menu_manage),
 ):
-    # Check if product is already in the menu
-    existing = (
-        db.query(MenuItem)
-        .filter(
-            MenuItem.menu_id == data.menu_id,
-            MenuItem.product_id == data.product_id,
-            MenuItem.is_deleted.is_(False),
-        )
-        .first()
-    )
-    if existing:
-        existing.price = data.price
-        existing.available = data.available
-        existing.sort_order = data.sort_order
-        db.commit()
-        db.refresh(existing)
-        return APIResponse(data=existing, message="Menu item updated in menu")
-
-    created = service.create(db, data)
-    return APIResponse(data=created, message="Product added to menu successfully")
+    item = service.create_or_restore(db, data)
+    return APIResponse(data=item, message="Product added to menu successfully")
 
 @router.put("/reorder", response_model=APIResponse[None])
 def reorder_menu_items(

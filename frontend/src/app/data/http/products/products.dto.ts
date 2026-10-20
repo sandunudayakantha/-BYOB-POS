@@ -11,6 +11,8 @@ export interface ProductDto {
   category_id?: string | null;
   categoryId?: string | null;
   category_name?: string | null;
+  categoryName?: string | null;
+  category?: CategoryDto | { id?: number | string; name?: string } | null;
   branch_id?: string | null;
   branchId?: string | null;
   available?: boolean;
@@ -99,6 +101,12 @@ export function mapUpdateCategoryInputToDto(input: {
 // Mappers
 export function mapProductDtoToModel(dto: ProductDto): ProductModel {
   const resolvedId = String(dto.id || dto._id || '');
+  const resolvedCategoryName =
+    dto.category_name ||
+    dto.categoryName ||
+    dto.category?.name ||
+    undefined;
+
   return {
     id: resolvedId,
     _id: resolvedId,
@@ -107,8 +115,8 @@ export function mapProductDtoToModel(dto: ProductDto): ProductModel {
     price: dto.price ? Number(dto.price) : undefined,
     imageUrl: dto.image_url || dto.image || undefined,
     image: dto.image || dto.image_url || undefined,
-    categoryId: String(dto.category_id || dto.categoryId || ''),
-    categoryName: dto.category_name ?? undefined,
+    categoryId: String(dto.category_id || dto.categoryId || (dto.category as any)?.id || ''),
+    categoryName: resolvedCategoryName,
     branchId: String(dto.branch_id || dto.branchId || ''),
     available: dto.available ?? dto.is_available ?? true,
     prepTime: dto.prep_time || dto.prepTime || undefined,

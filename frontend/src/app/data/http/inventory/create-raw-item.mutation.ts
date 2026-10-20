@@ -25,5 +25,6 @@ export async function createRawItemMutation(input: CreateRawItemMutationInput): 
   const response = await apiClient.post<ApiResponseEnvelope<InventoryItemDto>>("/inventory/items", payload, {
     params: { branchId: input.branchId },
   });
-  return mapInventoryItemDtoToModel(response.data?.data);
+  const raw = (response as any)?.data?.data || (response as any)?.data || response;
+  return mapInventoryItemDtoToModel(raw);
 }

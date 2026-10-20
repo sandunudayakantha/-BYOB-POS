@@ -19,9 +19,6 @@ export async function loginMutation(input: LoginMutationInput): Promise<AuthToke
   const data = response.data?.data;
   const model = mapLoginResponseDtoToModel(data);
   setAccessToken(model.accessToken);
-  if (model.refreshToken) {
-    localStorage.setItem("refreshToken", model.refreshToken);
-  }
   localStorage.setItem("user", JSON.stringify(model.user));
   return model;
 }

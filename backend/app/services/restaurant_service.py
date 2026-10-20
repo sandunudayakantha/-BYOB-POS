@@ -17,6 +17,23 @@ class RestaurantService(BaseCRUDService[Restaurant]):
     def create_for_owner(self, db: Session, data: RestaurantCreate, owner: User) -> Restaurant:
         return self.create(db, data, owner_id=owner.id)
 
+    def get_for_user(self, db: Session, item_id: int, user: User) -> Restaurant:
+        restaurant = self.get(db, item_id)
+        if user.role != "SUPER_ADMIN" and restaurant.owner_id != user.id and user.restaurant_id != restaurant.id:
+            raise AuthorizationException("Not authorized to access this restaurant")
+        return restaurant
+
+    def update_for_user(self, db: Session, item_id: int, data: RestaurantUpdate, user: User) -> Restaurant:
+        self.get_for_user(db, item_id, user)
+        return self.update(db, item_id, data)
+
+    def delete_for_user(self, db: Session, item_id: int, user: User) -> None:
+        if user.role != "SUPER_ADMIN":
+            restaurant = self.get_for_user(db, item_id, user)
+            if restaurant.owner_id != user.id:
+                raise AuthorizationException("Only the owner or super admin can delete this restaurant")
+        self.delete(db, item_id)
+
     def list_for_user(self, db: Session, user: User, skip: int = 0, limit: int = 20) -> tuple[int, list[Restaurant]]:
         if user.role == "SUPER_ADMIN":
             return self.list(db, skip=skip, limit=limit)

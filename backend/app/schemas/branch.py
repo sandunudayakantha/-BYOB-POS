@@ -1,7 +1,7 @@
 from datetime import datetime
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 from app.models.enums import GeneralStatus
-from app.utils.validators import validate_phone_number
+from app.utils.validators import validate_phone_number, validate_safe_url
 
 class BranchBase(BaseModel):
     model_config = ConfigDict(str_strip_whitespace=True)
@@ -35,6 +35,11 @@ class BranchBase(BaseModel):
     def check_phone(cls, v: str) -> str:
         return validate_phone_number(v)
 
+    @field_validator("logo", "cover_image")
+    @classmethod
+    def check_safe_urls(cls, v: str | None) -> str | None:
+        return validate_safe_url(v)
+
 class BranchCreate(BranchBase):
     pass
 
@@ -67,6 +72,11 @@ class BranchUpdate(BaseModel):
         if v is not None:
             return validate_phone_number(v)
         return v
+
+    @field_validator("logo", "cover_image")
+    @classmethod
+    def check_safe_urls(cls, v: str | None) -> str | None:
+        return validate_safe_url(v)
 
 class BranchResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)

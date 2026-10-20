@@ -25,5 +25,6 @@ export async function logPrepBatchMutation(input: LogPrepBatchMutationInput): Pr
     payload,
     { params: { branchId: input.branchId } }
   );
-  return mapKitchenPrepBatchDtoToModel(response.data?.data);
+  const raw = (response as any)?.data?.data || (response as any)?.data || response;
+  return mapKitchenPrepBatchDtoToModel(raw);
 }

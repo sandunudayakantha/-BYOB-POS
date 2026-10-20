@@ -20,5 +20,6 @@ export interface UpdateRawItemMutationInput {
 export async function updateRawItemMutation(input: UpdateRawItemMutationInput): Promise<InventoryItemModel> {
   const payload = mapUpdateRawItemInputToDto(input);
   const response = await apiClient.put<ApiResponseEnvelope<InventoryItemDto>>(`/inventory/items/${input.itemId}`, payload);
-  return mapInventoryItemDtoToModel(response.data?.data);
+  const raw = (response as any)?.data?.data || (response as any)?.data || response;
+  return mapInventoryItemDtoToModel(raw);
 }

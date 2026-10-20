@@ -85,6 +85,22 @@ def test_restaurant_crud(client, auth_headers):
     }
     r = client.post("/api/v1/menus/items", json=item_payload, headers=auth_headers)
     assert r.status_code == 201
+    item_id = r.json()["data"]["id"]
+
+    # 7b. Test deleting item from menu and re-adding (previously triggered duplicate key error)
+    del_r = client.delete(f"/api/v1/menu-items/{item_id}", headers=auth_headers)
+    assert del_r.status_code == 200
+
+    readd_payload = {
+        "menu_id": menu_id,
+        "product_id": product_id,
+        "price": 12.00,
+        "available": True,
+        "sort_order": 1,
+    }
+    readd_r = client.post("/api/v1/menu-items", json=readd_payload, headers=auth_headers)
+    assert readd_r.status_code == 201
+    assert float(readd_r.json()["data"]["price"]) == 12.00
 
     # 8. Create QR Code
     qr_payload = {

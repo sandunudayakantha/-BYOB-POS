@@ -98,7 +98,7 @@ class AuthService:
         except SQLAlchemyError as e:
             db.rollback()
             logger.error(f"auth_login_db_error: {e}", exc_info=True)
-            raise DatabaseException(f"Login failed due to database error: {e}")
+            raise DatabaseException("Login failed due to a server error")
 
     def refresh_token(self, db: Session, refresh_token_str: str) -> Token:
         try:
@@ -167,5 +167,14 @@ class AuthService:
             raise
         except SQLAlchemyError as e:
             db.rollback()
-            logger.error("auth_refresh_db_error", extra={"error": str(e)})
+            logger.error(f"auth_refresh_db_error: {e}", exc_info=True)
             raise DatabaseException("Token refresh failed due to database error")
+
+    def logout_user(self, db: Session, user_id: int) -> None:
+        """Revoke all refresh tokens for the given user."""
+        try:
+            self.refresh_token_repo.delete_by_user_id(db, user_id)
+        except SQLAlchemyError as e:
+            db.rollback()
+            logger.error("auth_logout_db_error", extra={"error": str(e)})
+            raise DatabaseException("Logout failed due to a server error")

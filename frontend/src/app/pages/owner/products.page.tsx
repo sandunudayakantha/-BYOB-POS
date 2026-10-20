@@ -15,6 +15,7 @@ import api from '@/services/api';
 import toast from 'react-hot-toast';
 import type { ProductModel } from '@/app/models/product.model';
 import { PlusIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
+import { extractValidationErrors } from '@/utils/errors';
 
 export interface ProductsPageProps {
   embedded?: boolean;
@@ -36,6 +37,7 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({ embedded = false }) 
   const [viewingProduct, setViewingProduct] = useState<ProductModel | null>(null);
   const [featuringProduct, setFeaturingProduct] = useState<ProductModel | null>(null);
   const [recipeProduct, setRecipeProduct] = useState<ProductModel | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   // Pagination & Filter state
   const [currentPage, setCurrentPage] = useState(1);
@@ -79,9 +81,9 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({ embedded = false }) 
     search: searchTerm,
   });
 
-  const { createProduct, isSubmitting: isCreating } = useCreateProductUseCase();
-  const { updateProduct, isSubmitting: isUpdating } = useUpdateProductUseCase();
-  const { deleteProduct } = useDeleteProductUseCase();
+  const { createProduct, isSubmitting: isCreating } = useCreateProductUseCase(branchId);
+  const { updateProduct, isSubmitting: isUpdating } = useUpdateProductUseCase(branchId);
+  const { deleteProduct } = useDeleteProductUseCase(branchId);
 
   const toggleFeatureMutation = useMutation({
     mutationFn: async ({ sectionId, productIds }: { sectionId: string; productIds: any[] }) => {
@@ -96,6 +98,7 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({ embedded = false }) 
 
   const handleOpenEdit = (prod: ProductModel | null = null) => {
     setImageFile(null);
+    setFieldErrors({});
     if (prod) {
       setEditingProduct(prod);
       setFormData({
@@ -141,12 +144,14 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({ embedded = false }) 
     setEditingProduct(null);
     setViewingProduct(null);
     setFeaturingProduct(null);
+    setFieldErrors({});
     setImageFile(null);
     setImagePreview('');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setFieldErrors({});
     try {
       if (editingProduct) {
         await updateProduct({
@@ -173,10 +178,17 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({ embedded = false }) 
         });
         toast.success('Product added to catalog!');
       }
+      queryClient.invalidateQueries({ queryKey: ['products'] });
       queryClient.invalidateQueries({ queryKey: ['ownerProducts'] });
       handleClose();
     } catch (err: any) {
-      toast.error(err?.message || 'Failed to save product.');
+      const valErrors = extractValidationErrors(err);
+      if (Object.keys(valErrors).length > 0) {
+        setFieldErrors(valErrors);
+        toast.error('Please fix the errors shown below.');
+      } else {
+        toast.error(err?.message || 'Failed to save product.');
+      }
     }
   };
 
@@ -185,6 +197,7 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({ embedded = false }) 
     try {
       await deleteProduct({ productId: prod.id });
       toast.success('Product deleted.');
+      queryClient.invalidateQueries({ queryKey: ['products'] });
       queryClient.invalidateQueries({ queryKey: ['ownerProducts'] });
     } catch (err: any) {
       toast.error(err?.message || 'Failed to delete product.');
@@ -309,6 +322,8 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({ embedded = false }) 
         imagePreview={imagePreview}
         setImagePreview={setImagePreview}
         handleFileChange={handleFileChange}
+        errors={fieldErrors}
+        setErrors={setFieldErrors}
         onSubmit={handleSubmit}
         isSubmitting={isCreating || isUpdating}
       />

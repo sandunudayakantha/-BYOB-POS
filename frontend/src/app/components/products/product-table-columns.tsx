@@ -56,7 +56,7 @@ export function buildProductColumns({
       header: 'Category',
       render: (row) => (
         <span className="font-semibold text-slate-700 dark:text-slate-300">
-          {row.categoryName || (row as any).category?.name || 'Unassigned'}
+          {row.categoryName || 'Unassigned'}
         </span>
       ),
     },

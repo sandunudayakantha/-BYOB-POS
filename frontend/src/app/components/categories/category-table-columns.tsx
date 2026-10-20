@@ -22,7 +22,7 @@ export function buildCategoryColumns({
     {
       key: 'displayOrder',
       header: 'Display Priority Order',
-      render: (row) => <span>{row.displayOrder ?? 0}</span>,
+      render: (row) => <span className="font-semibold text-slate-700 dark:text-slate-300">{row.displayOrder ?? 0}</span>,
     },
     {
       key: 'status',
@@ -42,7 +42,7 @@ export function buildCategoryColumns({
           <button
             type="button"
             onClick={() => onEdit(row)}
-            className="p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
+            className="p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-colors"
             title="Edit Category"
           >
             <PencilIcon className="w-4 h-4" />
@@ -50,7 +50,7 @@ export function buildCategoryColumns({
           <button
             type="button"
             onClick={() => onDelete(row)}
-            className="p-1.5 rounded-lg border border-rose-200 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40"
+            className="p-1.5 rounded-lg border border-rose-200 dark:border-rose-900/50 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors"
             title="Delete Category"
           >
             <TrashIcon className="w-4 h-4" />

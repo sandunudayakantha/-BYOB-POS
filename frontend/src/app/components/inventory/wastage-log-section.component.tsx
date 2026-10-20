@@ -1,6 +1,7 @@
 import React from 'react';
 import type { KitchenPrepBatchModel, InventoryItemModel } from '@/app/models/inventory.model';
 import { TrashIcon } from '@heroicons/react/24/outline';
+import { sanitizeUrl } from '@/utils/url';
 
 export interface WastageLogSectionProps {
   batches: KitchenPrepBatchModel[];
@@ -129,23 +130,23 @@ export const WastageLogSection: React.FC<WastageLogSectionProps> = ({ batches, d
                         <div className="flex items-center justify-center gap-1.5">
                           {b.wastageImageUrl ? (
                             <a
-                              href={b.wastageImageUrl}
+                              href={sanitizeUrl(b.wastageImageUrl)}
                               target="_blank"
-                              rel="noreferrer"
+                              rel="noopener noreferrer"
                               title="View Wastage Photo"
                               className="w-8 h-8 rounded-lg overflow-hidden border border-rose-300 dark:border-rose-900 block hover:opacity-80 transition"
                             >
-                              <img src={b.wastageImageUrl} alt="Waste Proof" className="w-full h-full object-cover" />
+                              <img src={sanitizeUrl(b.wastageImageUrl)} alt="Waste Proof" className="w-full h-full object-cover" />
                             </a>
                           ) : b.prepImageUrl ? (
                             <a
-                              href={b.prepImageUrl}
+                              href={sanitizeUrl(b.prepImageUrl)}
                               target="_blank"
-                              rel="noreferrer"
+                              rel="noopener noreferrer"
                               title="View Prep Photo"
                               className="w-8 h-8 rounded-lg overflow-hidden border border-slate-300 dark:border-slate-700 block hover:opacity-80 transition"
                             >
-                              <img src={b.prepImageUrl} alt="Prep Proof" className="w-full h-full object-cover" />
+                              <img src={sanitizeUrl(b.prepImageUrl)} alt="Prep Proof" className="w-full h-full object-cover" />
                             </a>
                           ) : (
                             <span className="text-[10px] text-slate-400">—</span>

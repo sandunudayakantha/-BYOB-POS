@@ -28,5 +28,6 @@ export async function createPrepDefinitionMutation(input: CreatePrepDefinitionMu
     payload,
     { params: { branchId: input.branchId } }
   );
-  return mapKitchenPrepDefinitionDtoToModel(response.data?.data);
+  const raw = (response as any)?.data?.data || (response as any)?.data || response;
+  return mapKitchenPrepDefinitionDtoToModel(raw);
 }

@@ -1,14 +1,18 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deleteProductMutation, type DeleteProductMutationInput } from "@/app/data/http/products/delete-product.mutation";
 
-export function useDeleteProductUseCase(branchId: string) {
+export function useDeleteProductUseCase(branchId?: string) {
   const queryClient = useQueryClient();
 
   const mutation = useMutation<void, Error, DeleteProductMutationInput>({
     mutationFn: (input: DeleteProductMutationInput) => deleteProductMutation(input),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["products", branchId] });
-      queryClient.invalidateQueries({ queryKey: ["ownerProducts", branchId] });
+      if (branchId) {
+        queryClient.invalidateQueries({ queryKey: ["products", branchId] });
+        queryClient.invalidateQueries({ queryKey: ["ownerProducts", branchId] });
+      }
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+      queryClient.invalidateQueries({ queryKey: ["ownerProducts"] });
     },
   });
 

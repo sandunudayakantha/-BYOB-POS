@@ -7,29 +7,43 @@ import { usePrepBatchesUseCase } from '@/app/domain/inventory/use-prep-batches.u
 import { useItemBatchesUseCase } from '@/app/domain/inventory/use-item-batches.use-case';
 import { useUomsUseCase } from '@/app/domain/inventory/use-uoms.use-case';
 import { useSuppliersUseCase } from '@/app/domain/inventory/use-suppliers.use-case';
+import { useCreateRawItemUseCase } from '@/app/domain/inventory/use-create-raw-item.use-case';
 import { useUpdateRawItemUseCase } from '@/app/domain/inventory/use-update-raw-item.use-case';
+import { useDeleteRawItemUseCase } from '@/app/domain/inventory/use-delete-raw-item.use-case';
+import { useInwardStockBatchUseCase } from '@/app/domain/inventory/use-inward-stock-batch.use-case';
+import { useCreatePrepDefinitionUseCase } from '@/app/domain/inventory/use-create-prep-definition.use-case';
+import { useUpdatePrepDefinitionUseCase } from '@/app/domain/inventory/use-update-prep-definition.use-case';
 import { useLogPrepBatchUseCase } from '@/app/domain/inventory/use-log-prep-batch.use-case';
 import { RawMaterialsTab } from '@/app/components/inventory/raw-materials-tab.component';
 import { KitchenPrepsTab } from '@/app/components/inventory/kitchen-preps-tab.component';
 import { RawItemDetail } from '@/app/components/inventory/raw-item-detail.component';
+import { CreateRawItemModal } from '@/app/components/inventory/create-raw-item-modal.component';
 import { EditRawItemModal } from '@/app/components/inventory/edit-raw-item-modal.component';
+import { InwardStockModal } from '@/app/components/inventory/inward-stock-modal.component';
+import { PrepDefinitionModal } from '@/app/components/inventory/prep-definition-modal.component';
 import { LogPrepBatchModal } from '@/app/components/inventory/log-prep-batch-modal.component';
-import type { KitchenPrepDefinitionModel } from '@/app/models/inventory.model';
+import type { InventoryItemModel, KitchenPrepDefinitionModel } from '@/app/models/inventory.model';
 import { ArchiveBoxIcon, BeakerIcon, CameraIcon } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 
 export const InventoryPage: React.FC = () => {
   const { activeBranch } = useBranch();
-  const branchId = Number(activeBranch?._id || activeBranch?.id || 1);
+  const branchId = Number(activeBranch?._id || activeBranch?.id || 0);
+  const isBranchLoading = !activeBranch || !branchId;
   const [searchParams, setSearchParams] = useSearchParams();
 
   const currentTab = searchParams.get('tab') || 'items';
   const [selectedItemId, setSelectedItemId] = useState<number | null>(null);
 
   // Modal states
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [stockModalItem, setStockModalItem] = useState<InventoryItemModel | null>(null);
   const [isLogBatchModalOpen, setIsLogBatchModalOpen] = useState(false);
   const [selectedPrepForBatch, setSelectedPrepForBatch] = useState<KitchenPrepDefinitionModel | null>(null);
+  const [isPrepModalOpen, setIsPrepModalOpen] = useState(false);
+  const [editingPrep, setEditingPrep] = useState<KitchenPrepDefinitionModel | null>(null);
+  const [prepBaseItem, setPrepBaseItem] = useState<InventoryItemModel | null>(null);
 
   // Domain hooks
   const { items, isLoading: itemsLoading } = useInventoryItemsUseCase({ branchId });
@@ -40,6 +54,11 @@ export const InventoryPage: React.FC = () => {
   });
   const { uoms } = useUomsUseCase();
   const { suppliers } = useSuppliersUseCase(branchId);
+  const { createRawItem, isSubmitting: isCreatingItem } = useCreateRawItemUseCase();
+  const { deleteRawItem } = useDeleteRawItemUseCase({ branchId });
+  const { inwardStockBatch, isSubmitting: isInwardingStock } = useInwardStockBatchUseCase();
+  const { createPrepDefinition, isSubmitting: isCreatingPrep } = useCreatePrepDefinitionUseCase();
+  const { updatePrepDefinition, isSubmitting: isUpdatingPrep } = useUpdatePrepDefinitionUseCase(branchId);
   const updateRawItem = useUpdateRawItemUseCase();
   const logPrepBatch = useLogPrepBatchUseCase();
 
@@ -53,6 +72,90 @@ export const InventoryPage: React.FC = () => {
       else next.set('tab', tabKey);
       return next;
     });
+  };
+
+  const handleCreateRawItem = async (data: any) => {
+    if (!branchId) {
+      toast.error('Please select an active branch first.');
+      return;
+    }
+    try {
+      await createRawItem({
+        ...data,
+        branchId,
+      });
+      toast.success('Raw material added successfully!');
+      setIsCreateModalOpen(false);
+    } catch (err: any) {
+      toast.error(err?.message || 'Failed to add raw material');
+    }
+  };
+
+  const handleDeleteRawItem = async (item: InventoryItemModel) => {
+    const confirmed = window.confirm(
+      `Delete "${item.name}"? Historical batches and audit logs will be preserved, but it will be removed from active inventory and preps.`
+    );
+    if (!confirmed) return;
+
+    try {
+      await deleteRawItem({ itemId: item.id });
+      toast.success(`"${item.name}" has been deleted.`);
+      if (selectedItemId === item.id) {
+        setSelectedItemId(null);
+      }
+    } catch (err: any) {
+      toast.error(err?.message || 'Failed to delete raw material');
+    }
+  };
+
+  const handleInwardStock = async (data: any) => {
+    if (!branchId) {
+      toast.error('Please select an active branch first.');
+      return;
+    }
+    try {
+      await inwardStockBatch({
+        ...data,
+        branchId,
+      });
+      toast.success('Stock inward recorded successfully!');
+      setStockModalItem(null);
+    } catch (err: any) {
+      toast.error(err?.message || 'Failed to record inward stock');
+    }
+  };
+
+  const handleOpenDefinePrep = (base?: InventoryItemModel) => {
+    setEditingPrep(null);
+    setPrepBaseItem(base || selectedItem || null);
+    setIsPrepModalOpen(true);
+  };
+
+  const handleOpenEditPrep = (prep: KitchenPrepDefinitionModel) => {
+    setEditingPrep(prep);
+    const base = items.find((i) => i.id === prep.baseRawItemId) || selectedItem || null;
+    setPrepBaseItem(base);
+    setIsPrepModalOpen(true);
+  };
+
+  const handleSubmitPrep = async (data: any) => {
+    if (!branchId) {
+      toast.error('Please select an active branch first.');
+      return;
+    }
+    try {
+      if (data.prepId) {
+        await updatePrepDefinition({ ...data, prepId: data.prepId });
+        toast.success('Kitchen prep specification updated!');
+      } else {
+        await createPrepDefinition({ ...data, branchId });
+        toast.success('Kitchen prep specification created!');
+      }
+      setIsPrepModalOpen(false);
+      setEditingPrep(null);
+    } catch (err: any) {
+      toast.error(err?.message || 'Failed to save prep specification');
+    }
   };
 
   const handleUpdateItem = async (data: any) => {
@@ -138,10 +241,11 @@ export const InventoryPage: React.FC = () => {
       {currentTab === 'items' && !selectedItem && (
         <RawMaterialsTab
           items={items}
-          isLoading={itemsLoading}
+          isLoading={itemsLoading || isBranchLoading}
           onSelectItem={(item) => setSelectedItemId(item.id)}
-          onOpenAddModal={() => {}}
-          onOpenStockModal={() => {}}
+          onOpenAddModal={() => setIsCreateModalOpen(true)}
+          onOpenStockModal={(item) => setStockModalItem(item)}
+          onDeleteItem={handleDeleteRawItem}
         />
       )}
 
@@ -154,27 +258,47 @@ export const InventoryPage: React.FC = () => {
           batchesLoading={rawBatchesLoading}
           onBack={() => setSelectedItemId(null)}
           onEditItem={() => setIsEditModalOpen(true)}
-          onInwardStock={() => {}}
-          onDefinePrep={() => {}}
-          onEditPrep={() => {}}
+          onInwardStock={() => setStockModalItem(selectedItem)}
+          onDefinePrep={() => handleOpenDefinePrep(selectedItem)}
+          onEditPrep={(prep) => handleOpenEditPrep(prep)}
           onLogPrepBatch={(prep) => {
             setSelectedPrepForBatch(prep);
             setIsLogBatchModalOpen(true);
           }}
+          onDeleteItem={handleDeleteRawItem}
         />
       )}
 
       {currentTab === 'preps' && (
         <KitchenPrepsTab
           prepDefinitions={prepDefinitions}
-          isLoading={prepsLoading}
-          onEditPrep={() => {}}
+          isLoading={prepsLoading || isBranchLoading}
+          onOpenAddPrep={() => handleOpenDefinePrep()}
+          onEditPrep={(prep) => handleOpenEditPrep(prep)}
           onLogBatch={(prep) => {
             setSelectedPrepForBatch(prep);
             setIsLogBatchModalOpen(true);
           }}
         />
       )}
+
+      <CreateRawItemModal
+        isOpen={isCreateModalOpen}
+        uoms={uoms}
+        suppliers={suppliers}
+        isPending={isCreatingItem}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSubmit={handleCreateRawItem}
+      />
+
+      <InwardStockModal
+        isOpen={Boolean(stockModalItem)}
+        item={stockModalItem}
+        suppliers={suppliers}
+        isPending={isInwardingStock}
+        onClose={() => setStockModalItem(null)}
+        onSubmit={handleInwardStock}
+      />
 
       <EditRawItemModal
         isOpen={isEditModalOpen}
@@ -184,6 +308,20 @@ export const InventoryPage: React.FC = () => {
         isPending={updateRawItem.isPending}
         onClose={() => setIsEditModalOpen(false)}
         onSubmit={handleUpdateItem}
+      />
+
+      <PrepDefinitionModal
+        isOpen={isPrepModalOpen}
+        baseItem={prepBaseItem}
+        rawItems={items}
+        editingPrep={editingPrep}
+        uoms={uoms}
+        isPending={isCreatingPrep || isUpdatingPrep}
+        onClose={() => {
+          setIsPrepModalOpen(false);
+          setEditingPrep(null);
+        }}
+        onSubmit={handleSubmitPrep}
       />
 
       <LogPrepBatchModal

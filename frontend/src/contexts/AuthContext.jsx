@@ -36,18 +36,16 @@ export const AuthProvider = ({ children }) => {
           }
         }
 
-        // 2. If no valid access token, use stored refresh token
-        if (storedRefreshToken) {
-          const refreshRes = await axios.post(`${API_BASE_URL}/auth/refresh`, {
-            refresh_token: storedRefreshToken,
+        // 2. If no valid access token, attempt cookie-based refresh
+        try {
+          const refreshRes = await axios.post(`${API_BASE_URL}/auth/refresh`, {}, {
+            withCredentials: true,
           });
           const tokenData = refreshRes.data?.data || refreshRes.data;
           const newAccessToken = tokenData.access_token || tokenData.accessToken;
-          const newRefreshToken = tokenData.refresh_token || tokenData.refreshToken;
 
           if (newAccessToken) {
             setAccessToken(newAccessToken);
-            if (newRefreshToken) localStorage.setItem('refreshToken', newRefreshToken);
             const meRes = await api.get('/auth/me');
             const currentUser = meRes.data?.user || meRes.data;
             if (currentUser) {
@@ -55,8 +53,11 @@ export const AuthProvider = ({ children }) => {
               setUser(currentUser);
               localStorage.setItem('user', JSON.stringify(currentUser));
             }
+          } else {
+            setUser(null);
           }
-        } else {
+        } catch {
+          // No active session cookie or refresh failed
           setUser(null);
         }
       } catch {
@@ -80,10 +81,9 @@ export const AuthProvider = ({ children }) => {
       user._id = user._id || user.id;
     }
     const accessToken = tokenData.access_token || tokenData.accessToken;
-    const refreshToken = tokenData.refresh_token || tokenData.refreshToken;
 
     if (accessToken) setAccessToken(accessToken);
-    if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
+    // Refresh token is safely set in HttpOnly cookie by backend
     if (user) {
       localStorage.setItem('user', JSON.stringify(user));
       setUser(user);

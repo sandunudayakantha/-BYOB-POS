@@ -8,8 +8,16 @@ import app.models  # noqa: F401
 from app.db.base import Base
 from app.db.session import get_db
 from app.main import app
+from app.core.rate_limit import limiter
 from app.core.security import get_password_hash
 from app.models.user import User
+
+@pytest.fixture(autouse=True)
+def disable_rate_limiting():
+    prev = limiter.enabled
+    limiter.enabled = False
+    yield
+    limiter.enabled = prev
 
 @pytest.fixture(scope="session")
 def db_engine():
@@ -67,5 +75,25 @@ def test_user(db: Session) -> User:
 @pytest.fixture()
 def auth_headers(client, test_user) -> dict:
     r = client.post("/api/v1/auth/login", json={"username": test_user.email, "password": "Password123!"})
+    token = r.json()["data"]["access_token"]
+    return {"Authorization": f"Bearer {token}"}
+
+@pytest.fixture()
+def admin_user(db: Session) -> User:
+    user = User(
+        name="Super Admin",
+        email="admin@test.com",
+        password_hash=get_password_hash("Password123!"),
+        role="SUPER_ADMIN",
+        status="ACTIVE"
+    )
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    return user
+
+@pytest.fixture()
+def admin_headers(client, admin_user) -> dict:
+    r = client.post("/api/v1/auth/login", json={"username": admin_user.email, "password": "Password123!"})
     token = r.json()["data"]["access_token"]
     return {"Authorization": f"Bearer {token}"}

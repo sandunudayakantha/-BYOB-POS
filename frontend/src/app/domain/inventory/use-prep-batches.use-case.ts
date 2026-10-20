@@ -6,7 +6,7 @@ export function usePrepBatchesUseCase(params: PrepBatchesQueryParams) {
   const query = useQuery<KitchenPrepBatchModel[], Error>({
     queryKey: ["inventory", "preps", "batches", params.branchId],
     queryFn: () => prepBatchesQuery(params),
-    enabled: Boolean(params.branchId),
+    enabled: Boolean(params.branchId && params.branchId > 0),
   });
 
   return {

@@ -26,5 +26,6 @@ export async function inwardStockBatchMutation(input: InwardStockBatchMutationIn
     payload,
     { params: { branchId: input.branchId } }
   );
-  return mapRawInventoryBatchDtoToModel(response.data?.data);
+  const raw = (response as any)?.data?.data || (response as any)?.data || response;
+  return mapRawInventoryBatchDtoToModel(raw);
 }

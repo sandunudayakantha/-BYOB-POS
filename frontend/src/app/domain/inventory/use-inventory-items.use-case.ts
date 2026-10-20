@@ -6,7 +6,7 @@ export function useInventoryItemsUseCase(params: InventoryItemsQueryParams) {
   const query = useQuery<InventoryItemModel[], Error>({
     queryKey: ["inventory", "items", params.branchId],
     queryFn: () => inventoryItemsQuery(params),
-    enabled: Boolean(params.branchId),
+    enabled: Boolean(params.branchId && params.branchId > 0),
   });
 
   return {

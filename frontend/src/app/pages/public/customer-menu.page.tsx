@@ -5,7 +5,7 @@ import { CustomerMenuHeader } from "@/app/components/customer-menu/customer-menu
 import { CustomerSearchBar } from "@/app/components/customer-menu/customer-search-bar.component";
 import { CustomerFeaturedSections } from "@/app/components/customer-menu/customer-featured-sections.component";
 import { CustomerProductDetailDrawer } from "@/app/components/customer-menu/customer-product-detail-drawer.component";
-import { ShoppingBagIcon, InformationCircleIcon } from "@heroicons/react/24/solid";
+import { ShoppingBagIcon, InformationCircleIcon, ChevronUpIcon } from "@heroicons/react/24/solid";
 import { optimizeImage } from "@/utils/cloudinary";
 import type {
   CustomerMenuResponseModel,
@@ -23,6 +23,19 @@ export const CustomerMenuPage: React.FC = () => {
   const [dragOffsetY, setDragOffsetY] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const touchStartY = useRef(0);
+  const [showBackToTop, setShowBackToTop] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowBackToTop(window.scrollY > 400);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   useEffect(() => {
     document.body.style.overflow = selectedProduct ? "hidden" : "";
@@ -99,7 +112,10 @@ export const CustomerMenuPage: React.FC = () => {
         });
 
         if (!isCancelled) {
-          const rawPayload: CustomerMenuDto = res?.data?.data || res?.data;
+          const rawPayload: CustomerMenuDto =
+            res?.data?.restaurant || res?.data?.menu || res?.data?.menuItems
+              ? res.data
+              : res?.data?.data || res?.data;
           if (!rawPayload || typeof rawPayload !== "object") {
             throw new Error("Menu data is empty or invalid");
           }
@@ -282,6 +298,18 @@ export const CustomerMenuPage: React.FC = () => {
         onTouchEnd={handleTouchEnd}
         onClose={handleCloseProductDetail}
       />
+
+      {showBackToTop && (
+        <button
+          type="button"
+          onClick={scrollToTop}
+          className="fixed bottom-6 right-6 z-40 p-3.5 rounded-full bg-orange-500 text-white shadow-2xl hover:bg-orange-600 active:scale-95 transition-all duration-300 flex items-center justify-center"
+          title="Back to top"
+          aria-label="Back to top"
+        >
+          <ChevronUpIcon className="w-5 h-5" />
+        </button>
+      )}
     </div>
   );
 };
