@@ -79,7 +79,7 @@ export function FormField({
         className={`w-full px-3.5 py-2.5 rounded-xl border bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 text-sm focus:outline-none focus:ring-2 transition ${
           error
             ? 'border-rose-500 focus:ring-rose-500'
-            : 'border-slate-300 dark:border-slate-700 focus:ring-emerald-500'
+            : 'border-slate-300 dark:border-slate-700 focus:ring-amber-500 focus:border-amber-500'
         }`}
       />
       {error && <p className="text-xs text-rose-500 mt-0.5">{error}</p>}

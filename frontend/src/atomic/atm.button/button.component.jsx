@@ -6,35 +6,51 @@ export const Button = ({
   children,
   variant = 'primary',
   size = 'md',
+  rounded = 'full',
   className = '',
   disabled = false,
   isLoading = false,
   type = 'button',
+  as: Component = 'button',
   onClick,
   ...props
 }) => {
-  const baseStyles = 'inline-flex items-center justify-center font-medium rounded-xl transition focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
+  const baseStyles = 'inline-flex items-center justify-center font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed select-none';
+
+  const roundness = {
+    full: 'rounded-full',
+    pill: 'rounded-full',
+    xl: 'rounded-2xl',
+    lg: 'rounded-xl',
+    md: 'rounded-lg',
+    sm: 'rounded-md',
+    none: 'rounded-none',
+  };
 
   const variants = {
-    primary: 'bg-emerald-600 hover:bg-emerald-700 text-white focus:ring-emerald-500 shadow-sm',
-    secondary: 'bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-100 focus:ring-slate-500',
-    danger: 'bg-rose-600 hover:bg-rose-700 text-white focus:ring-rose-500 shadow-sm',
-    ghost: 'bg-transparent hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300',
-    outline: 'border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300',
+    primary: 'bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold focus:ring-amber-500 active:scale-95',
+    secondary: 'bg-stone-100 hover:bg-stone-200 dark:bg-stone-800/80 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-100 border border-stone-200 dark:border-stone-700/60 focus:ring-amber-500 active:scale-95',
+    glass: 'bg-white/10 dark:bg-stone-800/60 hover:bg-white/20 dark:hover:bg-stone-800 text-stone-900 dark:text-white border border-stone-200/60 dark:border-white/15 backdrop-blur-md focus:ring-amber-500 shadow-sm active:scale-95',
+    amber: 'bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/25 focus:ring-amber-500 active:scale-95 font-semibold',
+    danger: 'bg-rose-600 hover:bg-rose-700 text-white focus:ring-rose-500 shadow-sm active:scale-95',
+    ghost: 'bg-transparent hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-300 active:scale-95',
+    outline: 'border border-stone-300 dark:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-300 active:scale-95',
   };
 
   const sizes = {
-    sm: 'text-xs px-2.5 py-1.5 gap-1.5',
-    md: 'text-sm px-4 py-2.5 gap-2',
-    lg: 'text-base px-5 py-3 gap-2.5',
+    sm: 'text-xs px-3.5 py-1.5 gap-1.5',
+    md: 'text-sm px-5 py-2.5 gap-2',
+    lg: 'text-base px-6 py-3 gap-2.5',
   };
 
+  const resolvedRound = roundness[rounded] || roundness.full;
+
   return (
-    <button
-      type={type}
+    <Component
+      type={Component === 'button' ? type : undefined}
       disabled={disabled || isLoading}
       onClick={onClick}
-      className={twMerge(clsx(baseStyles, variants[variant], sizes[size], className))}
+      className={twMerge(clsx(baseStyles, resolvedRound, variants[variant], sizes[size], className))}
       {...props}
     >
       {isLoading && (
@@ -44,6 +60,6 @@ export const Button = ({
         </svg>
       )}
       {children}
-    </button>
+    </Component>
   );
 };

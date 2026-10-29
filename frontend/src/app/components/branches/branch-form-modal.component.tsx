@@ -1,6 +1,7 @@
 import React from 'react';
 import Modal from '@/components/Modal';
 import { FormInput } from '@/components/FormFields';
+import { Button } from '@/atomic/atm.button';
 import { PhotoIcon } from '@heroicons/react/24/outline';
 import type { BranchModel } from '@/app/models/branch.model';
 
@@ -97,55 +98,58 @@ export const BranchFormModal: React.FC<BranchFormModalProps> = ({
 
         {/* Logo upload */}
         <div>
-          <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2">
+          <label className="block text-xs font-bold uppercase tracking-wider text-stone-700 dark:text-stone-300 mb-2">
             Branch / Brand Logo (Circular)
           </label>
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 overflow-hidden flex items-center justify-center">
+            <div className="w-16 h-16 rounded-full bg-stone-100 dark:bg-stone-800/80 border border-stone-200 dark:border-stone-700 overflow-hidden flex items-center justify-center">
               {logoPreview ? (
                 <img src={logoPreview} alt="Logo" className="w-full h-full object-cover" />
               ) : (
-                <PhotoIcon className="w-6 h-6 text-slate-400" />
+                <PhotoIcon className="w-6 h-6 text-stone-400" />
               )}
             </div>
             <input
               type="file"
               accept="image/*"
               onChange={handleLogoChange}
-              className="text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 dark:file:bg-emerald-950/60 dark:file:text-emerald-400"
+              className="text-xs text-stone-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-amber-500/10 file:text-amber-600 dark:file:bg-amber-500/20 dark:file:text-amber-400 cursor-pointer"
             />
           </div>
         </div>
 
         {/* Cover banner upload */}
         <div>
-          <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 mb-2">
+          <label className="block text-xs font-bold uppercase tracking-wider text-stone-700 dark:text-stone-300 mb-2">
             Header Banner Image (Wide Landscape)
           </label>
           <div className="flex flex-col gap-2">
-            <div className="w-full h-24 rounded-2xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 overflow-hidden flex items-center justify-center">
+            <div className="w-full h-24 rounded-2xl bg-stone-100 dark:bg-stone-800/80 border border-stone-200 dark:border-stone-700 overflow-hidden flex items-center justify-center">
               {coverPreview ? (
                 <img src={coverPreview} alt="Cover" className="w-full h-full object-cover" />
               ) : (
-                <PhotoIcon className="w-8 h-8 text-slate-400" />
+                <PhotoIcon className="w-8 h-8 text-stone-400" />
               )}
             </div>
             <input
               type="file"
               accept="image/*"
               onChange={handleCoverChange}
-              className="text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-700 dark:file:bg-emerald-950/60 dark:file:text-emerald-400"
+              className="text-xs text-stone-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-amber-500/10 file:text-amber-600 dark:file:bg-amber-500/20 dark:file:text-amber-400 cursor-pointer"
             />
           </div>
         </div>
 
-        <button
+        <Button
           type="submit"
+          variant="primary"
+          rounded="full"
           disabled={isSubmitting}
-          className="w-full py-2.5 rounded-xl bg-emerald-600 text-white font-bold text-sm shadow-md hover:bg-emerald-700 transition disabled:opacity-50"
+          isLoading={isSubmitting}
+          className="w-full py-3 font-bold text-sm shadow-none"
         >
-          {isSubmitting ? 'Saving...' : editingBranch ? 'Save Branch Changes' : 'Create Branch'}
-        </button>
+          {editingBranch ? 'Save Branch Changes' : 'Create Branch'}
+        </Button>
       </form>
     </Modal>
   );

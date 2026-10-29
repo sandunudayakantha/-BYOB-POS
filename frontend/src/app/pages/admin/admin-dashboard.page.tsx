@@ -16,11 +16,11 @@ export const AdminDashboardPage: React.FC = () => {
 
   const cards = [
     { name: "Total Restaurants", value: stats?.totalRestaurants, icon: BuildingStorefrontIcon, color: "from-blue-500 to-indigo-600" },
-    { name: "Total Branches", value: stats?.totalBranches, icon: BuildingOffice2Icon, color: "from-emerald-500 to-teal-600" },
+    { name: "Total Branches", value: stats?.totalBranches, icon: BuildingOffice2Icon, color: "from-amber-600 to-amber-700" },
     { name: "Total Products", value: stats?.totalProducts, icon: ShoppingBagIcon, color: "from-amber-500 to-orange-600" },
     { name: "Total Menus", value: stats?.totalMenus, icon: DocumentTextIcon, color: "from-purple-500 to-pink-600" },
     { name: "Total QR Codes", value: stats?.totalQRCodes, icon: QrCodeIcon, color: "from-cyan-500 to-blue-600" },
-    { name: "Active Accounts", value: stats?.activeRestaurants, icon: CheckCircleIcon, color: "from-emerald-600 to-green-700" },
+    { name: "Active Accounts", value: stats?.activeRestaurants, icon: CheckCircleIcon, color: "from-amber-500 to-amber-600" },
     { name: "Suspended Accounts", value: stats?.suspendedRestaurants, icon: ExclamationCircleIcon, color: "from-rose-500 to-red-600" },
   ];
 

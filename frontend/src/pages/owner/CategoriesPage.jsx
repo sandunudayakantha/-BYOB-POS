@@ -126,9 +126,9 @@ const CategoriesPage = ({ embedded = false }) => {
         </div>
         <button
           onClick={() => handleOpen()}
-          className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-emerald-600 text-white font-bold text-sm shadow-md hover:bg-emerald-700 transition"
+          className="flex items-center justify-center gap-2 py-2.5 px-5 rounded-full bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold text-sm shadow-none transition active:scale-95"
         >
-          <PlusIcon className="w-5 h-5" />
+          <PlusIcon className="w-5 h-5 stroke-[2.5]" />
           Add Category
         </button>
       </div>

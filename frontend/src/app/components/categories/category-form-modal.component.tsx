@@ -1,6 +1,7 @@
 import React from 'react';
 import Modal from '@/components/Modal';
 import { FormInput } from '@/components/FormFields';
+import { Button } from '@/atomic/atm.button';
 import type { CategoryModel } from '@/app/models/product.model';
 
 export interface CategoryFormModalProps {
@@ -46,13 +47,16 @@ export const CategoryFormModal: React.FC<CategoryFormModalProps> = ({
           value={formData.sortOrder}
           onChange={(e: any) => setFormData({ ...formData, sortOrder: Number(e.target.value) })}
         />
-        <button
+        <Button
           type="submit"
+          variant="primary"
+          rounded="full"
           disabled={isSubmitting}
-          className="w-full py-2.5 rounded-xl bg-emerald-600 text-white font-bold text-sm shadow-md hover:bg-emerald-700 transition disabled:opacity-50"
+          isLoading={isSubmitting}
+          className="w-full py-3 font-bold text-sm shadow-none"
         >
-          {isSubmitting ? 'Saving...' : editingCategory ? 'Save Changes' : 'Create Category'}
-        </button>
+          {editingCategory ? 'Save Changes' : 'Create Category'}
+        </Button>
       </form>
     </Modal>
   );

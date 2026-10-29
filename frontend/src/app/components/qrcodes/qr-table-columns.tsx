@@ -63,7 +63,7 @@ export function buildQRColumns({
           href={`/q/${row.token}`}
           target="_blank"
           rel="noreferrer"
-          className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold hover:underline flex items-center gap-1"
+          className="text-xs text-amber-600 dark:text-amber-400 font-semibold hover:underline flex items-center gap-1"
         >
           <span>/q/{row.token}</span>
           <ArrowTopRightOnSquareIcon className="w-3.5 h-3.5" />
@@ -74,7 +74,7 @@ export function buildQRColumns({
       key: 'status',
       header: 'Status',
       render: (row) => (
-        <Badge variant={row.isActive ? 'success' : 'default'}>
+        <Badge variant={row.isActive ? 'primary' : 'default'}>
           {row.isActive ? 'Active' : 'Disabled'}
         </Badge>
       ),
@@ -98,8 +98,8 @@ export function buildQRColumns({
             onClick={() => onToggleStatus(row)}
             className={`p-1.5 rounded-lg border transition ${
               row.isActive
-                ? 'border-amber-200 text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950/40'
-                : 'border-emerald-200 text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/40'
+                ? 'border-amber-500/30 text-amber-500 hover:bg-amber-500/10 dark:hover:bg-amber-500/10'
+                : 'border-stone-200 dark:border-stone-700 text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800'
             }`}
             title={row.isActive ? 'Disable QR code' : 'Activate QR code'}
           >

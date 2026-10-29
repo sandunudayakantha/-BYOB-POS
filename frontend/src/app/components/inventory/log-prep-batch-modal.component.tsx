@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Modal from "@/components/Modal";
 import { FormInput } from "@/components/FormFields";
+import { Button } from "@/atomic/atm.button";
 import type { KitchenPrepDefinitionModel } from "@/app/models/inventory.model";
 
 interface LogPrepBatchModalProps {
@@ -177,13 +178,13 @@ export const LogPrepBatchModal: React.FC<LogPrepBatchModalProps> = ({
 
         <div className="grid grid-cols-2 gap-4">
           <FormInput
-            label="Wastage Quantity"
+            label={prep.trackWastage ? "Wastage / Trimmings Quantity (Required)" : "Wastage / Trimmings Quantity (Optional)"}
             type="number"
             step="0.01"
             placeholder="e.g. 1.50"
             value={wastageQuantity}
             onChange={(e) => setWastageQuantity(e.target.value)}
-            required
+            required={Boolean(prep.trackWastage)}
           />
           <FormInput
             label="Reason / Trimming Note"
@@ -213,13 +214,16 @@ export const LogPrepBatchModal: React.FC<LogPrepBatchModalProps> = ({
           />
         )}
 
-        <button
+        <Button
           type="submit"
+          variant="primary"
+          rounded="full"
           disabled={isPending}
-          className="w-full py-3 rounded-xl bg-emerald-600 text-white font-bold text-sm hover:bg-emerald-700 transition"
+          isLoading={isPending}
+          className="w-full py-3 font-bold text-sm shadow-none"
         >
           {isPending ? "Processing Batch..." : "Confirm Batch & Update Stock"}
-        </button>
+        </Button>
       </form>
     </Modal>
   );

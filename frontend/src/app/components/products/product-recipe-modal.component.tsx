@@ -4,7 +4,8 @@ import { FormInput, FormSelect } from '@/components/FormFields';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '@/services/api';
 import toast from 'react-hot-toast';
-import { PlusIcon, TrashIcon, CalculatorIcon, SparklesIcon } from '@heroicons/react/24/outline';
+import { Button } from '@/atomic/atm.button';
+import { PlusIcon, TrashIcon, CalculatorIcon, SparklesIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
 
 interface ProductRecipeModalProps {
   isOpen: boolean;
@@ -126,35 +127,38 @@ export const ProductRecipeModal: React.FC<ProductRecipeModalProps> = ({
     <Modal isOpen={isOpen} onClose={onClose} title={`Recipe & Food Costing: ${product.name}`}>
       <div className="space-y-5">
         {/* Cost Summary Banner */}
-        <div className="p-4 rounded-2xl bg-gradient-to-r from-emerald-950/60 to-slate-900 border border-emerald-800/50 flex items-center justify-between shadow-xl">
+        <div className="p-4 rounded-2xl bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-600/20 text-emerald-400 flex items-center justify-center border border-emerald-500/30">
+            <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center border border-amber-500/20">
               <CalculatorIcon className="w-5 h-5" />
             </div>
             <div>
-              <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider block">Calculated Food Cost (COGS)</span>
-              <span className="text-xl font-black text-emerald-400">Rs. {totalCost.toFixed(2)}</span>
+              <span className="text-[10px] uppercase font-bold text-stone-400 tracking-wider block">Calculated Food Cost (COGS)</span>
+              <span className="text-xl font-black text-amber-500">Rs. {totalCost.toFixed(2)}</span>
             </div>
           </div>
-          <span className="text-xs text-slate-400 font-semibold">{ingredients.length} Ingredients</span>
+          <span className="text-xs text-stone-400 font-semibold">{ingredients.length} Ingredients</span>
         </div>
 
         {/* Recipe Ingredients List */}
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Ingredients & Prepped Items</span>
-            <button
+            <span className="text-xs font-bold uppercase tracking-wider text-stone-400">Ingredients & Prepped Items</span>
+            <Button
               type="button"
+              variant="primary"
+              size="sm"
+              rounded="full"
               onClick={handleAddIngredient}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm transition"
+              className="flex items-center gap-1.5 px-3 py-1.5 font-bold text-xs shadow-none"
             >
-              <PlusIcon className="w-3.5 h-3.5" />
-              Add Ingredient
-            </button>
+              <PlusIcon className="w-3.5 h-3.5 stroke-[2.5]" />
+              <span>Add Ingredient</span>
+            </Button>
           </div>
 
           {ingredients.length === 0 ? (
-            <div className="p-8 text-center bg-slate-50 dark:bg-slate-800/40 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 text-slate-400 text-xs">
+            <div className="p-8 text-center bg-stone-50 dark:bg-stone-900/40 rounded-2xl border border-dashed border-stone-300 dark:border-stone-800 text-stone-400 text-xs">
               No recipe ingredients defined yet. Click "Add Ingredient" to connect raw stock or kitchen preps (e.g. Diced Chicken, Eggs, Rice).
             </div>
           ) : (
@@ -169,21 +173,24 @@ export const ProductRecipeModal: React.FC<ProductRecipeModalProps> = ({
                   (1 + Number(ing.wastage_factor_percent || 0) / 100);
 
                 return (
-                  <div key={idx} className="p-3 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-2">
+                  <div key={idx} className="p-3 bg-stone-50 dark:bg-stone-900/60 rounded-2xl border border-stone-200 dark:border-stone-800 space-y-2">
                     <div className="grid grid-cols-12 gap-2 items-center">
                       {/* Item Selector */}
-                      <div className="col-span-5">
+                      <div className="col-span-5 relative">
                         <select
                           value={ing.inventory_item_id}
                           onChange={(e) => handleUpdateIngredient(idx, 'inventory_item_id', Number(e.target.value))}
-                          className="w-full text-xs font-semibold p-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white"
+                          className="w-full appearance-none text-xs font-semibold pl-2.5 pr-7 py-2 rounded-xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 text-stone-900 dark:text-white cursor-pointer focus:outline-none focus:ring-1 focus:ring-amber-500"
                         >
                           {inventoryItems.map((item: any) => (
-                            <option key={item.id} value={item.id}>
+                            <option key={item.id} value={item.id} className="bg-white dark:bg-stone-900 text-stone-900 dark:text-white">
                               {item.name} ({item.item_type === 'RAW_MATERIAL' ? 'Raw' : 'Prepped'})
                             </option>
                           ))}
                         </select>
+                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2 text-stone-400">
+                          <ChevronDownIcon className="w-3.5 h-3.5 stroke-[2]" />
+                        </div>
                       </div>
 
                       {/* Quantity */}
@@ -194,23 +201,26 @@ export const ProductRecipeModal: React.FC<ProductRecipeModalProps> = ({
                           placeholder="Qty"
                           value={ing.quantity}
                           onChange={(e) => handleUpdateIngredient(idx, 'quantity', Number(e.target.value))}
-                          className="w-full text-xs font-semibold p-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white"
+                          className="w-full text-xs font-semibold p-2 rounded-xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 text-stone-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-amber-500"
                         />
                       </div>
 
                       {/* UOM */}
-                      <div className="col-span-3">
+                      <div className="col-span-3 relative">
                         <select
                           value={ing.uom_id}
                           onChange={(e) => handleUpdateIngredient(idx, 'uom_id', Number(e.target.value))}
-                          className="w-full text-xs font-semibold p-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white"
+                          className="w-full appearance-none text-xs font-semibold pl-2.5 pr-7 py-2 rounded-xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 text-stone-900 dark:text-white cursor-pointer focus:outline-none focus:ring-1 focus:ring-amber-500"
                         >
                           {uoms.map((u: any) => (
-                            <option key={u.id} value={u.id}>
+                            <option key={u.id} value={u.id} className="bg-white dark:bg-stone-900 text-stone-900 dark:text-white">
                               {u.symbol} ({u.name})
                             </option>
                           ))}
                         </select>
+                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2 text-stone-400">
+                          <ChevronDownIcon className="w-3.5 h-3.5 stroke-[2]" />
+                        </div>
                       </div>
 
                       {/* Delete */}
@@ -226,9 +236,9 @@ export const ProductRecipeModal: React.FC<ProductRecipeModalProps> = ({
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between text-[11px] text-slate-400 pt-1 border-t border-slate-200/50 dark:border-slate-700/50">
+                    <div className="flex items-center justify-between text-[11px] text-stone-400 pt-1 border-t border-stone-200/50 dark:border-stone-800/50">
                       <span>Unit Cost: Rs. {Number(selectedItem?.unit_cost || 0).toFixed(2)}</span>
-                      <span className="font-bold text-emerald-500">Subtotal: Rs. {estimatedCost.toFixed(2)}</span>
+                      <span className="font-bold text-amber-500">Subtotal: Rs. {estimatedCost.toFixed(2)}</span>
                     </div>
                   </div>
                 );
@@ -239,21 +249,26 @@ export const ProductRecipeModal: React.FC<ProductRecipeModalProps> = ({
 
         {/* Action Buttons */}
         <div className="flex gap-3 pt-3">
-          <button
+          <Button
             type="button"
+            variant="secondary"
+            rounded="full"
             onClick={onClose}
-            className="flex-1 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 text-xs font-bold hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+            className="flex-1 py-2.5 font-bold text-xs"
           >
             Cancel
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
+            variant="primary"
+            rounded="full"
             disabled={saveRecipeMutation.isPending}
+            isLoading={saveRecipeMutation.isPending}
             onClick={() => saveRecipeMutation.mutate({ ingredients })}
-            className="flex-1 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md transition"
+            className="flex-1 py-2.5 font-bold text-xs shadow-none"
           >
-            {saveRecipeMutation.isPending ? 'Saving...' : 'Save Recipe & Cost'}
-          </button>
+            Save Recipe & Cost
+          </Button>
         </div>
       </div>
     </Modal>

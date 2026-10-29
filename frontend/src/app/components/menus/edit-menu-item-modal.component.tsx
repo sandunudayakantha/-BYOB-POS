@@ -1,6 +1,7 @@
 import React from 'react';
 import Modal from '@/components/Modal';
 import { FormInput } from '@/components/FormFields';
+import { Button } from '@/atomic/atm.button';
 import type { MenuItemModel } from '@/app/models/menu.model';
 
 export interface EditMenuItemModalProps {
@@ -38,13 +39,16 @@ export const EditMenuItemModal: React.FC<EditMenuItemModalProps> = ({
           onChange={(e: any) => setEditPrice(e.target.value)}
           required
         />
-        <button
+        <Button
           type="submit"
+          variant="primary"
+          rounded="full"
           disabled={isSubmitting}
-          className="w-full py-2.5 rounded-xl bg-emerald-600 text-white font-bold text-sm shadow-md hover:bg-emerald-700 transition disabled:opacity-50"
+          isLoading={isSubmitting}
+          className="w-full py-3 font-bold text-sm shadow-none"
         >
-          {isSubmitting ? 'Saving...' : 'Update Price'}
-        </button>
+          Update Price
+        </Button>
       </form>
     </Modal>
   );

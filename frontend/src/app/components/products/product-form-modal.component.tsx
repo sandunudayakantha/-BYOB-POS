@@ -1,6 +1,7 @@
 import React from 'react';
 import Modal from '@/components/Modal';
 import { FormInput, FormSelect, FormTextarea } from '@/components/FormFields';
+import { Button } from '@/atomic/atm.button';
 import { PhotoIcon } from '@heroicons/react/24/outline';
 
 interface ProductFormModalProps {
@@ -96,17 +97,17 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
                 <img
                   src={imagePreview}
                   alt="Preview"
-                  className="w-20 h-20 rounded-2xl object-cover ring-2 ring-emerald-500/40 shadow-md flex-shrink-0"
+                  className="w-20 h-20 rounded-2xl object-cover ring-2 ring-amber-500/40 shadow-md flex-shrink-0"
                 />
                 <div className="flex-1 space-y-1 min-w-0">
-                  <p className="text-xs font-bold text-slate-900 dark:text-white truncate">
+                  <p className="text-xs font-bold text-stone-900 dark:text-white truncate">
                     {imageFile ? imageFile.name : 'Current Image'}
                   </p>
-                  <p className="text-[10px] text-slate-400">
+                  <p className="text-[10px] text-stone-400">
                     {imageFile ? `${(imageFile.size / (1024 * 1024)).toFixed(2)} MB` : 'Cloudinary Hosted Image'}
                   </p>
                   <div className="flex items-center gap-2 pt-1">
-                    <label className="px-2.5 py-1 rounded-lg bg-emerald-600 text-white text-[11px] font-bold hover:bg-emerald-700 cursor-pointer transition">
+                    <label className="px-3 py-1.5 rounded-full bg-amber-500 hover:bg-amber-400 text-stone-950 text-[11px] font-bold cursor-pointer transition shadow-sm">
                       Change File
                       <input type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
                     </label>
@@ -117,7 +118,7 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
                         setImagePreview('');
                         setFormData({ ...formData, image: '' });
                       }}
-                      className="px-2.5 py-1 rounded-lg bg-rose-500/10 text-rose-500 text-[11px] font-bold hover:bg-rose-500/20 transition"
+                      className="px-3 py-1.5 rounded-full bg-rose-500/10 text-rose-500 text-[11px] font-bold hover:bg-rose-500/20 transition"
                     >
                       Remove
                     </button>
@@ -126,22 +127,22 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
               </div>
             ) : (
               <div className="text-center py-3">
-                <div className="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950 text-emerald-600 mx-auto flex items-center justify-center mb-2">
+                <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-500 mx-auto flex items-center justify-center mb-2 border border-amber-500/20">
                   <PhotoIcon className="w-6 h-6" />
                 </div>
-                <p className="text-xs font-bold text-slate-700 dark:text-slate-200">
+                <p className="text-xs font-bold text-stone-700 dark:text-stone-200">
                   Upload image file via Cloudinary
                 </p>
-                <p className="text-[10px] text-slate-400 mt-0.5">PNG, JPG or WEBP (Max 5MB)</p>
-                <label className="mt-3 inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 cursor-pointer transition shadow-md">
+                <p className="text-[10px] text-stone-400 mt-0.5">PNG, JPG or WEBP (Max 5MB)</p>
+                <label className="mt-3 inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-amber-500 hover:bg-amber-400 text-stone-950 text-xs font-bold cursor-pointer transition shadow-none active:scale-95">
                   <PhotoIcon className="w-4 h-4" /> Browse Image File
                   <input type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
                 </label>
               </div>
             )}
 
-            <div className="pt-2 border-t border-slate-200 dark:border-slate-700/60">
-              <p className="text-[10px] text-slate-400 font-medium mb-1">Or paste direct image URL:</p>
+            <div className="pt-2 border-t border-stone-200 dark:border-stone-800">
+              <p className="text-[10px] text-stone-400 font-medium mb-1">Or paste direct image URL:</p>
               <input
                 type="text"
                 placeholder="https://images.unsplash.com/..."
@@ -150,7 +151,7 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
                   setFormData({ ...formData, image: e.target.value });
                   if (!imageFile) setImagePreview(e.target.value);
                 }}
-                className="w-full px-3 py-2 text-xs rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-emerald-500"
+                className="w-full px-3 py-2 text-xs rounded-xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 text-stone-900 dark:text-white placeholder-stone-400 focus:outline-none focus:border-amber-500"
               />
             </div>
           </div>
@@ -169,20 +170,23 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
             id="available"
             checked={formData.available}
             onChange={(e) => setFormData({ ...formData, available: e.target.checked })}
-            className="w-5 h-5 accent-emerald-600 rounded"
+            className="w-5 h-5 accent-amber-500 rounded"
           />
-          <label htmlFor="available" className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+          <label htmlFor="available" className="text-sm font-semibold text-stone-700 dark:text-stone-300">
             Product is Available for Ordering
           </label>
         </div>
 
-        <button
+        <Button
           type="submit"
+          variant="primary"
+          rounded="full"
           disabled={isSubmitting}
-          className="w-full py-3 rounded-xl bg-emerald-600 text-white font-bold text-sm hover:bg-emerald-700 transition"
+          isLoading={isSubmitting}
+          className="w-full py-3 font-bold text-sm shadow-none"
         >
-          {isSubmitting ? 'Saving...' : editingProduct ? 'Update Product' : 'Add to Catalog'}
-        </button>
+          {editingProduct ? 'Update Product' : 'Add to Catalog'}
+        </Button>
       </form>
     </Modal>
   );

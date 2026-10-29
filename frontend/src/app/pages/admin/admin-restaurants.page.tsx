@@ -7,6 +7,7 @@ import { useResetRestaurantPasswordUseCase } from '@/app/domain/restaurants/use-
 import { useDeleteRestaurantUseCase } from '@/app/domain/restaurants/use-delete-restaurant.use-case';
 import { buildRestaurantColumns } from '@/app/components/restaurants/restaurant-table-columns';
 import { DataTable } from '@/atomic/obj.data-table';
+import { Button } from '@/atomic/atm.button';
 import Modal from '@/components/Modal';
 import { FormInput } from '@/components/FormFields';
 import toast from 'react-hot-toast';
@@ -122,14 +123,15 @@ export const AdminRestaurantsPage: React.FC = () => {
             Provision restaurant organizations, assign owner credentials, and manage branch limits.
           </p>
         </div>
-        <button
+        <Button
           type="button"
+          variant="primary"
           onClick={() => setCreateModalOpen(true)}
-          className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-emerald-600 text-white font-bold text-sm shadow-md hover:bg-emerald-700 transition"
+          icon={PlusIcon}
+          className="py-2.5 px-4 text-sm"
         >
-          <PlusIcon className="w-5 h-5" />
-          <span>Onboard Restaurant</span>
-        </button>
+          Onboard Restaurant
+        </Button>
       </div>
 
       <DataTable
@@ -184,13 +186,14 @@ export const AdminRestaurantsPage: React.FC = () => {
               required
             />
           </div>
-          <button
+          <Button
             type="submit"
+            variant="primary"
             disabled={isCreating}
-            className="w-full py-2.5 rounded-xl bg-emerald-600 text-white font-bold text-sm shadow-md hover:bg-emerald-700 transition disabled:opacity-50"
+            className="w-full py-2.5 text-sm"
           >
             {isCreating ? 'Provisioning...' : 'Provision Restaurant'}
-          </button>
+          </Button>
         </form>
       </Modal>
 
@@ -204,13 +207,14 @@ export const AdminRestaurantsPage: React.FC = () => {
             onChange={(e: any) => setNewMaxBranches(Number(e.target.value))}
             required
           />
-          <button
+          <Button
             type="submit"
+            variant="primary"
             disabled={isUpdatingLimit}
-            className="w-full py-2.5 rounded-xl bg-emerald-600 text-white font-bold text-sm shadow-md hover:bg-emerald-700 transition disabled:opacity-50"
+            className="w-full py-2.5 text-sm"
           >
             {isUpdatingLimit ? 'Saving...' : 'Update Quota'}
-          </button>
+          </Button>
         </form>
       </Modal>
 
@@ -225,13 +229,14 @@ export const AdminRestaurantsPage: React.FC = () => {
             onChange={(e: any) => setNewPassword(e.target.value)}
             required
           />
-          <button
+          <Button
             type="submit"
+            variant="primary"
             disabled={isResetting}
-            className="w-full py-2.5 rounded-xl bg-emerald-600 text-white font-bold text-sm shadow-md hover:bg-emerald-700 transition disabled:opacity-50"
+            className="w-full py-2.5 text-sm"
           >
             {isResetting ? 'Resetting...' : 'Set New Password'}
-          </button>
+          </Button>
         </form>
       </Modal>
     </div>

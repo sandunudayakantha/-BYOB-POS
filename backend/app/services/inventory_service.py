@@ -588,38 +588,102 @@ class InventoryService:
         db.refresh(batch)
         return batch
 
-    def list_prep_batches(self, db: Session, branch_id: int) -> list[dict]:
-        batches = db.query(KitchenPrepBatch).filter(
-            KitchenPrepBatch.branch_id == branch_id,
-            KitchenPrepBatch.is_deleted == False
-        ).order_by(KitchenPrepBatch.created_at.desc()).all()
+    def _format_prep_batch_dict(self, b: KitchenPrepBatch) -> dict:
+        prep = b.prep_definition
+        raw = prep.base_raw_item if prep else None
+        return {
+            "id": b.id,
+            "prep_definition_id": b.prep_definition_id,
+            "prep_definition_name": prep.name if prep else None,
+            "base_raw_item_id": prep.base_raw_item_id if prep else None,
+            "base_raw_item_name": raw.name if raw else None,
+            "base_raw_item_uom_symbol": raw.uom.symbol if (raw and raw.uom) else "",
+            "output_uom_symbol": prep.uom.symbol if (prep and prep.uom) else (raw.uom.symbol if (raw and raw.uom) else ""),
+            "branch_id": b.branch_id,
+            "prepared_by_user_id": b.prepared_by_user_id,
+            "prepared_by_name": b.prepared_by.name if b.prepared_by else "Staff",
+            "raw_input_quantity": b.raw_input_quantity,
+            "actual_yield_quantity": b.actual_yield_quantity,
+            "wastage_quantity": b.wastage_quantity,
+            "wastage_reason": b.wastage_reason or "",
+            "prep_image_url": b.prep_image_url or "",
+            "wastage_image_url": b.wastage_image_url or "",
+            "calculated_unit_cost": b.calculated_unit_cost,
+            "status": b.status,
+            "created_at": b.created_at.isoformat() if b.created_at else "",
+        }
 
-        results = []
-        for b in batches:
-            prep = b.prep_definition
-            raw = prep.base_raw_item if prep else None
-            results.append({
-                "id": b.id,
-                "prep_definition_id": b.prep_definition_id,
-                "prep_definition_name": prep.name if prep else None,
-                "base_raw_item_id": prep.base_raw_item_id if prep else None,
-                "base_raw_item_name": raw.name if raw else None,
-                "base_raw_item_uom_symbol": raw.uom.symbol if (raw and raw.uom) else "",
-                "output_uom_symbol": prep.uom.symbol if (prep and prep.uom) else (raw.uom.symbol if (raw and raw.uom) else ""),
-                "branch_id": b.branch_id,
-                "prepared_by_user_id": b.prepared_by_user_id,
-                "prepared_by_name": b.prepared_by.name if b.prepared_by else "Staff",
-                "raw_input_quantity": b.raw_input_quantity,
-                "actual_yield_quantity": b.actual_yield_quantity,
-                "wastage_quantity": b.wastage_quantity,
-                "wastage_reason": b.wastage_reason or "",
-                "prep_image_url": b.prep_image_url or "",
-                "wastage_image_url": b.wastage_image_url or "",
-                "calculated_unit_cost": b.calculated_unit_cost,
-                "status": b.status,
-                "created_at": b.created_at.isoformat() if b.created_at else "",
-            })
-        return results
+    def _build_prep_batches_query(
+        self,
+        db: Session,
+        branch_id: int,
+        raw_item_id: int | None = None,
+        prep_definition_id: int | None = None,
+        search: str | None = None,
+        only_wastage: bool = False,
+    ):
+        query = db.query(KitchenPrepBatch).join(
+            KitchenPrepDefinition, KitchenPrepBatch.prep_definition_id == KitchenPrepDefinition.id
+        ).filter(
+            KitchenPrepBatch.branch_id == branch_id,
+            KitchenPrepBatch.is_deleted == False,
+        )
+        if raw_item_id:
+            query = query.filter(KitchenPrepDefinition.base_raw_item_id == raw_item_id)
+        if prep_definition_id:
+            query = query.filter(KitchenPrepBatch.prep_definition_id == prep_definition_id)
+        if only_wastage:
+            query = query.filter(KitchenPrepBatch.wastage_quantity > 0)
+        if search and search.strip():
+            term = f"%{search.strip()}%"
+            query = query.filter(
+                (KitchenPrepDefinition.name.ilike(term)) |
+                (KitchenPrepBatch.wastage_reason.ilike(term))
+            )
+        return query.order_by(KitchenPrepBatch.created_at.desc())
+
+    def list_prep_batches(
+        self,
+        db: Session,
+        branch_id: int,
+        raw_item_id: int | None = None,
+        prep_definition_id: int | None = None,
+        search: str | None = None,
+        only_wastage: bool = False,
+    ) -> list[dict]:
+        query = self._build_prep_batches_query(
+            db,
+            branch_id,
+            raw_item_id=raw_item_id,
+            prep_definition_id=prep_definition_id,
+            search=search,
+            only_wastage=only_wastage,
+        )
+        batches = query.all()
+        return [self._format_prep_batch_dict(b) for b in batches]
+
+    def list_prep_batches_paginated(
+        self,
+        db: Session,
+        branch_id: int,
+        raw_item_id: int | None = None,
+        prep_definition_id: int | None = None,
+        search: str | None = None,
+        only_wastage: bool = False,
+        skip: int = 0,
+        limit: int = 20,
+    ) -> tuple[int, list[dict]]:
+        query = self._build_prep_batches_query(
+            db,
+            branch_id,
+            raw_item_id=raw_item_id,
+            prep_definition_id=prep_definition_id,
+            search=search,
+            only_wastage=only_wastage,
+        )
+        total = query.count()
+        batches = query.offset(skip).limit(limit).all()
+        return total, [self._format_prep_batch_dict(b) for b in batches]
 
     # ----------------- Product Recipe Operations -----------------
     def get_product_recipe(

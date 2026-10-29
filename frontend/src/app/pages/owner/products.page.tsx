@@ -11,10 +11,11 @@ import { ProductFormModal } from '@/app/components/products/product-form-modal.c
 import { ProductRecipeModal } from '@/app/components/products/product-recipe-modal.component';
 import { buildProductColumns } from '@/app/components/products/product-table-columns';
 import { DataTable } from '@/atomic/obj.data-table';
+import { Button } from '@/atomic/atm.button';
 import api from '@/services/api';
 import toast from 'react-hot-toast';
 import type { ProductModel } from '@/app/models/product.model';
-import { PlusIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
+import { PlusIcon, ChevronLeftIcon, ChevronRightIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import { extractValidationErrors } from '@/utils/errors';
 
 export interface ProductsPageProps {
@@ -232,34 +233,41 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({ embedded = false }) 
             <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white">
               Menu Products ({activeBranch?.name})
             </h2>
-            <p className="text-sm text-slate-500">Manage dishes, pricing, preparation standards, and recipes.</p>
+            <p className="text-sm text-stone-500">Manage dishes, pricing, preparation standards, and recipes.</p>
           </div>
-          <button
+          <Button
             type="button"
+            variant="primary"
+            size="md"
+            rounded="full"
             onClick={() => handleOpenEdit(null)}
-            className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-emerald-600 text-white font-bold text-sm shadow-md hover:bg-emerald-700 transition"
+            className="flex items-center justify-center gap-2 py-2.5 px-5 font-bold text-sm shadow-none transition active:scale-95"
           >
-            <PlusIcon className="w-5 h-5" />
-            Add Product
-          </button>
+            <PlusIcon className="w-5 h-5 stroke-[2.5]" />
+            <span>Add Product</span>
+          </Button>
         </div>
       )}
 
       {embedded && (
         <div className="flex justify-between items-center gap-4">
-          <p className="text-xs font-semibold text-slate-500">Catalog inventory items for {activeBranch?.name}.</p>
-          <button
+          <p className="text-xs font-semibold text-stone-400">Catalog inventory items for {activeBranch?.name}.</p>
+          <Button
             type="button"
+            variant="primary"
+            size="md"
+            rounded="full"
             onClick={() => handleOpenEdit(null)}
-            className="flex items-center gap-1.5 py-2 px-3.5 rounded-xl bg-emerald-600 text-white font-bold text-xs shadow-md hover:bg-emerald-700 transition"
+            className="flex items-center justify-center gap-2 py-2.5 px-5 font-bold text-sm shadow-none transition active:scale-95"
           >
-            <PlusIcon className="w-4 h-4" />
-            Add Product
-          </button>
+            <PlusIcon className="w-5 h-5 stroke-[2.5]" />
+            <span>Add Product</span>
+          </Button>
         </div>
       )}
 
-      <div className="flex items-center justify-between gap-4">
+      <div className="relative max-w-sm w-full">
+        <MagnifyingGlassIcon className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400 pointer-events-none" />
         <input
           type="text"
           placeholder="Search products by name..."
@@ -268,7 +276,7 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({ embedded = false }) 
             setSearchTerm(e.target.value);
             setCurrentPage(1);
           }}
-          className="w-full max-w-sm px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          className="w-full pl-9 pr-4 py-2 rounded-full border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 text-xs text-stone-900 dark:text-white placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-500"
         />
       </div>
 
@@ -278,6 +286,10 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({ embedded = false }) 
         keyExtractor={(item) => String(item.id)}
         isLoading={isLoading}
         emptyMessage="No products found in catalog."
+        onRowClick={(p) => {
+          setViewingProduct(p);
+          setViewModalOpen(true);
+        }}
       />
 
       {meta.totalPages > 1 && (
@@ -332,6 +344,7 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({ embedded = false }) 
         onClose={handleClose}
         product={viewingProduct}
         featuredSections={featuredSections}
+        categories={categories}
         onOpenFeature={(p) => {
           setFeaturingProduct(p);
           setFeatureModalOpen(true);

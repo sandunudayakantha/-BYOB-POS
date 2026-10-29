@@ -198,7 +198,7 @@ const QRModal = ({ isOpen, onClose, qrCode, qrData, logoUrl, brandName }) => {
             {activeQr.tableName || 'General QR Code'}
           </h4>
           <p className="text-sm text-slate-500">
-            Menu: <span className="font-semibold text-emerald-600 dark:text-emerald-400">{activeQr.menu?.name}</span>
+            Menu: <span className="font-semibold text-amber-600 dark:text-amber-400">{activeQr.menu?.name}</span>
           </p>
           <p className="text-xs text-slate-400 break-all bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-lg">
             {targetUrl}
@@ -211,7 +211,7 @@ const QRModal = ({ isOpen, onClose, qrCode, qrData, logoUrl, brandName }) => {
             onClick={downloadPNG}
             className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl border border-slate-200 dark:border-slate-700 font-semibold text-xs hover:bg-slate-50 dark:hover:bg-slate-800 transition"
           >
-            <ArrowDownTrayIcon className="w-4 h-4 text-emerald-500" />
+            <ArrowDownTrayIcon className="w-4 h-4 text-amber-500" />
             PNG
           </button>
           <button
@@ -223,7 +223,7 @@ const QRModal = ({ isOpen, onClose, qrCode, qrData, logoUrl, brandName }) => {
           </button>
           <button
             onClick={handlePrint}
-            className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-emerald-600 text-white font-semibold text-xs hover:bg-emerald-700 transition"
+            className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold text-xs transition shadow-sm"
           >
             <PrinterIcon className="w-4 h-4" />
             Print
@@ -303,7 +303,7 @@ const QRCodeCanvas = ({ url, logoUrl, brandName }) => {
       ctx.save();
       ctx.beginPath();
       ctx.arc(center, center, radius, 0, Math.PI * 2);
-      ctx.fillStyle = '#059669'; // Emerald brand color
+      ctx.fillStyle = '#f59e0b'; // Amber brand color
       ctx.fill();
 
       ctx.font = '900 22px sans-serif';

@@ -9,6 +9,7 @@ import { buildFeaturedColumns } from '@/app/components/featured/featured-table-c
 import { FeaturedFormModal } from '@/app/components/featured/featured-form-modal.component';
 import { FeaturedProductsManagerModal } from '@/app/components/featured/featured-products-manager-modal.component';
 import { DataTable } from '@/atomic/obj.data-table';
+import { Button } from '@/atomic/atm.button';
 import toast from 'react-hot-toast';
 import type { FeaturedSectionModel } from '@/app/models/featured.model';
 import { PlusIcon } from '@heroicons/react/24/outline';
@@ -181,14 +182,16 @@ export const FeaturedPage: React.FC = () => {
             Create promotional banners highlighted at the top of customer QR digital menus.
           </p>
         </div>
-        <button
+        <Button
           type="button"
+          variant="primary"
+          rounded="full"
           onClick={() => handleOpenEdit(null)}
-          className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-emerald-600 text-white font-bold text-sm shadow-md hover:bg-emerald-700 transition"
+          className="flex items-center gap-2 px-5 py-2.5 font-bold text-sm shadow-none"
         >
           <PlusIcon className="w-5 h-5" />
           <span>Create Banner</span>
-        </button>
+        </Button>
       </div>
 
       <DataTable

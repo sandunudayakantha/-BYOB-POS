@@ -92,7 +92,7 @@ export function buildMenuColumns({
             <button
               type="button"
               onClick={() => onOpenFill(row)}
-              className="py-1.5 px-2.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 font-bold text-xs flex items-center gap-1 hover:bg-emerald-100 transition"
+              className="py-1.5 px-2.5 rounded-lg bg-amber-500/10 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold text-xs flex items-center gap-1 hover:bg-amber-500/20 border border-amber-500/20 transition"
               title="Populate Missing Items from Base Menu"
             >
               + Fill
@@ -111,7 +111,7 @@ export function buildMenuColumns({
 
           <Link
             to={`/menus/${row.id}/builder`}
-            className="py-1.5 px-3 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 font-bold text-xs flex items-center gap-1.5 hover:bg-emerald-100 transition"
+            className="py-1.5 px-3 rounded-lg bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 hover:text-amber-500 font-bold text-xs flex items-center gap-1.5 border border-stone-200 dark:border-stone-700 hover:border-amber-500/30 transition"
           >
             <WrenchIcon className="w-4 h-4" />
             Menu Builder

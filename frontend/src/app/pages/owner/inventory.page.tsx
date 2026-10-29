@@ -16,6 +16,7 @@ import { useUpdatePrepDefinitionUseCase } from '@/app/domain/inventory/use-updat
 import { useLogPrepBatchUseCase } from '@/app/domain/inventory/use-log-prep-batch.use-case';
 import { RawMaterialsTab } from '@/app/components/inventory/raw-materials-tab.component';
 import { KitchenPrepsTab } from '@/app/components/inventory/kitchen-preps-tab.component';
+import { BatchEvidenceTab } from '@/app/components/inventory/batch-evidence-tab.component';
 import { RawItemDetail } from '@/app/components/inventory/raw-item-detail.component';
 import { CreateRawItemModal } from '@/app/components/inventory/create-raw-item-modal.component';
 import { EditRawItemModal } from '@/app/components/inventory/edit-raw-item-modal.component';
@@ -33,7 +34,8 @@ export const InventoryPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const currentTab = searchParams.get('tab') || 'items';
-  const [selectedItemId, setSelectedItemId] = useState<number | null>(null);
+  const rawItemIdParam = searchParams.get('itemId');
+  const selectedItemId = rawItemIdParam ? Number(rawItemIdParam) : null;
 
   // Modal states
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -59,15 +61,31 @@ export const InventoryPage: React.FC = () => {
   const { inwardStockBatch, isSubmitting: isInwardingStock } = useInwardStockBatchUseCase();
   const { createPrepDefinition, isSubmitting: isCreatingPrep } = useCreatePrepDefinitionUseCase();
   const { updatePrepDefinition, isSubmitting: isUpdatingPrep } = useUpdatePrepDefinitionUseCase(branchId);
-  const updateRawItem = useUpdateRawItemUseCase();
-  const logPrepBatch = useLogPrepBatchUseCase();
+  const { updateRawItem, isSubmitting: isUpdatingItem } = useUpdateRawItemUseCase(branchId);
+  const { logPrepBatch, isSubmitting: isLoggingBatch } = useLogPrepBatchUseCase();
 
   const selectedItem = items.find((i) => i.id === selectedItemId);
 
-  const handleTabChange = (tabKey: string) => {
-    setSelectedItemId(null);
+  const handleSelectItem = (item: InventoryItemModel) => {
     setSearchParams((prev) => {
       const next = new URLSearchParams(prev);
+      next.set('itemId', String(item.id));
+      return next;
+    });
+  };
+
+  const handleBackFromDetail = () => {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      next.delete('itemId');
+      return next;
+    });
+  };
+
+  const handleTabChange = (tabKey: string) => {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      next.delete('itemId');
       if (tabKey === 'items') next.delete('tab');
       else next.set('tab', tabKey);
       return next;
@@ -101,7 +119,7 @@ export const InventoryPage: React.FC = () => {
       await deleteRawItem({ itemId: item.id });
       toast.success(`"${item.name}" has been deleted.`);
       if (selectedItemId === item.id) {
-        setSelectedItemId(null);
+        handleBackFromDetail();
       }
     } catch (err: any) {
       toast.error(err?.message || 'Failed to delete raw material');
@@ -160,7 +178,7 @@ export const InventoryPage: React.FC = () => {
 
   const handleUpdateItem = async (data: any) => {
     try {
-      await updateRawItem.mutateAsync(data);
+      await updateRawItem(data);
       toast.success('Raw inventory item updated!');
       setIsEditModalOpen(false);
     } catch (err: any) {
@@ -170,7 +188,7 @@ export const InventoryPage: React.FC = () => {
 
   const handleLogBatch = async (data: any) => {
     try {
-      await logPrepBatch.mutateAsync({ ...data, branchId });
+      await logPrepBatch({ ...data, branchId });
       toast.success('Prep batch logged and stock adjusted!');
       setIsLogBatchModalOpen(false);
       setSelectedPrepForBatch(null);
@@ -183,27 +201,27 @@ export const InventoryPage: React.FC = () => {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+          <h2 className="text-2xl font-extrabold text-stone-900 dark:text-white flex items-center gap-2">
             <span>Inventory & Kitchen Governance</span>
             {activeBranch?.name && (
-              <span className="text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
+              <span className="text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
                 {activeBranch.name}
               </span>
             )}
           </h2>
-          <p className="text-sm text-slate-500 mt-1">
+          <p className="text-sm text-stone-500 mt-1">
             Manage raw materials, chef prep specifications, batch yields, photo evidence, and suppliers.
           </p>
         </div>
 
-        <div className="flex flex-wrap p-1 bg-slate-200/70 dark:bg-slate-800/80 rounded-2xl border border-slate-300/50 dark:border-slate-700/50 shadow-inner self-start sm:self-auto gap-1">
+        <div className="flex flex-wrap p-1 bg-stone-200/70 dark:bg-stone-900/80 rounded-2xl border border-stone-300/50 dark:border-stone-800/60 shadow-inner self-start sm:self-auto gap-1">
           <button
             type="button"
             onClick={() => handleTabChange('items')}
             className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${
               currentTab === 'items'
-                ? 'bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 shadow-sm border border-slate-200/60 dark:border-slate-700'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                ? 'bg-white dark:bg-stone-950 text-amber-600 dark:text-amber-400 shadow-sm border border-stone-200/60 dark:border-stone-800'
+                : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white'
             }`}
           >
             <ArchiveBoxIcon className="w-4 h-4" />
@@ -215,8 +233,8 @@ export const InventoryPage: React.FC = () => {
             onClick={() => handleTabChange('preps')}
             className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${
               currentTab === 'preps'
-                ? 'bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 shadow-sm border border-slate-200/60 dark:border-slate-700'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                ? 'bg-white dark:bg-stone-950 text-amber-600 dark:text-amber-400 shadow-sm border border-stone-200/60 dark:border-stone-800'
+                : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white'
             }`}
           >
             <BeakerIcon className="w-4 h-4" />
@@ -228,8 +246,8 @@ export const InventoryPage: React.FC = () => {
             onClick={() => handleTabChange('batches')}
             className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${
               currentTab === 'batches'
-                ? 'bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 shadow-sm border border-slate-200/60 dark:border-slate-700'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                ? 'bg-white dark:bg-stone-950 text-amber-600 dark:text-amber-400 shadow-sm border border-stone-200/60 dark:border-stone-800'
+                : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white'
             }`}
           >
             <CameraIcon className="w-4 h-4" />
@@ -238,35 +256,51 @@ export const InventoryPage: React.FC = () => {
         </div>
       </div>
 
-      {currentTab === 'items' && !selectedItem && (
+      {currentTab === 'items' && !selectedItemId && (
         <RawMaterialsTab
           items={items}
           isLoading={itemsLoading || isBranchLoading}
-          onSelectItem={(item) => setSelectedItemId(item.id)}
+          onSelectItem={handleSelectItem}
           onOpenAddModal={() => setIsCreateModalOpen(true)}
           onOpenStockModal={(item) => setStockModalItem(item)}
           onDeleteItem={handleDeleteRawItem}
         />
       )}
 
-      {currentTab === 'items' && selectedItem && (
-        <RawItemDetail
-          item={selectedItem}
-          preps={prepDefinitions}
-          batches={rawBatches}
-          prepBatches={prepBatches}
-          batchesLoading={rawBatchesLoading}
-          onBack={() => setSelectedItemId(null)}
-          onEditItem={() => setIsEditModalOpen(true)}
-          onInwardStock={() => setStockModalItem(selectedItem)}
-          onDefinePrep={() => handleOpenDefinePrep(selectedItem)}
-          onEditPrep={(prep) => handleOpenEditPrep(prep)}
-          onLogPrepBatch={(prep) => {
-            setSelectedPrepForBatch(prep);
-            setIsLogBatchModalOpen(true);
-          }}
-          onDeleteItem={handleDeleteRawItem}
-        />
+      {currentTab === 'items' && selectedItemId && (
+        itemsLoading || isBranchLoading ? (
+          <div className="p-12 text-center text-xs text-stone-400">Loading raw material details...</div>
+        ) : selectedItem ? (
+          <RawItemDetail
+            branchId={branchId}
+            item={selectedItem}
+            preps={prepDefinitions}
+            batches={rawBatches}
+            prepBatches={prepBatches}
+            batchesLoading={rawBatchesLoading}
+            onBack={handleBackFromDetail}
+            onEditItem={() => setIsEditModalOpen(true)}
+            onInwardStock={() => setStockModalItem(selectedItem)}
+            onDefinePrep={() => handleOpenDefinePrep(selectedItem)}
+            onEditPrep={(prep) => handleOpenEditPrep(prep)}
+            onLogPrepBatch={(prep) => {
+              setSelectedPrepForBatch(prep);
+              setIsLogBatchModalOpen(true);
+            }}
+            onDeleteItem={handleDeleteRawItem}
+          />
+        ) : (
+          <div className="p-8 text-center bg-stone-900 border border-stone-800 rounded-2xl text-stone-400 text-xs space-y-3">
+            <p>Raw inventory item not found or may have been deleted.</p>
+            <button
+              type="button"
+              onClick={handleBackFromDetail}
+              className="px-4 py-2 rounded-full bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold text-xs transition"
+            >
+              Return to Raw Materials
+            </button>
+          </div>
+        )
       )}
 
       {currentTab === 'preps' && (
@@ -279,6 +313,14 @@ export const InventoryPage: React.FC = () => {
             setSelectedPrepForBatch(prep);
             setIsLogBatchModalOpen(true);
           }}
+        />
+      )}
+
+      {currentTab === 'batches' && (
+        <BatchEvidenceTab
+          branchId={branchId}
+          rawItems={items}
+          preps={prepDefinitions}
         />
       )}
 
@@ -305,7 +347,7 @@ export const InventoryPage: React.FC = () => {
         item={selectedItem || null}
         uoms={uoms}
         suppliers={suppliers}
-        isPending={updateRawItem.isPending}
+        isPending={isUpdatingItem}
         onClose={() => setIsEditModalOpen(false)}
         onSubmit={handleUpdateItem}
       />
@@ -327,7 +369,7 @@ export const InventoryPage: React.FC = () => {
       <LogPrepBatchModal
         isOpen={isLogBatchModalOpen}
         prep={selectedPrepForBatch}
-        isPending={logPrepBatch.isPending}
+        isPending={isLoggingBatch}
         onClose={() => {
           setIsLogBatchModalOpen(false);
           setSelectedPrepForBatch(null);

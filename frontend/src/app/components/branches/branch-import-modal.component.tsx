@@ -1,6 +1,7 @@
 import React from 'react';
 import Modal from '@/components/Modal';
 import { FormSelect } from '@/components/FormFields';
+import { Button } from '@/atomic/atm.button';
 import type { BranchModel } from '@/app/models/branch.model';
 
 export interface BranchImportModalProps {
@@ -67,39 +68,42 @@ export const BranchImportModal: React.FC<BranchImportModalProps> = ({
               onChange={(e) =>
                 setImportData({ ...importData, includeCategoriesAndProducts: e.target.checked })
               }
-              className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500"
+              className="w-4 h-4 rounded text-amber-500 accent-amber-500 focus:ring-amber-500"
             />
             Include Categories & Products
           </label>
 
-          <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-slate-700 dark:text-slate-300">
+          <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-stone-700 dark:text-stone-300">
             <input
               type="checkbox"
               checked={importData.includeMenus}
               onChange={(e) => setImportData({ ...importData, includeMenus: e.target.checked })}
-              className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500"
+              className="w-4 h-4 rounded text-amber-500 accent-amber-500 focus:ring-amber-500"
             />
             Include Menus & Pricing Configurations
           </label>
 
-          <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-slate-700 dark:text-slate-300">
+          <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-stone-700 dark:text-stone-300">
             <input
               type="checkbox"
               checked={importData.includeFeatured}
               onChange={(e) => setImportData({ ...importData, includeFeatured: e.target.checked })}
-              className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500"
+              className="w-4 h-4 rounded text-amber-500 accent-amber-500 focus:ring-amber-500"
             />
             Include Featured Banners
           </label>
         </div>
 
-        <button
+        <Button
           type="submit"
+          variant="primary"
+          rounded="full"
           disabled={isSubmitting || !importData.sourceBranchId || !importData.targetBranchId}
-          className="w-full py-2.5 rounded-xl bg-emerald-600 text-white font-bold text-sm shadow-md hover:bg-emerald-700 transition disabled:opacity-50"
+          isLoading={isSubmitting}
+          className="w-full py-3 font-bold text-sm shadow-none"
         >
           {isSubmitting ? 'Importing Catalog...' : 'Start Catalog Copy'}
-        </button>
+        </Button>
       </form>
     </Modal>
   );

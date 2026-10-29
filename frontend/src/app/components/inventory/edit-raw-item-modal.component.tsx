@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Modal from "@/components/Modal";
 import { FormInput, FormSelect } from "@/components/FormFields";
+import { Button } from "@/atomic/atm.button";
 import type { InventoryItemModel, UnitOfMeasureModel, SupplierModel } from "@/app/models/inventory.model";
 
 interface EditRawItemModalProps {
@@ -121,23 +122,26 @@ export const EditRawItemModal: React.FC<EditRawItemModalProps> = ({
             type="checkbox"
             checked={isActive}
             onChange={(e) => setIsActive(e.target.checked)}
-            className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500"
+            className="w-4 h-4 rounded text-amber-500 accent-amber-500 focus:ring-amber-500"
           />
           <label
             htmlFor="edit-is-active"
-            className="text-xs font-bold text-slate-700 dark:text-slate-300 cursor-pointer"
+            className="text-xs font-bold text-stone-700 dark:text-stone-300 cursor-pointer"
           >
             Item is Active for Kitchen Preps & Catalog Recipes
           </label>
         </div>
 
-        <button
+        <Button
           type="submit"
+          variant="primary"
+          rounded="full"
           disabled={isPending}
-          className="w-full py-3 rounded-xl bg-emerald-600 text-white font-bold text-sm hover:bg-emerald-700 transition"
+          isLoading={isPending}
+          className="w-full py-3 font-bold text-sm shadow-none"
         >
           {isPending ? "Saving Changes..." : "Save Item Changes"}
-        </button>
+        </Button>
       </form>
     </Modal>
   );

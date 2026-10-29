@@ -11,8 +11,8 @@ import { useProductsUseCase } from '@/app/domain/products/use-products.use-case'
 import { AddMenuItemModal } from '@/app/components/menus/add-menu-item-modal.component';
 import { EditMenuItemModal } from '@/app/components/menus/edit-menu-item-modal.component';
 import { DragDropContext, Droppable, Draggable, type DropResult } from '@hello-pangea/dnd';
-import toast from 'react-hot-toast';
 import type { MenuItemModel } from '@/app/models/menu.model';
+import { Button } from '@/atomic/atm.button';
 import {
   ArrowLeftIcon,
   PlusIcon,
@@ -146,19 +146,21 @@ export const MenuBuilderPage: React.FC = () => {
           </div>
         </div>
 
-        <button
+        <Button
           type="button"
+          variant="primary"
+          rounded="full"
           onClick={() => {
             if (availableProducts.length > 0) {
               setSelectedProductId(availableProducts[0].id);
             }
             setAddModalOpen(true);
           }}
-          className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-emerald-600 text-white font-bold text-sm shadow-md hover:bg-emerald-700 transition"
+          className="flex items-center justify-center gap-2 py-2.5 px-4 font-bold text-sm shadow-none"
         >
-          <PlusIcon className="w-5 h-5" />
+          <PlusIcon className="w-5 h-5 stroke-[2.5]" />
           <span>Add Product to Menu</span>
-        </button>
+        </Button>
       </div>
 
       <DragDropContext onDragEnd={handleDragEnd}>
@@ -166,9 +168,9 @@ export const MenuBuilderPage: React.FC = () => {
           {(provided) => (
             <div {...provided.droppableProps} ref={provided.innerRef} className="space-y-3">
               {isLoading ? (
-                <div className="p-8 text-center text-slate-400">Loading menu layout...</div>
+                <div className="p-8 text-center text-stone-400">Loading menu layout...</div>
               ) : menuItems.length === 0 ? (
-                <div className="p-12 text-center bg-white dark:bg-slate-900 rounded-3xl border border-dashed border-slate-300 dark:border-slate-800 text-slate-500">
+                <div className="p-12 text-center bg-white/75 dark:bg-stone-900/40 rounded-3xl border border-dashed border-stone-300 dark:border-stone-800 text-stone-500">
                   No products in this menu yet. Click "Add Product to Menu" above to begin.
                 </div>
               ) : (
@@ -178,25 +180,25 @@ export const MenuBuilderPage: React.FC = () => {
                       <div
                         ref={dragProvided.innerRef}
                         {...dragProvided.draggableProps}
-                        className={`p-4 bg-white dark:bg-slate-900 rounded-2xl border ${
+                        className={`p-4 bg-white/75 dark:bg-stone-900/40 rounded-2xl border ${
                           snapshot.isDragging
-                            ? 'border-emerald-500 shadow-2xl bg-emerald-50/20'
-                            : 'border-slate-200 dark:border-slate-800 shadow-sm'
+                            ? 'border-amber-500 shadow-2xl bg-amber-500/10'
+                            : 'border-stone-200/80 dark:border-white/[0.07] shadow-sm'
                         } flex items-center justify-between gap-4 transition`}
                       >
                         <div className="flex items-center gap-4">
                           <div
                             {...dragProvided.dragHandleProps}
-                            className="cursor-grab active:cursor-grabbing p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                            className="cursor-grab active:cursor-grabbing p-2 text-stone-400 hover:text-stone-600 dark:hover:text-stone-200"
                             title="Drag to reorder"
                           >
                             <Bars3Icon className="w-5 h-5" />
                           </div>
                           <div>
-                            <h4 className="font-bold text-slate-900 dark:text-white text-base">
+                            <h4 className="font-bold text-stone-900 dark:text-white text-base">
                               {item.productName || 'Product Item'}
                             </h4>
-                            <div className="flex items-center gap-3 text-xs text-slate-400 mt-0.5">
+                            <div className="flex items-center gap-3 text-xs text-stone-400 mt-0.5">
                               <span>Category: {item.categoryName || 'General'}</span>
                             </div>
                           </div>
@@ -204,10 +206,10 @@ export const MenuBuilderPage: React.FC = () => {
 
                         <div className="flex items-center gap-6">
                           <div className="text-right">
-                            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider block">
+                            <span className="text-xs font-semibold text-stone-400 uppercase tracking-wider block">
                               Menu Price
                             </span>
-                            <span className="text-lg font-extrabold text-emerald-600 dark:text-emerald-400">
+                            <span className="text-lg font-extrabold text-amber-600 dark:text-amber-400">
                               LKR {Number(item.price).toFixed(2)}
                             </span>
                           </div>
@@ -215,9 +217,9 @@ export const MenuBuilderPage: React.FC = () => {
                           <button
                             type="button"
                             onClick={() => handleToggleAvailability(item)}
-                            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
+                            className={`px-3 py-1.5 rounded-full text-xs font-bold transition flex items-center gap-1.5 ${
                               item.isAvailable
-                                ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 border border-emerald-200 dark:border-emerald-800'
+                                ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20'
                                 : 'bg-rose-50 dark:bg-rose-950/60 text-rose-600 border border-rose-200 dark:border-rose-800'
                             }`}
                           >

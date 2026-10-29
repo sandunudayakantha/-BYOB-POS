@@ -48,10 +48,10 @@ const AdminLayout = () => {
           {/* Logo Header */}
           <div className="h-16 px-6 flex items-center justify-between border-b border-slate-100 dark:border-slate-800">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-500 to-indigo-600 flex items-center justify-center text-white font-bold text-lg shadow-md shadow-emerald-500/20">
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-amber-500 to-amber-600 flex items-center justify-center text-stone-950 font-black text-lg shadow-md shadow-amber-500/20">
                 QR
               </div>
-              <span className="font-extrabold text-lg tracking-tight bg-gradient-to-r from-emerald-600 to-indigo-600 bg-clip-text text-transparent">
+              <span className="font-extrabold text-lg tracking-tight bg-gradient-to-r from-amber-500 to-amber-400 bg-clip-text text-transparent">
                 Super Admin
               </span>
             </div>
@@ -76,7 +76,7 @@ const AdminLayout = () => {
                   className={({ isActive }) =>
                     `flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition-all ${
                       isActive
-                        ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 font-semibold shadow-sm'
+                        ? 'bg-amber-500/10 text-amber-500 font-semibold shadow-sm border border-amber-500/20'
                         : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white'
                     }`
                   }

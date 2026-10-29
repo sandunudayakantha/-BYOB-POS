@@ -41,16 +41,16 @@ export const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 p-4">
-      <div className="w-full max-w-md bg-white dark:bg-slate-900 rounded-3xl shadow-xl border border-slate-200 dark:border-slate-800 p-8 space-y-8">
+    <div className="min-h-screen flex items-center justify-center bg-stone-950 p-4">
+      <div className="w-full max-w-md bg-stone-900 rounded-3xl shadow-2xl border border-stone-800 p-8 space-y-8">
         <div className="text-center space-y-3">
-          <div className="inline-flex w-14 h-14 rounded-2xl bg-gradient-to-tr from-emerald-500 to-indigo-600 items-center justify-center text-white shadow-lg shadow-emerald-500/20">
-            <QrCodeIcon className="w-8 h-8" />
+          <div className="inline-flex w-14 h-14 rounded-2xl bg-gradient-to-tr from-amber-500 to-amber-600 items-center justify-center text-stone-950 shadow-lg shadow-amber-500/20 font-bold">
+            <QrCodeIcon className="w-8 h-8 text-stone-950" />
           </div>
-          <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white">
+          <h2 className="text-2xl font-extrabold text-stone-100">
             SaaS QR Menu Portal
           </h2>
-          <p className="text-sm text-slate-500 dark:text-slate-400">
+          <p className="text-sm text-stone-400">
             Enter your account credentials to access your portal
           </p>
         </div>
@@ -83,13 +83,13 @@ export const LoginPage: React.FC = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-lg shadow-emerald-600/20 transition disabled:opacity-50 flex items-center justify-center gap-2"
+            className="w-full py-3 px-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold text-sm shadow-lg shadow-amber-500/20 transition disabled:opacity-50 flex items-center justify-center gap-2"
           >
             {loading ? (
               <span>Signing in...</span>
             ) : (
               <>
-                <LockClosedIcon className="w-4 h-4" />
+                <LockClosedIcon className="w-4 h-4 text-stone-950" />
                 Sign In to Dashboard
               </>
             )}

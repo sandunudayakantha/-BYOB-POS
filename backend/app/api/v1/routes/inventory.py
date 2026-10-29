@@ -5,7 +5,7 @@ from app.api.deps import get_db
 from app.api.route_guards import require_inventory_manage
 from app.core.exceptions import BadRequestException
 from app.models.user import User
-from app.schemas.common import APIResponse
+from app.schemas.common import APIResponse, PaginatedData
 from app.schemas.inventory import (
     InventoryItemCreate,
     InventoryItemResponse,
@@ -282,15 +282,48 @@ def delete_prep_definition(
     return APIResponse(data=None, message="Kitchen prep definition deleted successfully")
 
 
-# ----------------- Kitchen Prep Batches -----------------
-@router.get("/preps/batches", response_model=APIResponse[list[KitchenPrepBatchResponse]])
+@router.get(
+    "/preps/batches",
+    response_model=APIResponse[list[KitchenPrepBatchResponse] | PaginatedData[KitchenPrepBatchResponse]],
+)
 def get_prep_batches(
     branchId: int = Query(...),
+    rawItemId: int | None = Query(None),
+    prepDefinitionId: int | None = Query(None),
+    search: str | None = Query(None),
+    onlyWastage: bool = Query(False),
+    page: int | None = Query(None, ge=1),
+    limit: int | None = Query(None, ge=1, le=100),
     db: Session = Depends(get_db),
     current_user: User = Depends(require_inventory_manage),
 ):
     verify_branch_access(db, current_user, branchId)
-    batches = inventory_service.list_prep_batches(db, branchId)
+    if page is not None:
+        lim = limit or 20
+        skip = (page - 1) * lim
+        total, items = inventory_service.list_prep_batches_paginated(
+            db,
+            branchId,
+            raw_item_id=rawItemId,
+            prep_definition_id=prepDefinitionId,
+            search=search,
+            only_wastage=onlyWastage,
+            skip=skip,
+            limit=lim,
+        )
+        return APIResponse(
+            data=PaginatedData(items=items, total=total, skip=skip, limit=lim),
+            message="Kitchen prep batches loaded",
+        )
+
+    batches = inventory_service.list_prep_batches(
+        db,
+        branchId,
+        raw_item_id=rawItemId,
+        prep_definition_id=prepDefinitionId,
+        search=search,
+        only_wastage=onlyWastage,
+    )
     return APIResponse(data=batches, message="Kitchen prep batches loaded")
 
 

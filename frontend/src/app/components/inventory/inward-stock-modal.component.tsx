@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Modal from "@/components/Modal";
 import { FormInput, FormSelect } from "@/components/FormFields";
+import { Button } from "@/atomic/atm.button";
 import type { InventoryItemModel, SupplierModel } from "@/app/models/inventory.model";
 
 export interface InwardStockModalProps {
@@ -80,16 +81,16 @@ export const InwardStockModal: React.FC<InwardStockModalProps> = ({
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Info Banner */}
-        <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 flex items-center justify-between text-xs">
+        <div className="p-3 rounded-xl bg-stone-50 dark:bg-stone-800/60 border border-stone-200 dark:border-stone-700 flex items-center justify-between text-xs">
           <div>
-            <span className="text-slate-400">Current In Stock:</span>
-            <span className="ml-1.5 font-bold text-slate-800 dark:text-white">
+            <span className="text-stone-400">Current In Stock:</span>
+            <span className="ml-1.5 font-bold text-stone-800 dark:text-white">
               {Number(item.currentStock).toFixed(2)} {uomLabel}
             </span>
           </div>
           <div>
-            <span className="text-slate-400">Base Unit:</span>
-            <span className="ml-1.5 font-bold text-emerald-600 dark:text-emerald-400">
+            <span className="text-stone-400">Base Unit:</span>
+            <span className="ml-1.5 font-bold text-amber-600 dark:text-amber-400">
               {item.uomName || uomLabel} ({uomLabel})
             </span>
           </div>
@@ -166,17 +167,20 @@ export const InwardStockModal: React.FC<InwardStockModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-bold text-xs hover:bg-slate-50 dark:hover:bg-slate-800 transition"
+            className="px-4 py-2.5 rounded-full border border-stone-200 dark:border-stone-700 text-stone-600 dark:text-stone-300 font-bold text-xs hover:bg-stone-100 dark:hover:bg-stone-800 transition"
           >
             Cancel
           </button>
-          <button
+          <Button
             type="submit"
+            variant="primary"
+            rounded="full"
             disabled={isPending || !Number(quantity)}
-            className="px-5 py-2.5 rounded-xl bg-emerald-600 text-white font-bold text-xs hover:bg-emerald-700 transition disabled:opacity-50"
+            isLoading={isPending}
+            className="px-5 py-2.5 font-bold text-xs shadow-none"
           >
             {isPending ? "Recording Inward Stock..." : "Record Inward Stock"}
-          </button>
+          </Button>
         </div>
       </form>
     </Modal>

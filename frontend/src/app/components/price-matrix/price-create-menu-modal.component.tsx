@@ -1,6 +1,7 @@
 import React from 'react';
 import Modal from '@/components/Modal';
 import { FormInput, FormTextarea, FormSelect } from '@/components/FormFields';
+import { Button } from '@/atomic/atm.button';
 import { PlusIcon } from '@heroicons/react/24/outline';
 
 interface PriceCreateMenuModalProps {
@@ -70,14 +71,17 @@ export const PriceCreateMenuModal: React.FC<PriceCreateMenuModalProps> = ({
           </p>
         </div>
 
-        <button
+        <Button
           type="submit"
+          variant="primary"
+          rounded="full"
           disabled={isSubmitting}
-          className="w-full py-3 rounded-xl bg-emerald-600 text-white font-bold text-sm hover:bg-emerald-700 transition flex items-center justify-center gap-2 shadow-md"
+          isLoading={isSubmitting}
+          className="w-full py-3 font-bold text-sm shadow-none flex items-center justify-center gap-2"
         >
-          <PlusIcon className="w-4 h-4" />
-          {isSubmitting ? 'Creating Menu...' : 'Create Menu'}
-        </button>
+          <PlusIcon className="w-4 h-4 stroke-[2.5]" />
+          <span>{isSubmitting ? 'Creating Menu...' : 'Create Menu'}</span>
+        </Button>
       </form>
     </Modal>
   );

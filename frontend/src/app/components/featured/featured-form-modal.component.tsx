@@ -1,6 +1,7 @@
 import React from 'react';
 import Modal from '@/components/Modal';
 import { FormInput, FormTextarea } from '@/components/FormFields';
+import { Button } from '@/atomic/atm.button';
 import type { FeaturedSectionModel } from '@/app/models/featured.model';
 
 export interface FeaturedFormModalProps {
@@ -70,20 +71,23 @@ export const FeaturedFormModal: React.FC<FeaturedFormModalProps> = ({
             type="checkbox"
             checked={formData.isActive}
             onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-            className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500"
+            className="w-4 h-4 rounded text-amber-500 accent-amber-500 focus:ring-amber-500"
           />
-          <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+          <span className="text-xs font-semibold text-stone-700 dark:text-stone-300">
             Publish and make visible on customer QR menu
           </span>
         </label>
 
-        <button
+        <Button
           type="submit"
+          variant="primary"
+          rounded="full"
           disabled={isSubmitting}
-          className="w-full py-2.5 rounded-xl bg-emerald-600 text-white font-bold text-sm shadow-md hover:bg-emerald-700 transition disabled:opacity-50"
+          isLoading={isSubmitting}
+          className="w-full py-3 font-bold text-sm shadow-none"
         >
-          {isSubmitting ? 'Saving...' : editingSection ? 'Save Banner Changes' : 'Create Banner'}
-        </button>
+          {editingSection ? 'Save Banner Changes' : 'Create Banner'}
+        </Button>
       </form>
     </Modal>
   );

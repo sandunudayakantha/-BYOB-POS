@@ -1,4 +1,5 @@
 import React from 'react';
+import { ChevronDownIcon } from '@heroicons/react/24/outline';
 
 export interface FormFieldBaseProps {
   label?: string;
@@ -34,17 +35,17 @@ export const FormInput: React.FC<FormInputProps> = ({
 }) => (
   <div className="space-y-1.5">
     {label && (
-      <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300">
+      <label className="block text-sm font-semibold text-stone-700 dark:text-stone-300">
         {label}
       </label>
     )}
     <input
       {...registration}
       {...props}
-      className={`w-full px-4 py-2.5 rounded-xl border bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-emerald-500 focus:outline-none transition ${
+      className={`w-full px-4 py-2.5 rounded-xl border bg-white dark:bg-stone-900/90 text-stone-900 dark:text-white placeholder-stone-500 focus:ring-2 focus:ring-amber-500 focus:outline-none transition ${
         error
           ? 'border-rose-500 dark:border-rose-500'
-          : 'border-slate-300 dark:border-slate-700'
+          : 'border-stone-300 dark:border-stone-700/80'
       } ${className}`}
     />
     {error && <p className="text-xs text-rose-500 mt-1">{error.message || error}</p>}
@@ -61,25 +62,30 @@ export const FormSelect: React.FC<FormSelectProps> = ({
 }) => (
   <div className="space-y-1.5">
     {label && (
-      <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300">
+      <label className="block text-sm font-semibold text-stone-700 dark:text-stone-300">
         {label}
       </label>
     )}
-    <select
-      {...registration}
-      {...props}
-      className={`w-full px-4 py-2.5 rounded-xl border bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:outline-none transition ${
-        error
-          ? 'border-rose-500 dark:border-rose-500'
-          : 'border-slate-300 dark:border-slate-700'
-      } ${className}`}
-    >
-      {options.map((opt) => (
-        <option key={opt.value} value={opt.value}>
-          {opt.label}
-        </option>
-      ))}
-    </select>
+    <div className="relative">
+      <select
+        {...registration}
+        {...props}
+        className={`w-full appearance-none pl-4 pr-10 py-2.5 rounded-xl border bg-white dark:bg-stone-900/90 text-stone-900 dark:text-white focus:ring-2 focus:ring-amber-500 focus:outline-none transition cursor-pointer ${
+          error
+            ? 'border-rose-500 dark:border-rose-500'
+            : 'border-stone-300 dark:border-stone-700/80'
+        } ${className}`}
+      >
+        {options.map((opt) => (
+          <option key={opt.value} value={opt.value} className="bg-white dark:bg-stone-900 text-stone-900 dark:text-white">
+            {opt.label}
+          </option>
+        ))}
+      </select>
+      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5 text-stone-400">
+        <ChevronDownIcon className="w-4 h-4 stroke-[2]" />
+      </div>
+    </div>
     {error && <p className="text-xs text-rose-500 mt-1">{error.message || error}</p>}
   </div>
 );
@@ -93,7 +99,7 @@ export const FormTextarea: React.FC<FormTextareaProps> = ({
 }) => (
   <div className="space-y-1.5">
     {label && (
-      <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300">
+      <label className="block text-sm font-semibold text-stone-700 dark:text-stone-300">
         {label}
       </label>
     )}
@@ -101,10 +107,10 @@ export const FormTextarea: React.FC<FormTextareaProps> = ({
       {...registration}
       {...props}
       rows={props.rows || 3}
-      className={`w-full px-4 py-2.5 rounded-xl border bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-emerald-500 focus:outline-none transition ${
+      className={`w-full px-4 py-2.5 rounded-xl border bg-white dark:bg-stone-900/90 text-stone-900 dark:text-white placeholder-stone-500 focus:ring-2 focus:ring-amber-500 focus:outline-none transition ${
         error
           ? 'border-rose-500 dark:border-rose-500'
-          : 'border-slate-300 dark:border-slate-700'
+          : 'border-stone-300 dark:border-stone-700/80'
       } ${className}`}
     />
     {error && <p className="text-xs text-rose-500 mt-1">{error.message || error}</p>}

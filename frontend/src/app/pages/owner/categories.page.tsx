@@ -7,9 +7,10 @@ import { useDeleteCategoryUseCase } from '@/app/domain/products/use-delete-categ
 import { buildCategoryColumns } from '@/app/components/categories/category-table-columns';
 import { CategoryFormModal } from '@/app/components/categories/category-form-modal.component';
 import { DataTable } from '@/atomic/obj.data-table';
+import { Button } from '@/atomic/atm.button';
 import toast from 'react-hot-toast';
 import type { CategoryModel } from '@/app/models/product.model';
-import { PlusIcon } from '@heroicons/react/24/outline';
+import { PlusIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 
 export interface CategoriesPageProps {
   embedded?: boolean;
@@ -111,23 +112,27 @@ export const CategoriesPage: React.FC<CategoriesPageProps> = ({ embedded = false
             </p>
           )}
         </div>
-        <button
+        <Button
           type="button"
+          variant="primary"
+          size="md"
+          rounded="full"
           onClick={() => handleOpen()}
-          className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-emerald-600 text-white font-bold text-sm shadow-md hover:bg-emerald-700 transition"
+          className="flex items-center justify-center gap-2 py-2.5 px-5 font-bold text-sm shadow-none transition active:scale-95"
         >
-          <PlusIcon className="w-5 h-5" />
+          <PlusIcon className="w-5 h-5 stroke-[2.5]" />
           <span>Add Category</span>
-        </button>
+        </Button>
       </div>
 
-      <div className="flex items-center justify-between gap-4">
+      <div className="relative max-w-sm w-full">
+        <MagnifyingGlassIcon className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400 pointer-events-none" />
         <input
           type="text"
           placeholder="Search categories by name..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full max-w-sm px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          className="w-full pl-9 pr-4 py-2 rounded-full border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 text-xs text-stone-900 dark:text-white placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-500"
         />
       </div>
 

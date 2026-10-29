@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Modal from "@/components/Modal";
 import { FormInput, FormSelect, FormTextarea } from "@/components/FormFields";
+import { Button } from "@/atomic/atm.button";
 import type {
   InventoryItemModel,
   KitchenPrepDefinitionModel,
@@ -109,7 +110,7 @@ export const PrepDefinitionModal: React.FC<PrepDefinitionModalProps> = ({
       expectedYieldPercent: Number(expectedYieldPercent) || 100,
       requiresImageEvidence,
       trackWastage,
-      requiresWastageImage,
+      requiresWastageImage: trackWastage ? requiresWastageImage : false,
     });
   };
 
@@ -124,15 +125,15 @@ export const PrepDefinitionModal: React.FC<PrepDefinitionModalProps> = ({
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Base Raw Material */}
         {baseItem ? (
-          <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 flex items-center justify-between text-xs">
+          <div className="p-3 rounded-xl bg-stone-50 dark:bg-stone-800/60 border border-stone-200 dark:border-stone-700 flex items-center justify-between text-xs">
             <div>
-              <span className="text-slate-400">Base Raw Ingredient:</span>
-              <span className="ml-1.5 font-bold text-slate-900 dark:text-white">
+              <span className="text-stone-400">Base Raw Ingredient:</span>
+              <span className="ml-1.5 font-bold text-stone-900 dark:text-white">
                 {baseItem.name}
               </span>
             </div>
-            <div className="text-slate-400">
-              Unit: <strong className="text-emerald-600 dark:text-emerald-400">{baseItem.uomSymbol}</strong>
+            <div className="text-stone-400">
+              Unit: <strong className="text-amber-600 dark:text-amber-400">{baseItem.uomSymbol}</strong>
             </div>
           </div>
         ) : (
@@ -213,8 +214,8 @@ export const PrepDefinitionModal: React.FC<PrepDefinitionModalProps> = ({
         </div>
 
         {/* Governance Checkboxes */}
-        <div className="space-y-2 pt-2 border-t border-slate-200 dark:border-slate-800">
-          <label className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">
+        <div className="space-y-2 pt-2 border-t border-stone-200 dark:border-stone-800">
+          <label className="text-[11px] font-bold uppercase tracking-wider text-stone-400 block">
             Kitchen Evidence & Wastage Governance
           </label>
 
@@ -224,11 +225,11 @@ export const PrepDefinitionModal: React.FC<PrepDefinitionModalProps> = ({
               type="checkbox"
               checked={requiresImageEvidence}
               onChange={(e) => setRequiresImageEvidence(e.target.checked)}
-              className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500"
+              className="w-4 h-4 rounded text-amber-500 accent-amber-500 focus:ring-amber-500"
             />
             <label
               htmlFor="prep-requires-image"
-              className="text-xs font-semibold text-slate-700 dark:text-slate-300 cursor-pointer"
+              className="text-xs font-semibold text-stone-700 dark:text-stone-300 cursor-pointer"
             >
               Require chef photo evidence of prepared yield when logging batches
             </label>
@@ -240,11 +241,11 @@ export const PrepDefinitionModal: React.FC<PrepDefinitionModalProps> = ({
               type="checkbox"
               checked={trackWastage}
               onChange={(e) => setTrackWastage(e.target.checked)}
-              className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500"
+              className="w-4 h-4 rounded text-amber-500 accent-amber-500 focus:ring-amber-500"
             />
             <label
               htmlFor="prep-track-wastage"
-              className="text-xs font-semibold text-slate-700 dark:text-slate-300 cursor-pointer"
+              className="text-xs font-semibold text-stone-700 dark:text-stone-300 cursor-pointer"
             >
               Track trimming loss and wastage logs for this prep recipe
             </label>
@@ -257,11 +258,11 @@ export const PrepDefinitionModal: React.FC<PrepDefinitionModalProps> = ({
                 type="checkbox"
                 checked={requiresWastageImage}
                 onChange={(e) => setRequiresWastageImage(e.target.checked)}
-                className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500"
+                className="w-4 h-4 rounded text-amber-500 accent-amber-500 focus:ring-amber-500"
               />
               <label
                 htmlFor="prep-requires-wastage-image"
-                className="text-xs font-semibold text-slate-600 dark:text-slate-400 cursor-pointer"
+                className="text-xs font-semibold text-stone-600 dark:text-stone-400 cursor-pointer"
               >
                 Require photo evidence for trimmed wastage
               </label>
@@ -273,21 +274,24 @@ export const PrepDefinitionModal: React.FC<PrepDefinitionModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-bold text-xs hover:bg-slate-50 dark:hover:bg-slate-800 transition"
+            className="px-4 py-2.5 rounded-full border border-stone-200 dark:border-stone-700 text-stone-600 dark:text-stone-300 font-bold text-xs hover:bg-stone-100 dark:hover:bg-stone-800 transition"
           >
             Cancel
           </button>
-          <button
+          <Button
             type="submit"
+            variant="primary"
+            rounded="full"
             disabled={isPending || !name.trim()}
-            className="px-5 py-2.5 rounded-xl bg-emerald-600 text-white font-bold text-xs hover:bg-emerald-700 transition disabled:opacity-50"
+            isLoading={isPending}
+            className="px-5 py-2.5 font-bold text-xs shadow-none"
           >
             {isPending
               ? "Saving Kitchen Prep..."
               : editingPrep
               ? "Save Changes"
               : "Create Kitchen Prep"}
-          </button>
+          </Button>
         </div>
       </form>
     </Modal>

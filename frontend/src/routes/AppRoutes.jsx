@@ -30,9 +30,9 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-950 text-white space-y-4">
-        <div className="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin" />
-        <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Verifying session...</p>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-stone-950 text-white space-y-4">
+        <div className="w-12 h-12 border-4 border-amber-500 border-t-transparent rounded-full animate-spin" />
+        <p className="text-xs font-bold text-stone-400 uppercase tracking-wider">Verifying session...</p>
       </div>
     );
   }

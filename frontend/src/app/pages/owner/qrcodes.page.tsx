@@ -9,6 +9,7 @@ import { buildQRColumns } from '@/app/components/qrcodes/qr-table-columns';
 import { QRFormModal } from '@/app/components/qrcodes/qr-form-modal.component';
 import QRModal from '@/components/QRModal';
 import { DataTable } from '@/atomic/obj.data-table';
+import { Button } from '@/atomic/atm.button';
 import toast from 'react-hot-toast';
 import type { QRCodeModel } from '@/app/models/qrcode.model';
 import { PlusIcon } from '@heroicons/react/24/outline';
@@ -114,14 +115,17 @@ export const QRCodesPage: React.FC = () => {
             Generate permanent QR codes mapping directly to your digital restaurant live menu.
           </p>
         </div>
-        <button
+        <Button
           type="button"
+          variant="primary"
+          rounded="full"
+          size="sm"
           onClick={handleOpenCreate}
-          className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-emerald-600 text-white font-bold text-sm shadow-md hover:bg-emerald-700 transition"
+          className="font-extrabold text-xs shadow-none"
         >
-          <PlusIcon className="w-5 h-5" />
+          <PlusIcon className="w-4 h-4 stroke-[2.5]" />
           <span>New QR Code</span>
-        </button>
+        </Button>
       </div>
 
       <DataTable

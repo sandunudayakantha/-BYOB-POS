@@ -28,7 +28,7 @@ export function buildCategoryColumns({
       key: 'status',
       header: 'Status',
       render: (row) => (
-        <Badge variant={row.isActive ? 'success' : 'danger'}>
+        <Badge variant={row.isActive ? 'primary' : 'danger'}>
           {row.isActive ? 'Active' : 'Inactive'}
         </Badge>
       ),
@@ -42,7 +42,7 @@ export function buildCategoryColumns({
           <button
             type="button"
             onClick={() => onEdit(row)}
-            className="p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-colors"
+            className="p-1.5 rounded-full border border-stone-200 dark:border-stone-700 text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 hover:text-stone-900 dark:hover:text-white transition-colors"
             title="Edit Category"
           >
             <PencilIcon className="w-4 h-4" />
@@ -50,7 +50,7 @@ export function buildCategoryColumns({
           <button
             type="button"
             onClick={() => onDelete(row)}
-            className="p-1.5 rounded-lg border border-rose-200 dark:border-rose-900/50 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors"
+            className="p-1.5 rounded-full border border-rose-200 dark:border-rose-900/50 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors"
             title="Delete Category"
           >
             <TrashIcon className="w-4 h-4" />

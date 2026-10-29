@@ -259,18 +259,18 @@ const BranchesPage = () => {
                 });
                 setImportModalOpen(true);
               }}
-              className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-indigo-600 text-white font-bold text-sm shadow-md hover:bg-indigo-700 transition"
+              className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-full bg-stone-100 hover:bg-stone-200 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-100 border border-stone-200 dark:border-stone-700 font-bold text-sm shadow-sm transition active:scale-95"
             >
-              <ArrowPathIcon className="w-5 h-5" />
+              <ArrowPathIcon className="w-5 h-5 text-amber-500" />
               Import Catalog
             </button>
           )}
           <button
             onClick={() => handleOpen()}
-            className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-emerald-600 text-white font-bold text-sm shadow-md hover:bg-emerald-700 transition"
+            className="flex items-center justify-center gap-2 py-2.5 px-5 rounded-full bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold text-sm shadow-none transition active:scale-95"
           >
-            <PlusIcon className="w-5 h-5" />
-            Add Branch
+            <PlusIcon className="w-5 h-5 stroke-[2.5]" />
+            Create Branch
           </button>
         </div>
       </div>

@@ -384,9 +384,13 @@ export function mapUpdatePrepDefinitionInputToDto(input: {
   portionSizeUomId?: number;
   expectedYieldPercent?: number;
   requiresImageEvidence?: boolean;
+  trackWastage?: boolean;
   track_wastage?: boolean;
   requiresWastageImage?: boolean;
 }): UpdatePrepDefinitionRequestDto {
+  const trackWastageVal =
+    input.trackWastage !== undefined ? input.trackWastage : input.track_wastage;
+
   return {
     name: input.name?.trim(),
     description: input.description?.trim(),
@@ -395,7 +399,7 @@ export function mapUpdatePrepDefinitionInputToDto(input: {
     portion_size_uom_id: input.portionSizeUomId,
     expected_yield_percent: input.expectedYieldPercent,
     requires_image_evidence: input.requiresImageEvidence,
-    track_wastage: input.track_wastage,
+    track_wastage: trackWastageVal,
     requires_wastage_image: input.requiresWastageImage,
   };
 }

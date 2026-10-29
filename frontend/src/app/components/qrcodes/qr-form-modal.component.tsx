@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import Modal from '@/components/Modal';
 import { FormInput, FormSelect } from '@/components/FormFields';
+import { Button } from '@/atomic/atm.button';
 
 export interface QRFormModalProps {
   isOpen: boolean;
@@ -62,13 +63,16 @@ export const QRFormModal: React.FC<QRFormModalProps> = ({
           value={formData.tableName}
           onChange={(e: any) => setFormData({ ...formData, tableName: e.target.value })}
         />
-        <button
+        <Button
           type="submit"
+          variant="primary"
+          rounded="full"
           disabled={isSubmitting || availableMenus.length === 0 || !formData.menuId}
-          className="w-full py-2.5 rounded-xl bg-emerald-600 text-white font-bold text-sm shadow-md hover:bg-emerald-700 transition disabled:opacity-50"
+          isLoading={isSubmitting}
+          className="w-full py-3 font-bold text-sm shadow-none"
         >
-          {isSubmitting ? 'Generating...' : 'Generate QR Code'}
-        </button>
+          Generate QR Code
+        </Button>
       </form>
     </Modal>
   );

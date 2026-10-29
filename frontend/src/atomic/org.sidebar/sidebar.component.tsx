@@ -25,7 +25,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <div>
         <div className="p-6 border-b border-slate-800/80">
           <h2 className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse" />
             {title}
           </h2>
           {subtitle && <p className="text-xs text-slate-400 mt-1 font-medium">{subtitle}</p>}
@@ -39,7 +39,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               className={({ isActive }) =>
                 `flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
                   isActive
-                    ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shadow-sm"
+                    ? "bg-amber-500/10 text-amber-400 border border-amber-500/20 shadow-sm"
                     : "text-slate-400 hover:text-slate-200 hover:bg-slate-900"
                 }`
               }

@@ -19,7 +19,10 @@ export function useLogPrepBatchUseCase() {
 
   return {
     logPrepBatch: mutation.mutateAsync,
+    mutateAsync: mutation.mutateAsync,
+    mutate: mutation.mutate,
     isSubmitting: mutation.isPending,
+    isPending: mutation.isPending,
     error: mutation.error,
   };
 }

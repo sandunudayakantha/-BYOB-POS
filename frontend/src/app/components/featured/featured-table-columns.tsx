@@ -37,9 +37,9 @@ export function buildFeaturedColumns({
           <button
             type="button"
             onClick={() => onOpenProducts(row)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/60 hover:text-emerald-600 font-bold text-xs transition border border-slate-200 dark:border-slate-700"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 hover:bg-amber-500/10 dark:hover:bg-amber-500/15 hover:text-amber-500 font-bold text-xs transition border border-stone-200 dark:border-stone-700"
           >
-            <ShoppingBagIcon className="w-3.5 h-3.5 text-emerald-500" />
+            <ShoppingBagIcon className="w-3.5 h-3.5 text-amber-500" />
             <span>{count} Items Assigned</span>
           </button>
         );

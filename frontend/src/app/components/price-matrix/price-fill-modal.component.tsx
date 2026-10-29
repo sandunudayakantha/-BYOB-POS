@@ -1,6 +1,7 @@
 import React from 'react';
 import Modal from '@/components/Modal';
 import { FormInput, FormSelect } from '@/components/FormFields';
+import { Button } from '@/atomic/atm.button';
 import { SparklesIcon } from '@heroicons/react/24/outline';
 
 interface PriceFillModalProps {
@@ -50,7 +51,7 @@ export const PriceFillModal: React.FC<PriceFillModalProps> = ({
             required
           />
 
-          <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+          <p className="text-xs text-stone-500 dark:text-stone-400 leading-relaxed">
             Instantly populate missing catalog products from the <strong>Base Menu</strong> into <strong>"{fillModalMenu.name}"</strong> with an optional percentage markup.
           </p>
 
@@ -64,42 +65,45 @@ export const PriceFillModal: React.FC<PriceFillModalProps> = ({
             required
           />
 
-          <div className="pt-2 border-t border-slate-200 dark:border-slate-800">
-            <label className="flex items-center gap-3 text-xs font-bold text-slate-700 dark:text-slate-200 cursor-pointer">
+          <div className="pt-2 border-t border-stone-200 dark:border-stone-800">
+            <label className="flex items-center gap-3 text-xs font-bold text-stone-700 dark:text-stone-200 cursor-pointer">
               <input
                 type="checkbox"
                 checked={fillOverwrite}
                 onChange={(e) => setFillOverwrite(e.target.checked)}
-                className="w-4 h-4 accent-emerald-600 rounded"
+                className="w-4 h-4 rounded text-amber-500 accent-amber-500 focus:ring-amber-500"
               />
               <span>Overwrite existing product prices in this menu</span>
             </label>
-            <p className="text-[11px] text-slate-400 mt-1 pl-7">
+            <p className="text-[11px] text-stone-400 mt-1 pl-7">
               Leave unchecked to fill missing products only while preserving existing item prices.
             </p>
           </div>
 
-          <div className="p-3.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-xs space-y-1">
-            <span className="font-bold text-emerald-900 dark:text-emerald-300 block">Auto-Fill Calculation Preview:</span>
-            <p className="text-slate-600 dark:text-slate-400">
-              Base Menu Item Price: <span className="font-bold text-slate-900 dark:text-white">1,000.00 LKR</span>
+          <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs space-y-1">
+            <span className="font-bold text-amber-600 dark:text-amber-400 block">Auto-Fill Calculation Preview:</span>
+            <p className="text-stone-600 dark:text-stone-300">
+              Base Menu Item Price: <span className="font-bold text-stone-900 dark:text-white">1,000.00 LKR</span>
             </p>
-            <p className="text-slate-600 dark:text-slate-400">
-              Markup Applied: <span className="font-bold text-emerald-600 dark:text-emerald-400">+{fillPercentage}%</span>
+            <p className="text-stone-600 dark:text-stone-300">
+              Markup Applied: <span className="font-bold text-amber-600 dark:text-amber-400">+{fillPercentage}%</span>
             </p>
-            <p className="text-slate-600 dark:text-slate-400">
-              New Target Menu Item Price: <span className="font-black text-emerald-600 dark:text-emerald-400">{(1000 * (1 + Number(fillPercentage || 0) / 100)).toFixed(2)} LKR</span>
+            <p className="text-stone-600 dark:text-stone-300">
+              New Target Menu Item Price: <span className="font-black text-amber-600 dark:text-amber-400">{(1000 * (1 + Number(fillPercentage || 0) / 100)).toFixed(2)} LKR</span>
             </p>
           </div>
 
-          <button
+          <Button
             type="submit"
+            variant="primary"
+            rounded="full"
             disabled={isPending}
-            className="w-full py-3 rounded-xl bg-emerald-600 text-white font-bold text-sm hover:bg-emerald-700 transition flex items-center justify-center gap-2 shadow-md"
+            isLoading={isPending}
+            className="w-full py-3 font-bold text-sm shadow-none flex items-center justify-center gap-2"
           >
-            <SparklesIcon className="w-4 h-4" />
-            {isPending ? 'Populating Menu Products...' : `Populate "${fillModalMenu.name}" (+${fillPercentage}%)`}
-          </button>
+            <SparklesIcon className="w-4 h-4 stroke-[2.5]" />
+            <span>{isPending ? 'Populating Menu Products...' : `Populate "${fillModalMenu.name}" (+${fillPercentage}%)`}</span>
+          </Button>
         </form>
       )}
     </Modal>

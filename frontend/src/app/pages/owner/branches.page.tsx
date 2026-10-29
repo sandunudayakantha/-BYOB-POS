@@ -1,4 +1,5 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useBranchesUseCase } from '@/app/domain/branches/use-branches.use-case';
 import { useCreateBranchUseCase } from '@/app/domain/branches/use-create-branch.use-case';
 import { useUpdateBranchUseCase } from '@/app/domain/branches/use-update-branch.use-case';
@@ -8,12 +9,14 @@ import { buildBranchColumns } from '@/app/components/branches/branch-table-colum
 import { BranchFormModal } from '@/app/components/branches/branch-form-modal.component';
 import { BranchImportModal } from '@/app/components/branches/branch-import-modal.component';
 import { DataTable } from '@/atomic/obj.data-table';
+import { Button } from '@/atomic/atm.button';
 import toast from 'react-hot-toast';
 import type { BranchModel } from '@/app/models/branch.model';
 import { PlusIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 import { extractValidationErrors } from '@/utils/errors';
 
 export const BranchesPage: React.FC = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [modalOpen, setModalOpen] = useState(false);
   const [editingBranch, setEditingBranch] = useState<BranchModel | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -71,6 +74,15 @@ export const BranchesPage: React.FC = () => {
     setFieldErrors({});
     setModalOpen(true);
   };
+
+  useEffect(() => {
+    if (searchParams.get('create') === 'true') {
+      handleOpen(null);
+      const newParams = new URLSearchParams(searchParams);
+      newParams.delete('create');
+      setSearchParams(newParams, { replace: true });
+    }
+  }, [searchParams]);
 
   const handleClose = () => {
     setModalOpen(false);
@@ -192,8 +204,11 @@ export const BranchesPage: React.FC = () => {
         </div>
         <div className="flex items-center gap-3">
           {branches.length >= 2 && (
-            <button
+            <Button
               type="button"
+              variant="secondary"
+              size="md"
+              rounded="full"
               onClick={() => {
                 setImportData({
                   sourceBranchId: branches[0]?.id || '',
@@ -204,21 +219,24 @@ export const BranchesPage: React.FC = () => {
                 });
                 setImportModalOpen(true);
               }}
-              className="flex items-center gap-2 py-2.5 px-4 rounded-xl border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 font-bold text-sm hover:bg-emerald-50 dark:hover:bg-emerald-950/40 transition shadow-sm"
+              className="flex items-center justify-center gap-2 py-2.5 px-4 font-bold text-sm shadow-sm hover:border-amber-400/40 active:scale-95"
             >
-              <ArrowPathIcon className="w-4 h-4" />
+              <ArrowPathIcon className="w-5 h-5 text-amber-500" />
               <span>Import Catalog</span>
-            </button>
+            </Button>
           )}
 
-          <button
+          <Button
             type="button"
+            variant="primary"
+            size="md"
+            rounded="full"
             onClick={() => handleOpen()}
-            className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-emerald-600 text-white font-bold text-sm shadow-md hover:bg-emerald-700 transition"
+            className="flex items-center justify-center gap-2 py-2.5 px-5 font-bold text-sm shadow-none transition active:scale-95"
           >
-            <PlusIcon className="w-5 h-5" />
+            <PlusIcon className="w-5 h-5 stroke-[2.5]" />
             <span>Create Branch</span>
-          </button>
+          </Button>
         </div>
       </div>
 

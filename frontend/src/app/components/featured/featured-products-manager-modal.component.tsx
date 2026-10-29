@@ -58,13 +58,13 @@ export const FeaturedProductsManagerModal: React.FC<FeaturedProductsManagerModal
               setSearchTerm(e.target.value);
               setPage(1);
             }}
-            className="w-full pl-9 pr-4 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            className="w-full pl-9 pr-4 py-2 rounded-xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 text-xs text-stone-900 dark:text-white placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-500"
           />
         </div>
 
         <div className="space-y-2 max-h-80 overflow-y-auto pr-1">
           {paginatedProducts.length === 0 ? (
-            <div className="p-8 text-center text-xs text-slate-400 bg-slate-50 dark:bg-slate-800/40 rounded-2xl">
+            <div className="p-8 text-center text-xs text-stone-400 bg-stone-50 dark:bg-stone-900/40 rounded-2xl">
               No products found matching "{searchTerm}".
             </div>
           ) : (
@@ -76,12 +76,12 @@ export const FeaturedProductsManagerModal: React.FC<FeaturedProductsManagerModal
                   onClick={() => onToggleProduct(prod.id, prod.name)}
                   className={`p-3 rounded-2xl border transition flex items-center justify-between gap-3 cursor-pointer ${
                     isIncluded
-                      ? 'bg-emerald-50/80 dark:bg-emerald-950/60 border-emerald-400'
-                      : 'bg-white dark:bg-slate-800/60 border-slate-200 dark:border-slate-700 hover:border-slate-300'
+                      ? 'bg-amber-500/10 dark:bg-amber-500/15 border-amber-500/40'
+                      : 'bg-white dark:bg-stone-900/60 border-stone-200 dark:border-stone-800 hover:border-stone-300'
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 overflow-hidden flex-shrink-0 flex items-center justify-center border border-slate-200 dark:border-slate-700">
+                    <div className="w-10 h-10 rounded-xl bg-stone-100 dark:bg-stone-800 overflow-hidden flex-shrink-0 flex items-center justify-center border border-stone-200 dark:border-stone-700">
                       {prod.imageUrl || prod.image ? (
                         <img
                           src={prod.imageUrl || prod.image}
@@ -89,24 +89,24 @@ export const FeaturedProductsManagerModal: React.FC<FeaturedProductsManagerModal
                           className="w-full h-full object-cover"
                         />
                       ) : (
-                        <PhotoIcon className="w-5 h-5 text-slate-400" />
+                        <PhotoIcon className="w-5 h-5 text-stone-400" />
                       )}
                     </div>
                     <div>
-                      <span className="font-bold text-xs text-slate-900 dark:text-white block">
+                      <span className="font-bold text-xs text-stone-900 dark:text-white block">
                         {prod.name}
                       </span>
-                      <span className="text-[10px] text-slate-400">
+                      <span className="text-[10px] text-stone-400">
                         {prod.categoryName || 'General Category'}
                       </span>
                     </div>
                   </div>
 
                   <span
-                    className={`flex items-center gap-1 px-2.5 py-1 rounded-xl text-[10px] font-bold ${
+                    className={`flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold ${
                       isIncluded
-                        ? 'bg-emerald-600 text-white shadow-sm'
-                        : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
+                        ? 'bg-amber-500 text-stone-950 font-extrabold shadow-sm'
+                        : 'bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300'
                     }`}
                   >
                     {isIncluded ? <CheckIcon className="w-3 h-3" /> : <PlusIcon className="w-3 h-3" />}

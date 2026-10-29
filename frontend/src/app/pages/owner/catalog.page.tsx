@@ -38,7 +38,7 @@ export const CatalogPage: React.FC = () => {
           <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
             <span>Catalog Management</span>
             {activeBranch?.name && (
-              <span className="text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
+              <span className="text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
                 {activeBranch.name}
               </span>
             )}
@@ -48,14 +48,14 @@ export const CatalogPage: React.FC = () => {
           </p>
         </div>
 
-        <div className="inline-flex p-1 bg-slate-200/70 dark:bg-slate-800/80 rounded-2xl border border-slate-300/50 dark:border-slate-700/50 self-start sm:self-auto shadow-inner">
+        <div className="inline-flex p-1 bg-stone-200/70 dark:bg-stone-900/80 rounded-2xl border border-stone-300/50 dark:border-stone-800/60 self-start sm:self-auto shadow-inner">
           <button
             type="button"
             onClick={() => handleTabChange('products')}
             className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
               currentTab === 'products'
-                ? 'bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 shadow-sm border border-slate-200/60 dark:border-slate-700'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                ? 'bg-white dark:bg-stone-950 text-amber-600 dark:text-amber-400 shadow-sm border border-stone-200/60 dark:border-stone-800'
+                : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white'
             }`}
           >
             <ShoppingBagIcon className="w-4 h-4" />
@@ -64,8 +64,8 @@ export const CatalogPage: React.FC = () => {
               <span
                 className={`px-1.5 py-0.5 rounded-full text-[10px] font-extrabold ${
                   currentTab === 'products'
-                    ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300'
-                    : 'bg-slate-300 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
+                    ? 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/20'
+                    : 'bg-stone-300 dark:bg-stone-800 text-stone-700 dark:text-stone-300'
                 }`}
               >
                 {productsTotal}
@@ -78,8 +78,8 @@ export const CatalogPage: React.FC = () => {
             onClick={() => handleTabChange('categories')}
             className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
               currentTab === 'categories'
-                ? 'bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 shadow-sm border border-slate-200/60 dark:border-slate-700'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                ? 'bg-white dark:bg-stone-950 text-amber-600 dark:text-amber-400 shadow-sm border border-stone-200/60 dark:border-stone-800'
+                : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white'
             }`}
           >
             <TagIcon className="w-4 h-4" />
@@ -88,8 +88,8 @@ export const CatalogPage: React.FC = () => {
               <span
                 className={`px-1.5 py-0.5 rounded-full text-[10px] font-extrabold ${
                   currentTab === 'categories'
-                    ? 'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300'
-                    : 'bg-slate-300 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
+                    ? 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/20'
+                    : 'bg-stone-300 dark:bg-stone-800 text-stone-700 dark:text-stone-300'
                 }`}
               >
                 {categories.length}

@@ -6,7 +6,7 @@ export const StatCard = ({
   value,
   icon: Icon,
   link,
-  color = 'from-emerald-500 to-teal-600',
+  color = 'from-amber-500 to-amber-600',
   description,
 }) => {
   const content = (

@@ -52,20 +52,19 @@ const OwnerDashboardPage = () => {
           <p className="text-emerald-100 text-sm mt-1 max-w-xl">
             Manage your menus, product prices, featured recommendations, and export permanent QR codes for customer scanning.
           </p>
-        </div>
-        <div className="flex gap-3">
+        <div className="flex items-center gap-3">
           <Link
             to="/qr-codes"
-            className="py-2.5 px-4 rounded-xl bg-white text-emerald-700 font-bold text-xs shadow-md hover:bg-emerald-50 transition flex items-center gap-1.5"
+            className="py-2.5 px-4 rounded-full bg-stone-800/80 text-white font-bold text-sm shadow-sm hover:bg-stone-700 transition flex items-center gap-2 border border-stone-700"
           >
-            <QrCodeIcon className="w-4 h-4" />
+            <QrCodeIcon className="w-5 h-5 text-amber-300" />
             Generate QR
           </Link>
           <Link
-            to="/menus"
-            className="py-2.5 px-4 rounded-xl bg-emerald-800/60 hover:bg-emerald-800 text-white font-bold text-xs backdrop-blur-sm transition flex items-center gap-1.5"
+            to="/menus?create=true"
+            className="py-2.5 px-5 rounded-full bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold text-sm shadow-none transition flex items-center gap-2 active:scale-95"
           >
-            <PlusIcon className="w-4 h-4" />
+            <PlusIcon className="w-5 h-5 stroke-[2.5]" />
             Create Menu
           </Link>
         </div>

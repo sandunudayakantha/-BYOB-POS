@@ -23,7 +23,7 @@ export function buildRestaurantColumns({
       header: 'Restaurant',
       render: (row) => (
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center font-bold text-emerald-600">
+          <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center font-bold text-amber-500">
             {row.name.charAt(0)}
           </div>
           <div>
@@ -54,7 +54,7 @@ export function buildRestaurantColumns({
           <button
             type="button"
             onClick={() => onOpenLimitModal(row)}
-            className="p-1 rounded text-slate-400 hover:text-emerald-500"
+            className="p-1 rounded text-slate-400 hover:text-amber-500"
             title="Edit branch quota"
           >
             <PencilIcon className="w-3.5 h-3.5" />
@@ -90,8 +90,8 @@ export function buildRestaurantColumns({
             onClick={() => onToggleStatus(row)}
             className={`p-1.5 rounded-lg border transition ${
               row.status === 'ACTIVE'
-                ? 'border-amber-200 text-amber-600 hover:bg-amber-50'
-                : 'border-emerald-200 text-emerald-600 hover:bg-emerald-50'
+                ? 'border-amber-500/30 text-amber-500 hover:bg-amber-500/10'
+                : 'border-stone-300 dark:border-stone-700 text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800'
             }`}
             title={row.status === 'ACTIVE' ? 'Suspend Restaurant' : 'Activate Restaurant'}
           >
