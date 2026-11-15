@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from app.core.exceptions import AuthorizationException, BadRequestException, NotFoundException
 from app.models.enums import BatchStatus, InventoryItemType, InventoryTransactionType, PrepBatchStatus
 from app.models.inventory import (
+    BarDispenseRule,
     InventoryItem,
     InventoryTransaction,
     KitchenPrepBatch,
@@ -16,6 +17,8 @@ from app.models.inventory import (
 )
 from app.models.product import Product
 from app.schemas.inventory import (
+    BarDispenseRuleCreate,
+    BarDispenseRuleUpdate,
     InventoryItemCreate,
     InventoryItemUpdate,
     KitchenPrepBatchCreate,
@@ -125,26 +128,32 @@ class InventoryService:
             query = query.filter(InventoryItem.item_type == item_type)
         items = query.order_by(InventoryItem.name.asc()).all()
 
-        results = []
-        for it in items:
-            results.append({
-                "id": it.id,
-                "restaurant_id": it.restaurant_id,
-                "branch_id": it.branch_id,
-                "supplier_id": it.supplier_id,
-                "supplier_name": it.supplier.name if it.supplier else None,
-                "uom_id": it.uom_id,
-                "uom_symbol": it.uom.symbol if it.uom else None,
-                "uom_name": it.uom.name if it.uom else None,
-                "name": it.name,
-                "sku": it.sku or "",
-                "item_type": it.item_type,
-                "current_stock": it.current_stock,
-                "reorder_threshold": it.reorder_threshold,
-                "unit_cost": it.unit_cost,
-                "is_active": it.is_active,
-            })
-        return results
+        return [self._format_inventory_item_dict(it) for it in items]
+
+    def _format_inventory_item_dict(self, it: InventoryItem) -> dict:
+        return {
+            "id": it.id,
+            "restaurant_id": it.restaurant_id,
+            "branch_id": it.branch_id,
+            "supplier_id": it.supplier_id,
+            "supplier_name": it.supplier.name if it.supplier else None,
+            "uom_id": it.uom_id,
+            "uom_symbol": it.uom.symbol if it.uom else None,
+            "uom_name": it.uom.name if it.uom else None,
+            "name": it.name,
+            "sku": it.sku or "",
+            "item_type": it.item_type,
+            "current_stock": it.current_stock,
+            "reorder_threshold": it.reorder_threshold,
+            "unit_cost": it.unit_cost,
+            "is_active": it.is_active,
+            "pack_size": it.pack_size,
+            "dispense_uom_id": it.dispense_uom_id,
+            "dispense_uom_symbol": it.dispense_uom_symbol,
+            "linked_product_id": it.linked_product_id,
+            "linked_product_name": it.linked_product.name if it.linked_product else None,
+            "bottle_breakdown": it.bottle_breakdown,
+        }
 
     def create_inventory_item(self, db: Session, restaurant_id: int, branch_id: int, payload: InventoryItemCreate) -> InventoryItem:
         item = InventoryItem(
@@ -159,10 +168,42 @@ class InventoryService:
             reorder_threshold=payload.reorder_threshold,
             unit_cost=payload.unit_cost,
             is_active=payload.is_active,
+            pack_size=payload.pack_size,
+            dispense_uom_id=payload.dispense_uom_id,
+            linked_product_id=payload.linked_product_id,
         )
         db.add(item)
         db.commit()
         db.refresh(item)
+
+        # Auto-create menu product if requested (e.g. for DIRECT_RESALE cans/bottles)
+        if payload.auto_create_menu_product and payload.category_id:
+            from app.models.product import Product
+            from app.models.inventory import ProductRecipeItem
+            prod = Product(
+                restaurant_id=restaurant_id,
+                branch_id=branch_id,
+                category_id=payload.category_id,
+                name=payload.name,
+                description=f"Direct consumption item: {payload.name}",
+                available=True,
+            )
+            db.add(prod)
+            db.flush()
+
+            item.linked_product_id = prod.id
+
+            # Create 1:1 recipe
+            recipe_item = ProductRecipeItem(
+                product_id=prod.id,
+                inventory_item_id=item.id,
+                uom_id=payload.uom_id,
+                quantity=Decimal("1.000"),
+                wastage_factor_percent=Decimal("0.00"),
+            )
+            db.add(recipe_item)
+            db.commit()
+            db.refresh(item)
 
         # Log initial stock transaction and batch if current_stock > 0
         if payload.current_stock > 0:
@@ -764,3 +805,243 @@ class InventoryService:
 
         db.commit()
         return self.get_product_recipe(db, product_id, restaurant_id=restaurant_id, is_super_admin=is_super_admin)
+
+    def deduct_inventory_for_order(
+        self, db: Session, branch_id: int, order_items: list[dict], order_ref: str = ""
+    ) -> list[dict]:
+        """
+        Deducts raw, retail, and liquid bar inventory based on ProductRecipeItem configurations.
+        Handles both 1:1 retail items (e.g. cans/bottles) and liquid cocktail/mocktail dispense units (e.g. ml).
+        Automatically unrolls/depletes FIFO batches and updates continuous stock.
+        """
+        deductions = []
+
+        for item in order_items:
+            product_id = item.get("product_id")
+            order_qty = Decimal(str(item.get("quantity", 1)))
+            if not product_id or order_qty <= Decimal("0"):
+                continue
+
+            recipes = db.query(ProductRecipeItem).filter(
+                ProductRecipeItem.product_id == product_id,
+                ProductRecipeItem.is_deleted == False,
+            ).all()
+
+            for r in recipes:
+                raw_item = r.inventory_item
+                if not raw_item or raw_item.is_deleted:
+                    continue
+
+                # Check if a Global Bar Dispense Rule is configured for this beverage/item
+                target_item = raw_item
+                bar_rule = db.query(BarDispenseRule).filter(
+                    BarDispenseRule.branch_id == branch_id,
+                    BarDispenseRule.is_active == True,
+                    BarDispenseRule.is_deleted == False,
+                    (
+                        (BarDispenseRule.primary_inventory_item_id == raw_item.id) |
+                        (BarDispenseRule.fallback_inventory_item_id == raw_item.id) |
+                        (BarDispenseRule.beverage_name == raw_item.name)
+                    )
+                ).first()
+
+                if bar_rule and bar_rule.primary_inventory_item:
+                    primary = bar_rule.primary_inventory_item
+                    fallback = bar_rule.fallback_inventory_item
+                    # If primary has stock, use primary; if primary is empty (<=0) and fallback has stock, uncap fallback
+                    if primary.current_stock > Decimal("0") or not fallback or fallback.current_stock <= Decimal("0"):
+                        target_item = primary
+                    else:
+                        target_item = fallback
+
+                # Calculate base required quantity adjusted for wastage factor
+                waste_multiplier = Decimal("1.0") + (r.wastage_factor_percent / Decimal("100.0"))
+                needed_qty = r.quantity * order_qty * waste_multiplier
+
+                # Check if recipe calls for dispense UOM (e.g. ml) while stock is stored in primary UOM (e.g. bottle)
+                if target_item.pack_size and target_item.pack_size > Decimal("0"):
+                    # Check if recipe item uom matches dispense uom or is ml/cl/oz
+                    if r.uom_id == target_item.dispense_uom_id or (r.uom and r.uom.symbol.lower() in ["ml", "cl", "oz"]):
+                        needed_qty = needed_qty / target_item.pack_size
+
+                # Deduct from target item stock
+                target_item.current_stock -= needed_qty
+
+                # Deplete FIFO batches
+                active_batches = db.query(RawInventoryBatch).filter(
+                    RawInventoryBatch.inventory_item_id == target_item.id,
+                    RawInventoryBatch.branch_id == branch_id,
+                    RawInventoryBatch.status == BatchStatus.ACTIVE.value,
+                    RawInventoryBatch.quantity_remaining > Decimal("0"),
+                    RawInventoryBatch.is_deleted == False,
+                ).order_by(
+                    RawInventoryBatch.expiry_date.asc().nullslast(),
+                    RawInventoryBatch.received_date.asc(),
+                ).all()
+
+                remaining_to_deplete = needed_qty
+                for b in active_batches:
+                    if remaining_to_deplete <= Decimal("0"):
+                        break
+                    if b.quantity_remaining <= remaining_to_deplete:
+                        remaining_to_deplete -= b.quantity_remaining
+                        b.quantity_remaining = Decimal("0")
+                        b.status = BatchStatus.DEPLETED.value
+                    else:
+                        b.quantity_remaining -= remaining_to_deplete
+                        remaining_to_deplete = Decimal("0")
+
+                # Record InventoryTransaction
+                tx = InventoryTransaction(
+                    inventory_item_id=target_item.id,
+                    branch_id=branch_id,
+                    transaction_type=InventoryTransactionType.SALE_DEDUCTION.value,
+                    quantity_delta=-needed_qty,
+                    unit_cost_at_time=target_item.unit_cost,
+                    reference_id=order_ref,
+                    notes=f"Order deduction ({order_ref})" + (f" [Bar Rule: {bar_rule.beverage_name}]" if bar_rule else ""),
+                )
+                db.add(tx)
+                deductions.append({
+                    "inventory_item_id": target_item.id,
+                    "item_name": target_item.name,
+                    "quantity_deducted": float(needed_qty),
+                })
+
+        db.commit()
+        return deductions
+
+    # ----------------- Bar Dispense Rules CRUD -----------------
+    def _format_bar_dispense_rule_dict(self, rule: BarDispenseRule) -> dict:
+        p_item = rule.primary_inventory_item
+        f_item = rule.fallback_inventory_item
+        return {
+            "id": rule.id,
+            "restaurant_id": rule.restaurant_id,
+            "branch_id": rule.branch_id,
+            "beverage_name": rule.beverage_name,
+            "brand_group": rule.brand_group or "",
+            "primary_inventory_item_id": rule.primary_inventory_item_id,
+            "fallback_inventory_item_id": rule.fallback_inventory_item_id,
+            "shot_single_ml": float(rule.shot_single_ml),
+            "shot_double_ml": float(rule.shot_double_ml),
+            "notes": rule.notes or "",
+            "is_active": rule.is_active,
+            "primary_item_name": p_item.name if p_item else None,
+            "primary_pack_size": float(p_item.pack_size) if p_item and p_item.pack_size else None,
+            "primary_uom_symbol": p_item.uom.symbol if p_item and p_item.uom else None,
+            "primary_dispense_uom_symbol": p_item.dispense_uom_symbol if p_item else None,
+            "primary_bottle_breakdown": p_item.bottle_breakdown if p_item else None,
+            "fallback_item_name": f_item.name if f_item else None,
+            "fallback_pack_size": float(f_item.pack_size) if f_item and f_item.pack_size else None,
+            "fallback_uom_symbol": f_item.uom.symbol if f_item and f_item.uom else None,
+            "fallback_bottle_breakdown": f_item.bottle_breakdown if f_item else None,
+            "created_at": rule.created_at.isoformat() if rule.created_at else None,
+        }
+
+    def create_bar_dispense_rule(
+        self,
+        db: Session,
+        restaurant_id: int,
+        branch_id: int,
+        payload: BarDispenseRuleCreate,
+    ) -> dict:
+        primary_item = db.query(InventoryItem).filter(
+            InventoryItem.id == payload.primary_inventory_item_id,
+            InventoryItem.branch_id == branch_id,
+            InventoryItem.is_deleted == False,
+        ).first()
+        if not primary_item:
+            raise NotFoundException("Primary inventory item not found")
+
+        if payload.fallback_inventory_item_id:
+            fallback_item = db.query(InventoryItem).filter(
+                InventoryItem.id == payload.fallback_inventory_item_id,
+                InventoryItem.branch_id == branch_id,
+                InventoryItem.is_deleted == False,
+            ).first()
+            if not fallback_item:
+                raise NotFoundException("Fallback inventory item not found")
+
+        rule = BarDispenseRule(
+            restaurant_id=restaurant_id,
+            branch_id=branch_id,
+            beverage_name=payload.beverage_name.strip(),
+            brand_group=payload.brand_group.strip() if payload.brand_group else "",
+            primary_inventory_item_id=payload.primary_inventory_item_id,
+            fallback_inventory_item_id=payload.fallback_inventory_item_id,
+            shot_single_ml=payload.shot_single_ml,
+            shot_double_ml=payload.shot_double_ml,
+            notes=payload.notes or "",
+            is_active=payload.is_active,
+        )
+        db.add(rule)
+        db.commit()
+        db.refresh(rule)
+        return self._format_bar_dispense_rule_dict(rule)
+
+    def list_bar_dispense_rules(
+        self,
+        db: Session,
+        branch_id: int,
+    ) -> list[dict]:
+        rules = db.query(BarDispenseRule).filter(
+            BarDispenseRule.branch_id == branch_id,
+            BarDispenseRule.is_deleted == False,
+        ).order_by(BarDispenseRule.beverage_name.asc()).all()
+        return [self._format_bar_dispense_rule_dict(r) for r in rules]
+
+    def update_bar_dispense_rule(
+        self,
+        db: Session,
+        rule_id: int,
+        payload: BarDispenseRuleUpdate,
+    ) -> dict:
+        rule = db.query(BarDispenseRule).filter(
+            BarDispenseRule.id == rule_id,
+            BarDispenseRule.is_deleted == False,
+        ).first()
+        if not rule:
+            raise NotFoundException("Bar dispense rule not found")
+
+        if payload.beverage_name is not None:
+            rule.beverage_name = payload.beverage_name.strip()
+        if payload.brand_group is not None:
+            rule.brand_group = payload.brand_group.strip()
+        if payload.primary_inventory_item_id is not None:
+            primary_item = db.query(InventoryItem).filter(
+                InventoryItem.id == payload.primary_inventory_item_id,
+                InventoryItem.branch_id == rule.branch_id,
+                InventoryItem.is_deleted == False,
+            ).first()
+            if not primary_item:
+                raise NotFoundException("Primary inventory item not found")
+            rule.primary_inventory_item_id = payload.primary_inventory_item_id
+        if payload.fallback_inventory_item_id is not None:
+            rule.fallback_inventory_item_id = payload.fallback_inventory_item_id
+        if payload.shot_single_ml is not None:
+            rule.shot_single_ml = payload.shot_single_ml
+        if payload.shot_double_ml is not None:
+            rule.shot_double_ml = payload.shot_double_ml
+        if payload.notes is not None:
+            rule.notes = payload.notes
+        if payload.is_active is not None:
+            rule.is_active = payload.is_active
+
+        db.commit()
+        db.refresh(rule)
+        return self._format_bar_dispense_rule_dict(rule)
+
+    def delete_bar_dispense_rule(
+        self,
+        db: Session,
+        rule_id: int,
+    ) -> None:
+        rule = db.query(BarDispenseRule).filter(
+            BarDispenseRule.id == rule_id,
+            BarDispenseRule.is_deleted == False,
+        ).first()
+        if not rule:
+            raise NotFoundException("Bar dispense rule not found")
+        rule.is_deleted = True
+        db.commit()

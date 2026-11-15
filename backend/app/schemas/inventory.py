@@ -102,11 +102,17 @@ class InventoryItemCreate(BaseModel):
     sku: Optional[str] = Field(default="", max_length=100)
     supplier_id: Optional[int] = None
     uom_id: int = Field(..., gt=0)
-    item_type: str = Field("RAW_MATERIAL", description="RAW_MATERIAL or PREPARED_ITEM")
+    item_type: str = Field("RAW_MATERIAL", description="RAW_MATERIAL, PREPARED_ITEM, DIRECT_RESALE, or BAR_BEVERAGE")
     current_stock: Decimal = Field(default=Decimal("0.000"), ge=0)
     reorder_threshold: Decimal = Field(default=Decimal("0.000"), ge=0)
     unit_cost: Decimal = Field(default=Decimal("0.00"), ge=0)
     is_active: bool = True
+    pack_size: Optional[Decimal] = Field(default=None, gt=0)
+    dispense_uom_id: Optional[int] = Field(default=None, gt=0)
+    linked_product_id: Optional[int] = None
+    auto_create_menu_product: bool = False
+    selling_price: Optional[Decimal] = Field(default=None, ge=0)
+    category_id: Optional[int] = None
 
 
 class InventoryItemUpdate(BaseModel):
@@ -121,6 +127,9 @@ class InventoryItemUpdate(BaseModel):
     reorder_threshold: Optional[Decimal] = Field(default=None, ge=0)
     unit_cost: Optional[Decimal] = Field(default=None, ge=0)
     is_active: Optional[bool] = None
+    pack_size: Optional[Decimal] = Field(default=None, gt=0)
+    dispense_uom_id: Optional[int] = None
+    linked_product_id: Optional[int] = None
 
 
 class InventoryItemResponse(BaseModel):
@@ -141,6 +150,12 @@ class InventoryItemResponse(BaseModel):
     reorder_threshold: Decimal
     unit_cost: Decimal
     is_active: bool
+    pack_size: Optional[Decimal] = None
+    dispense_uom_id: Optional[int] = None
+    dispense_uom_symbol: Optional[str] = None
+    linked_product_id: Optional[int] = None
+    linked_product_name: Optional[str] = None
+    bottle_breakdown: Optional[dict] = None
 
 
 # ----------------- Kitchen Prep Definition Schemas -----------------
@@ -314,3 +329,53 @@ class RawInventoryBatchResponse(BaseModel):
     status: str
     notes: Optional[str] = ""
     created_at: Union[datetime, str]
+
+
+# ----------------- Bar Dispense Rule Schemas -----------------
+class BarDispenseRuleBase(BaseModel):
+    model_config = ConfigDict(str_strip_whitespace=True)
+
+    beverage_name: str = Field(..., min_length=1, max_length=200, description="Name of liquid/beverage (e.g. Coca-Cola, Absolut Vodka)")
+    brand_group: Optional[str] = Field(default="", max_length=100)
+    primary_inventory_item_id: int = Field(..., gt=0, description="Designated packaging bottle to open (e.g. 1L Bottle)")
+    fallback_inventory_item_id: Optional[int] = Field(default=None, description="Optional secondary packaging bottle if primary is out of stock")
+    shot_single_ml: Decimal = Field(default=Decimal("25.00"), ge=0, description="Standard single shot volume in ml")
+    shot_double_ml: Decimal = Field(default=Decimal("50.00"), ge=0, description="Standard double shot volume in ml")
+    notes: Optional[str] = Field(default="", max_length=300)
+    is_active: bool = Field(default=True)
+
+
+class BarDispenseRuleCreate(BarDispenseRuleBase):
+    pass
+
+
+class BarDispenseRuleUpdate(BaseModel):
+    model_config = ConfigDict(str_strip_whitespace=True)
+
+    beverage_name: Optional[str] = Field(default=None, min_length=1, max_length=200)
+    brand_group: Optional[str] = Field(default=None, max_length=100)
+    primary_inventory_item_id: Optional[int] = Field(default=None, gt=0)
+    fallback_inventory_item_id: Optional[int] = Field(default=None)
+    shot_single_ml: Optional[Decimal] = Field(default=None, ge=0)
+    shot_double_ml: Optional[Decimal] = Field(default=None, ge=0)
+    notes: Optional[str] = Field(default=None, max_length=300)
+    is_active: Optional[bool] = None
+
+
+class BarDispenseRuleResponse(BarDispenseRuleBase):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    restaurant_id: int
+    branch_id: int
+    primary_item_name: Optional[str] = None
+    primary_pack_size: Optional[Decimal] = None
+    primary_uom_symbol: Optional[str] = None
+    primary_dispense_uom_symbol: Optional[str] = None
+    primary_bottle_breakdown: Optional[BottleBreakdownSchema] = None
+    fallback_item_name: Optional[str] = None
+    fallback_pack_size: Optional[Decimal] = None
+    fallback_uom_symbol: Optional[str] = None
+    fallback_bottle_breakdown: Optional[BottleBreakdownSchema] = None
+    created_at: Union[datetime, str]
+

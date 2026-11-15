@@ -22,8 +22,10 @@ from app.models.inventory import (
     InventoryTransaction,
 )
 from app.schemas.inventory import (
+    BarDispenseRuleCreate,
     InventoryItemCreate,
     InventoryItemUpdate,
+    KitchenPrepBatchCreate,
     KitchenPrepDefinitionCreate,
     KitchenPrepDefinitionUpdate,
     KitchenPrepBatchCreate,
@@ -315,3 +317,231 @@ def test_log_prep_batch_and_wastage_tracking(db: Session, test_restaurant_and_br
     assert logged["wastage_quantity"] == Decimal("1.800")
     assert logged["wastage_reason"] == "Fat trimmings & skin discarded"
     assert logged["wastage_image_url"] == "https://images.example.com/waste_1.jpg"
+
+
+def test_direct_resale_and_dual_unit_bottle_dispense(db: Session, test_restaurant_and_branch, uoms):
+    from app.models.category import Category
+    from app.models.product import Product
+    from app.models.inventory import ProductRecipeItem
+    from app.schemas.inventory import RawInventoryBatchCreate
+
+    rest, branch = test_restaurant_and_branch
+    service = InventoryService()
+
+    # Create ml and Bottle UOMs if needed
+    bottle_uom = uoms.get("portion") or uoms["kg"]
+    ml_uom = uoms.get("g") or uoms["kg"]
+
+    # 1. Create a Bar Beverage: Coca-Cola 1L Bottle with pack_size=1000 ml
+    coke_item = service.create_inventory_item(
+        db,
+        rest.id,
+        branch.id,
+        InventoryItemCreate(
+            name="Coca-Cola 1L Bottle",
+            item_type="BAR_BEVERAGE",
+            uom_id=bottle_uom.id,
+            pack_size=Decimal("1000.000"),
+            dispense_uom_id=ml_uom.id,
+            reorder_threshold=Decimal("2.000"),
+            unit_cost=Decimal("200.00"),
+            current_stock=Decimal("0.000"),
+        ),
+    )
+
+    # Inward 10 full bottles
+    service.add_stock_batch(
+        db,
+        branch.id,
+        coke_item.id,
+        RawInventoryBatchCreate(
+            inventory_item_id=coke_item.id,
+            quantity=Decimal("10.000"),
+            unit_cost=Decimal("200.00"),
+        ),
+    )
+
+    db.refresh(coke_item)
+    assert coke_item.current_stock == Decimal("10.000")
+    breakdown = coke_item.bottle_breakdown
+    assert breakdown["sealed_units"] == 10
+    assert breakdown["has_open_unit"] is False
+    assert breakdown["open_unit_remaining"] == 0.0
+
+    # 2. Create a Mocktail Product that uses 100 ml of Coca-Cola
+    cat = Category(restaurant_id=rest.id, branch_id=branch.id, name="Beverages")
+    db.add(cat)
+    db.commit()
+
+    mocktail = Product(
+        restaurant_id=rest.id,
+        branch_id=branch.id,
+        category_id=cat.id,
+        name="Virgin Cuba Libre",
+        available=True,
+    )
+    db.add(mocktail)
+    db.commit()
+
+    recipe = ProductRecipeItem(
+        product_id=mocktail.id,
+        inventory_item_id=coke_item.id,
+        uom_id=ml_uom.id,  # Measured in ml (dispense UOM)
+        quantity=Decimal("100.000"),
+        wastage_factor_percent=Decimal("0.00"),
+    )
+    db.add(recipe)
+    db.commit()
+
+    # 3. Customer orders 1 Mocktail (100 ml)
+    deductions = service.deduct_inventory_for_order(
+        db,
+        branch.id,
+        [{"product_id": mocktail.id, "quantity": 1}],
+        order_ref="ORD-101",
+    )
+    assert len(deductions) == 1
+    # 100 ml / 1000 = 0.100 bottle deducted
+    assert deductions[0]["quantity_deducted"] == 0.1
+
+    # 4. Verify Stock State: 10 - 0.100 = 9.900 bottles (9 Sealed + 1 Open with 900 ml)
+    db.refresh(coke_item)
+    assert coke_item.current_stock == Decimal("9.900")
+    b_down = coke_item.bottle_breakdown
+    assert b_down["sealed_units"] == 9
+    assert b_down["has_open_unit"] is True
+    assert b_down["open_unit_remaining"] == 900.0
+    assert b_down["open_unit_percent"] == 90.0
+
+
+def test_global_bar_dispense_rule_and_shot_wise_sales(db: Session, test_restaurant_and_branch, supplier):
+    rest, branch = test_restaurant_and_branch
+    service = InventoryService()
+
+    bottle_uom = UnitOfMeasure(
+        restaurant_id=rest.id,
+        name="Bottle",
+        symbol="btl",
+        uom_type=UOMType.PIECE_COUNT.value,
+        conversion_factor=Decimal("1.0000"),
+    )
+    ml_uom = UnitOfMeasure(
+        restaurant_id=rest.id,
+        name="Milliliter",
+        symbol="ml",
+        uom_type=UOMType.VOLUME.value,
+        conversion_factor=Decimal("0.0010"),
+    )
+    db.add_all([bottle_uom, ml_uom])
+    db.commit()
+
+    # 1. Add Coca-Cola 1L bottle and 500ml bottle as regular retail inventory
+    coke_1l = service.create_inventory_item(
+        db,
+        rest.id,
+        branch.id,
+        InventoryItemCreate(
+            name="Coca-Cola 1L",
+            sku="COKE-1L",
+            uom_id=bottle_uom.id,
+            item_type=InventoryItemType.DIRECT_RESALE,
+            supplier_id=supplier.id,
+            pack_size=Decimal("1000.000"),
+            dispense_uom_id=ml_uom.id,
+            unit_cost=Decimal("300.00"),
+        ),
+    )
+    coke_500ml = service.create_inventory_item(
+        db,
+        rest.id,
+        branch.id,
+        InventoryItemCreate(
+            name="Coca-Cola 500ml",
+            sku="COKE-500ML",
+            uom_id=bottle_uom.id,
+            item_type=InventoryItemType.DIRECT_RESALE,
+            supplier_id=supplier.id,
+            pack_size=Decimal("500.000"),
+            dispense_uom_id=ml_uom.id,
+            unit_cost=Decimal("180.00"),
+        ),
+    )
+
+    # Inward 5 of each
+    service.add_stock_batch(
+        db,
+        branch.id,
+        coke_1l.id,
+        RawInventoryBatchCreate(quantity=Decimal("5.000"), unit_cost=Decimal("300.00")),
+    )
+    service.add_stock_batch(
+        db,
+        branch.id,
+        coke_500ml.id,
+        RawInventoryBatchCreate(quantity=Decimal("5.000"), unit_cost=Decimal("180.00")),
+    )
+
+    # 2. Configure Global Bar Dispense Rule: For "Coca-Cola", Primary = 1L, Fallback = 500ml
+    rule = service.create_bar_dispense_rule(
+        db,
+        rest.id,
+        branch.id,
+        BarDispenseRuleCreate(
+            beverage_name="Coca-Cola",
+            brand_group="coca_cola",
+            primary_inventory_item_id=coke_1l.id,
+            fallback_inventory_item_id=coke_500ml.id,
+            shot_single_ml=Decimal("25.00"),
+            shot_double_ml=Decimal("50.00"),
+            notes="Bar dispense rule for all mocktails and mixers",
+        ),
+    )
+    assert rule["id"] is not None
+    assert rule["primary_item_name"] == "Coca-Cola 1L"
+    assert rule["fallback_item_name"] == "Coca-Cola 500ml"
+
+    # 3. Create a Mocktail whose recipe refers to Coca-Cola (even if bartender selected 500ml or generic item)
+    from app.models.category import Category
+    from app.models.product import Product
+    from app.models.inventory import ProductRecipeItem
+
+    cat = Category(restaurant_id=rest.id, branch_id=branch.id, name="Mocktails")
+    db.add(cat)
+    db.commit()
+
+    mocktail = Product(restaurant_id=rest.id, branch_id=branch.id, category_id=cat.id, name="Virgin Cuba Libre")
+    db.add(mocktail)
+    db.commit()
+
+    recipe_item = ProductRecipeItem(
+        product_id=mocktail.id,
+        inventory_item_id=coke_500ml.id,  # Pointed to 500ml item initially in recipe
+        uom_id=ml_uom.id,
+        quantity=Decimal("100.000"),  # 100ml
+    )
+    db.add(recipe_item)
+    db.commit()
+
+    # 4. Bill the mocktail: System checks rule -> sees Coca-Cola rule -> prioritizes 1L bottle!
+    deductions = service.deduct_inventory_for_order(
+        db,
+        branch.id,
+        [{"product_id": mocktail.id, "quantity": 1}],
+        order_ref="ORD-BAR-001",
+    )
+    assert len(deductions) == 1
+    # Check that the 1L bottle was deducted, NOT the 500ml bottle!
+    assert deductions[0]["inventory_item_id"] == coke_1l.id
+
+    db.refresh(coke_1l)
+    db.refresh(coke_500ml)
+    # 1L bottle: 5.000 - 0.100 = 4.900 bottles (4 sealed + 1 open with 900ml)
+    assert coke_1l.current_stock == Decimal("4.900")
+    assert coke_1l.bottle_breakdown["sealed_units"] == 4
+    assert coke_1l.bottle_breakdown["open_unit_remaining"] == 900.0
+
+    # 500ml bottle remained completely untouched at 5.000 bottles!
+    assert coke_500ml.current_stock == Decimal("5.000")
+    assert coke_500ml.bottle_breakdown["sealed_units"] == 5
+    assert coke_500ml.bottle_breakdown["has_open_unit"] is False
+

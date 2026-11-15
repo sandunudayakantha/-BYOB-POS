@@ -18,6 +18,12 @@ export interface CreateRawItemMutationInput {
   reorderThreshold: number;
   unitCost: number;
   isActive: boolean;
+  packSize?: number;
+  dispenseUomId?: number;
+  linkedProductId?: number;
+  autoCreateMenuProduct?: boolean;
+  sellingPrice?: number;
+  categoryId?: number;
 }
 
 export async function createRawItemMutation(input: CreateRawItemMutationInput): Promise<InventoryItemModel> {

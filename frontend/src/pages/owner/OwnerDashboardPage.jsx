@@ -52,6 +52,7 @@ const OwnerDashboardPage = () => {
           <p className="text-emerald-100 text-sm mt-1 max-w-xl">
             Manage your menus, product prices, featured recommendations, and export permanent QR codes for customer scanning.
           </p>
+        </div>
         <div className="flex items-center gap-3">
           <Link
             to="/qr-codes"

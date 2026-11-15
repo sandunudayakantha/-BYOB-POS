@@ -22,6 +22,8 @@ class UOMType(str, Enum):
 class InventoryItemType(str, Enum):
     RAW_MATERIAL = "RAW_MATERIAL"
     PREPARED_ITEM = "PREPARED_ITEM"
+    DIRECT_RESALE = "DIRECT_RESALE"
+    BAR_BEVERAGE = "BAR_BEVERAGE"
 
 class PrepBatchStatus(str, Enum):
     COMPLETED = "COMPLETED"

@@ -62,11 +62,39 @@ class InventoryItem(IntegerPrimaryKeyMixin, TimestampMixin, SoftDeleteMixin, Bas
     unit_cost: Mapped[Decimal] = mapped_column(Numeric(12, 2), default=Decimal("0.00"), nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
 
+    pack_size: Mapped[Decimal | None] = mapped_column(Numeric(12, 3), nullable=True)
+    dispense_uom_id: Mapped[int | None] = mapped_column(ForeignKey("units_of_measure.id", ondelete="SET NULL"), nullable=True)
+    linked_product_id: Mapped[int | None] = mapped_column(ForeignKey("products.id", ondelete="SET NULL"), nullable=True)
+
     restaurant: Mapped[Restaurant] = relationship()
     branch: Mapped[Branch] = relationship()
     supplier: Mapped[Supplier | None] = relationship(back_populates="inventory_items")
-    uom: Mapped[UnitOfMeasure] = relationship()
+    uom: Mapped[UnitOfMeasure] = relationship(foreign_keys=[uom_id])
+    dispense_uom: Mapped[UnitOfMeasure | None] = relationship(foreign_keys=[dispense_uom_id])
+    linked_product: Mapped[Product | None] = relationship(foreign_keys=[linked_product_id])
     batches: Mapped[list[RawInventoryBatch]] = relationship(back_populates="inventory_item", cascade="all, delete-orphan")
+
+    @property
+    def dispense_uom_symbol(self) -> str | None:
+        return self.dispense_uom.symbol if self.dispense_uom else None
+
+    @property
+    def bottle_breakdown(self) -> dict | None:
+        if not self.pack_size or self.pack_size <= Decimal("0"):
+            return None
+        current = Decimal(str(self.current_stock or 0))
+        pack = Decimal(str(self.pack_size))
+        sealed = int(current // Decimal("1"))
+        fraction = current - Decimal(str(sealed))
+        is_open = fraction > Decimal("0.0001")
+        open_ml = round(fraction * pack, 2)
+        pct = round(float((open_ml / pack) * Decimal("100")), 1) if is_open else 0.0
+        return {
+            "sealed_units": sealed,
+            "has_open_unit": is_open,
+            "open_unit_remaining": float(open_ml),
+            "open_unit_percent": pct,
+        }
 
 
 class KitchenPrepDefinition(IntegerPrimaryKeyMixin, TimestampMixin, SoftDeleteMixin, Base):
@@ -186,3 +214,26 @@ class RawInventoryBatch(IntegerPrimaryKeyMixin, TimestampMixin, SoftDeleteMixin,
     inventory_item: Mapped[InventoryItem] = relationship(back_populates="batches")
     branch: Mapped[Branch] = relationship()
     supplier: Mapped[Supplier | None] = relationship()
+
+
+class BarDispenseRule(IntegerPrimaryKeyMixin, TimestampMixin, SoftDeleteMixin, Base):
+    __tablename__ = "bar_dispense_rules"
+
+    restaurant_id: Mapped[int] = mapped_column(ForeignKey("restaurants.id", ondelete="CASCADE"), nullable=False, index=True)
+    branch_id: Mapped[int] = mapped_column(ForeignKey("branches.id", ondelete="CASCADE"), nullable=False, index=True)
+
+    beverage_name: Mapped[str] = mapped_column(String(200), nullable=False, index=True)
+    brand_group: Mapped[str | None] = mapped_column(String(100), default="", nullable=True, index=True)
+    primary_inventory_item_id: Mapped[int] = mapped_column(ForeignKey("inventory_items.id", ondelete="CASCADE"), nullable=False, index=True)
+    fallback_inventory_item_id: Mapped[int | None] = mapped_column(ForeignKey("inventory_items.id", ondelete="SET NULL"), nullable=True)
+
+    shot_single_ml: Mapped[Decimal] = mapped_column(Numeric(10, 2), default=Decimal("25.00"), nullable=False)
+    shot_double_ml: Mapped[Decimal] = mapped_column(Numeric(10, 2), default=Decimal("50.00"), nullable=False)
+    notes: Mapped[str | None] = mapped_column(String(300), default="", nullable=True)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+
+    restaurant: Mapped[Restaurant] = relationship()
+    branch: Mapped[Branch] = relationship()
+    primary_inventory_item: Mapped[InventoryItem] = relationship(foreign_keys=[primary_inventory_item_id])
+    fallback_inventory_item: Mapped[InventoryItem | None] = relationship(foreign_keys=[fallback_inventory_item_id])
+

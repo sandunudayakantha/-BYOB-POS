@@ -24,6 +24,7 @@ import { InwardStockModal } from '@/app/components/inventory/inward-stock-modal.
 import { PrepDefinitionModal } from '@/app/components/inventory/prep-definition-modal.component';
 import { LogPrepBatchModal } from '@/app/components/inventory/log-prep-batch-modal.component';
 import type { InventoryItemModel, KitchenPrepDefinitionModel } from '@/app/models/inventory.model';
+import { useCategoriesUseCase } from '@/app/domain/products/use-categories.use-case';
 import { ArchiveBoxIcon, BeakerIcon, CameraIcon } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 
@@ -56,6 +57,7 @@ export const InventoryPage: React.FC = () => {
   });
   const { uoms } = useUomsUseCase();
   const { suppliers } = useSuppliersUseCase(branchId);
+  const { categories } = useCategoriesUseCase({ branchId });
   const { createRawItem, isSubmitting: isCreatingItem } = useCreateRawItemUseCase();
   const { deleteRawItem } = useDeleteRawItemUseCase({ branchId });
   const { inwardStockBatch, isSubmitting: isInwardingStock } = useInwardStockBatchUseCase();
@@ -328,6 +330,7 @@ export const InventoryPage: React.FC = () => {
         isOpen={isCreateModalOpen}
         uoms={uoms}
         suppliers={suppliers}
+        categories={categories || []}
         isPending={isCreatingItem}
         onClose={() => setIsCreateModalOpen(false)}
         onSubmit={handleCreateRawItem}

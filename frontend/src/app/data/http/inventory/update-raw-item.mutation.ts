@@ -14,7 +14,11 @@ export interface UpdateRawItemMutationInput {
   supplierId?: number;
   uomId?: number;
   reorderThreshold?: number;
+  unitCost?: number;
   isActive?: boolean;
+  packSize?: number;
+  dispenseUomId?: number;
+  linkedProductId?: number;
 }
 
 export async function updateRawItemMutation(input: UpdateRawItemMutationInput): Promise<InventoryItemModel> {

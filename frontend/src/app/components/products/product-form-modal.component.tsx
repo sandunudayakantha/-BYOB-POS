@@ -5,6 +5,8 @@ import { Button } from '@/atomic/atm.button';
 import { PhotoIcon } from '@heroicons/react/24/outline';
 
 interface ProductFormModalProps {
+  title?: string;
+  namePlaceholder?: string;
   isOpen: boolean;
   onClose: () => void;
   editingProduct: any;
@@ -30,6 +32,8 @@ interface ProductFormModalProps {
 }
 
 export const ProductFormModal: React.FC<ProductFormModalProps> = ({
+  title,
+  namePlaceholder,
   isOpen,
   onClose,
   editingProduct,
@@ -47,11 +51,15 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
   isSubmitting,
 }) => {
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={editingProduct ? 'Edit Product' : 'Add Product to Catalog'}>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={title || (editingProduct ? 'Edit Product' : 'Add Product to Catalog')}
+    >
       <form onSubmit={onSubmit} className="space-y-4">
         <FormInput
           label="Product Name"
-          placeholder="e.g. Truffle Wagyu Burger"
+          placeholder={namePlaceholder || 'e.g. Truffle Wagyu Burger'}
           value={formData.name}
           error={errors.name}
           onChange={(e: any) => {
@@ -71,7 +79,7 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
               setErrors((prev) => ({ ...prev, categoryId: '', category_id: '' }));
             }
           }}
-          options={categories.map((c) => ({ value: c._id, label: c.name }))}
+          options={categories.map((c) => ({ value: String(c.id || c._id), label: c.name }))}
           required
         />
 

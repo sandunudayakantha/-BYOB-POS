@@ -1,5 +1,12 @@
-export type ItemType = 'RAW_MATERIAL' | 'SEMI_PROCESSED' | 'PACKAGING' | 'FINISHED_GOOD';
+export type ItemType = 'RAW_MATERIAL' | 'SEMI_PROCESSED' | 'PACKAGING' | 'FINISHED_GOOD' | 'DIRECT_RESALE' | 'BAR_BEVERAGE';
 export type BatchStatus = 'ACTIVE' | 'DEPLETED' | 'EXPIRED';
+
+export interface BottleBreakdownModel {
+  sealedUnits: number;
+  hasOpenUnit: boolean;
+  openUnitRemaining: number;
+  openUnitPercent: number;
+}
 
 export interface UnitOfMeasureModel {
   id: number;
@@ -34,6 +41,12 @@ export interface InventoryItemModel {
   uomName?: string;
   uomSymbol?: string;
   supplierName?: string;
+  packSize?: number;
+  dispenseUomId?: number;
+  dispenseUomSymbol?: string;
+  linkedProductId?: number;
+  linkedProductName?: string;
+  bottleBreakdown?: BottleBreakdownModel | null;
   createdAt: string;
 }
 

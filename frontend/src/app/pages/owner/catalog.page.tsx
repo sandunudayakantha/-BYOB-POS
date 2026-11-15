@@ -5,16 +5,18 @@ import { useCategoriesUseCase } from '@/app/domain/products/use-categories.use-c
 import { useProductsUseCase } from '@/app/domain/products/use-products.use-case';
 import { ProductsPage } from '@/app/pages/owner/products.page';
 import { CategoriesPage } from '@/app/pages/owner/categories.page';
-import { ShoppingBagIcon, TagIcon } from '@heroicons/react/24/outline';
+import { BarBeveragesTab } from '@/app/components/products/bar-beverages-tab.component';
+import { ShoppingBagIcon, TagIcon, BeakerIcon } from '@heroicons/react/24/outline';
 
 export const CatalogPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { activeBranch } = useBranch();
   const branchId = String(activeBranch?._id || activeBranch?.id || '');
 
-  const currentTab = searchParams.get('tab') === 'categories' ? 'categories' : 'products';
+  const rawTab = searchParams.get('tab');
+  const currentTab = rawTab === 'categories' ? 'categories' : rawTab === 'beverages' ? 'beverages' : 'products';
 
-  const handleTabChange = (tabKey: 'products' | 'categories') => {
+  const handleTabChange = (tabKey: 'products' | 'beverages' | 'categories') => {
     setSearchParams((prev) => {
       const nextParams = new URLSearchParams(prev);
       if (tabKey === 'products') {
@@ -36,7 +38,7 @@ export const CatalogPage: React.FC = () => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
-            <span>Catalog Management</span>
+            <span>Catalog & Menu Management</span>
             {activeBranch?.name && (
               <span className="text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
                 {activeBranch.name}
@@ -44,7 +46,7 @@ export const CatalogPage: React.FC = () => {
             )}
           </h2>
           <p className="text-sm text-slate-500 mt-1">
-            Manage your dishes, drinks, prices, and organize them into navigational categories.
+            Manage your food dishes, bar drinks & mixology recipes, prices, and categories.
           </p>
         </div>
 
@@ -59,7 +61,7 @@ export const CatalogPage: React.FC = () => {
             }`}
           >
             <ShoppingBagIcon className="w-4 h-4" />
-            <span>Products</span>
+            <span>Food Dishes</span>
             {productsTotal !== null && (
               <span
                 className={`px-1.5 py-0.5 rounded-full text-[10px] font-extrabold ${
@@ -71,6 +73,19 @@ export const CatalogPage: React.FC = () => {
                 {productsTotal}
               </span>
             )}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => handleTabChange('beverages')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+              currentTab === 'beverages'
+                ? 'bg-white dark:bg-stone-950 text-amber-600 dark:text-amber-400 shadow-sm border border-stone-200/60 dark:border-stone-800'
+                : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white'
+            }`}
+          >
+            <BeakerIcon className="w-4 h-4 text-cyan-500" />
+            <span>Bar & Beverages</span>
           </button>
 
           <button
@@ -102,6 +117,8 @@ export const CatalogPage: React.FC = () => {
       <div className="pt-1">
         {currentTab === 'products' ? (
           <ProductsPage embedded={true} />
+        ) : currentTab === 'beverages' ? (
+          <BarBeveragesTab branchId={branchId} />
         ) : (
           <CategoriesPage embedded={true} />
         )}

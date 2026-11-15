@@ -114,10 +114,19 @@ export const ProductRecipeModal: React.FC<ProductRecipeModalProps> = ({
     const uom = uoms.find((u: any) => u.id === Number(ing.uom_id));
     if (!item) return sum;
 
-    const baseCost = Number(item.unit_cost || 0);
+    let effectiveUnitCost = Number(item.unit_cost || 0);
+    // If dispensing from a bar beverage package in liquid units (e.g. ml from bottle)
+    if (
+      item.pack_size &&
+      item.dispense_uom_id &&
+      Number(ing.uom_id) === Number(item.dispense_uom_id)
+    ) {
+      effectiveUnitCost = effectiveUnitCost / Number(item.pack_size);
+    }
+
     const factor = Number(uom?.conversion_factor || 1);
     const wasteFactor = 1 + Number(ing.wastage_factor_percent || 0) / 100;
-    const itemCost = Number(ing.quantity || 0) * factor * baseCost * wasteFactor;
+    const itemCost = Number(ing.quantity || 0) * factor * effectiveUnitCost * wasteFactor;
     return sum + itemCost;
   }, 0);
 
@@ -166,10 +175,20 @@ export const ProductRecipeModal: React.FC<ProductRecipeModalProps> = ({
               {ingredients.map((ing, idx) => {
                 const selectedItem = inventoryItems.find((i: any) => i.id === Number(ing.inventory_item_id));
                 const selectedUom = uoms.find((u: any) => u.id === Number(ing.uom_id));
+
+                let itemEffectiveCost = Number(selectedItem?.unit_cost || 0);
+                if (
+                  selectedItem?.pack_size &&
+                  selectedItem?.dispense_uom_id &&
+                  Number(ing.uom_id) === Number(selectedItem.dispense_uom_id)
+                ) {
+                  itemEffectiveCost = itemEffectiveCost / Number(selectedItem.pack_size);
+                }
+
                 const estimatedCost =
                   Number(ing.quantity || 0) *
                   Number(selectedUom?.conversion_factor || 1) *
-                  Number(selectedItem?.unit_cost || 0) *
+                  itemEffectiveCost *
                   (1 + Number(ing.wastage_factor_percent || 0) / 100);
 
                 return (
@@ -179,12 +198,36 @@ export const ProductRecipeModal: React.FC<ProductRecipeModalProps> = ({
                       <div className="col-span-5 relative">
                         <select
                           value={ing.inventory_item_id}
-                          onChange={(e) => handleUpdateIngredient(idx, 'inventory_item_id', Number(e.target.value))}
+                          onChange={(e) => {
+                            const newId = Number(e.target.value);
+                            const found = inventoryItems.find((i: any) => i.id === newId);
+                            // If bar beverage with a dispense unit, auto-switch UOM to dispense unit
+                            if (found?.dispense_uom_id) {
+                              const updated = [...ingredients];
+                              updated[idx] = {
+                                ...updated[idx],
+                                inventory_item_id: newId,
+                                uom_id: found.dispense_uom_id,
+                                quantity: updated[idx].quantity || 100,
+                              };
+                              setIngredients(updated);
+                            } else {
+                              handleUpdateIngredient(idx, 'inventory_item_id', newId);
+                            }
+                          }}
                           className="w-full appearance-none text-xs font-semibold pl-2.5 pr-7 py-2 rounded-xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 text-stone-900 dark:text-white cursor-pointer focus:outline-none focus:ring-1 focus:ring-amber-500"
                         >
                           {inventoryItems.map((item: any) => (
                             <option key={item.id} value={item.id} className="bg-white dark:bg-stone-900 text-stone-900 dark:text-white">
-                              {item.name} ({item.item_type === 'RAW_MATERIAL' ? 'Raw' : 'Prepped'})
+                              {item.name} (
+                              {item.item_type === 'BAR_BEVERAGE'
+                                ? 'Bar Liquid'
+                                : item.item_type === 'DIRECT_RESALE'
+                                ? 'Resale'
+                                : item.item_type === 'RAW_MATERIAL'
+                                ? 'Raw'
+                                : 'Prepped'}
+                              )
                             </option>
                           ))}
                         </select>
@@ -237,7 +280,9 @@ export const ProductRecipeModal: React.FC<ProductRecipeModalProps> = ({
                     </div>
 
                     <div className="flex items-center justify-between text-[11px] text-stone-400 pt-1 border-t border-stone-200/50 dark:border-stone-800/50">
-                      <span>Unit Cost: Rs. {Number(selectedItem?.unit_cost || 0).toFixed(2)}</span>
+                      <span>
+                        Cost Rate: Rs. {itemEffectiveCost.toFixed(3)} / {selectedUom?.symbol || 'unit'}
+                      </span>
                       <span className="font-bold text-amber-500">Subtotal: Rs. {estimatedCost.toFixed(2)}</span>
                     </div>
                   </div>

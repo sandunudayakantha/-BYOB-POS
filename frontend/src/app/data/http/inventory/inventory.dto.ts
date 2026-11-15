@@ -25,6 +25,13 @@ export interface SupplierDto {
   is_active: boolean;
 }
 
+export interface BottleBreakdownDto {
+  sealed_units: number;
+  has_open_unit: boolean;
+  open_unit_remaining: number;
+  open_unit_percent: number;
+}
+
 export interface InventoryItemDto {
   id: number;
   restaurant_id: number;
@@ -41,6 +48,12 @@ export interface InventoryItemDto {
   uom_name?: string | null;
   uom_symbol?: string | null;
   supplier_name?: string | null;
+  pack_size?: number | null;
+  dispense_uom_id?: number | null;
+  dispense_uom_symbol?: string | null;
+  linked_product_id?: number | null;
+  linked_product_name?: string | null;
+  bottle_breakdown?: BottleBreakdownDto | null;
   created_at: string;
 }
 
@@ -116,6 +129,12 @@ export interface CreateRawItemRequestDto {
   reorder_threshold: number;
   unit_cost: number;
   is_active: boolean;
+  pack_size?: number;
+  dispense_uom_id?: number;
+  linked_product_id?: number;
+  auto_create_menu_product?: boolean;
+  selling_price?: number;
+  category_id?: number;
 }
 
 export interface UpdateRawItemRequestDto {
@@ -124,7 +143,11 @@ export interface UpdateRawItemRequestDto {
   supplier_id?: number;
   uom_id?: number;
   reorder_threshold?: number;
+  unit_cost?: number;
   is_active?: boolean;
+  pack_size?: number;
+  dispense_uom_id?: number;
+  linked_product_id?: number;
 }
 
 export interface InwardStockBatchRequestDto {
@@ -213,6 +236,19 @@ export function mapInventoryItemDtoToModel(dto: InventoryItemDto): InventoryItem
     uomName: dto.uom_name ?? undefined,
     uomSymbol: dto.uom_symbol ?? undefined,
     supplierName: dto.supplier_name ?? undefined,
+    packSize: dto.pack_size ? Number(dto.pack_size) : undefined,
+    dispenseUomId: dto.dispense_uom_id ?? undefined,
+    dispenseUomSymbol: dto.dispense_uom_symbol ?? undefined,
+    linkedProductId: dto.linked_product_id ?? undefined,
+    linkedProductName: dto.linked_product_name ?? undefined,
+    bottleBreakdown: dto.bottle_breakdown
+      ? {
+          sealedUnits: Number(dto.bottle_breakdown.sealed_units || 0),
+          hasOpenUnit: Boolean(dto.bottle_breakdown.has_open_unit),
+          openUnitRemaining: Number(dto.bottle_breakdown.open_unit_remaining || 0),
+          openUnitPercent: Number(dto.bottle_breakdown.open_unit_percent || 0),
+        }
+      : null,
     createdAt: dto.created_at,
   };
 }
@@ -297,6 +333,12 @@ export function mapCreateRawItemInputToDto(input: {
   reorderThreshold: number;
   unitCost: number;
   isActive: boolean;
+  packSize?: number;
+  dispenseUomId?: number;
+  linkedProductId?: number;
+  autoCreateMenuProduct?: boolean;
+  sellingPrice?: number;
+  categoryId?: number;
 }): CreateRawItemRequestDto {
   return {
     name: input.name.trim(),
@@ -308,6 +350,12 @@ export function mapCreateRawItemInputToDto(input: {
     reorder_threshold: input.reorderThreshold,
     unit_cost: input.unitCost,
     is_active: input.isActive,
+    pack_size: input.packSize,
+    dispense_uom_id: input.dispenseUomId,
+    linked_product_id: input.linkedProductId,
+    auto_create_menu_product: input.autoCreateMenuProduct,
+    selling_price: input.sellingPrice,
+    category_id: input.categoryId,
   };
 }
 
@@ -317,7 +365,11 @@ export function mapUpdateRawItemInputToDto(input: {
   supplierId?: number;
   uomId?: number;
   reorderThreshold?: number;
+  unitCost?: number;
   isActive?: boolean;
+  packSize?: number;
+  dispenseUomId?: number;
+  linkedProductId?: number;
 }): UpdateRawItemRequestDto {
   return {
     name: input.name?.trim(),
@@ -325,7 +377,11 @@ export function mapUpdateRawItemInputToDto(input: {
     supplier_id: input.supplierId,
     uom_id: input.uomId,
     reorder_threshold: input.reorderThreshold,
+    unit_cost: input.unitCost,
     is_active: input.isActive,
+    pack_size: input.packSize,
+    dispense_uom_id: input.dispenseUomId,
+    linked_product_id: input.linkedProductId,
   };
 }
 

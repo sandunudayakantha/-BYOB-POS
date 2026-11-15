@@ -7,6 +7,9 @@ from app.core.exceptions import BadRequestException
 from app.models.user import User
 from app.schemas.common import APIResponse, PaginatedData
 from app.schemas.inventory import (
+    BarDispenseRuleCreate,
+    BarDispenseRuleResponse,
+    BarDispenseRuleUpdate,
     InventoryItemCreate,
     InventoryItemResponse,
     InventoryItemUpdate,
@@ -391,3 +394,49 @@ def save_product_recipe(
         is_super_admin=(current_user.role == "SUPER_ADMIN"),
     )
     return APIResponse(data=recipe, message="Product recipe and food cost saved successfully")
+
+
+# ----------------- Global Bar Dispense Settings & Rules -----------------
+@router.get("/bar-rules", response_model=APIResponse[list[BarDispenseRuleResponse]])
+def get_bar_dispense_rules(
+    branchId: int = Query(...),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_inventory_manage),
+):
+    verify_branch_access(db, current_user, branchId)
+    rules = inventory_service.list_bar_dispense_rules(db, branchId)
+    return APIResponse(data=rules, message="Bar dispense rules retrieved")
+
+
+@router.post("/bar-rules", response_model=APIResponse[BarDispenseRuleResponse], status_code=status.HTTP_201_CREATED)
+def create_bar_dispense_rule(
+    payload: BarDispenseRuleCreate,
+    branchId: int = Query(...),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_inventory_manage),
+):
+    branch = verify_branch_access(db, current_user, branchId)
+    rule = inventory_service.create_bar_dispense_rule(db, branch.restaurant_id, branchId, payload)
+    return APIResponse(data=rule, message="Global bar dispense rule created successfully")
+
+
+@router.put("/bar-rules/{rule_id}", response_model=APIResponse[BarDispenseRuleResponse])
+def update_bar_dispense_rule(
+    rule_id: int,
+    payload: BarDispenseRuleUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_inventory_manage),
+):
+    rule = inventory_service.update_bar_dispense_rule(db, rule_id, payload)
+    return APIResponse(data=rule, message="Global bar dispense rule updated successfully")
+
+
+@router.delete("/bar-rules/{rule_id}", response_model=APIResponse[None])
+def delete_bar_dispense_rule(
+    rule_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_inventory_manage),
+):
+    inventory_service.delete_bar_dispense_rule(db, rule_id)
+    return APIResponse(data=None, message="Global bar dispense rule deleted successfully")
+

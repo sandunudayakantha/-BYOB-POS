@@ -19,6 +19,8 @@ interface EditRawItemModalProps {
     uomId: number;
     reorderThreshold: number;
     isActive: boolean;
+    packSize?: number;
+    dispenseUomId?: number;
   }) => void;
 }
 
@@ -39,6 +41,8 @@ export const EditRawItemModal: React.FC<EditRawItemModalProps> = ({
     item?.reorderThreshold !== undefined ? String(item.reorderThreshold) : "0"
   );
   const [isActive, setIsActive] = useState<boolean>(item?.isActive ?? true);
+  const [packSize, setPackSize] = useState<string>(item?.packSize ? String(item.packSize) : "1000");
+  const [dispenseUomId, setDispenseUomId] = useState<string>(item?.dispenseUomId ? String(item.dispenseUomId) : "");
 
   React.useEffect(() => {
     if (item) {
@@ -48,13 +52,15 @@ export const EditRawItemModal: React.FC<EditRawItemModalProps> = ({
       setUomId(item.uomId ? String(item.uomId) : "");
       setReorderThreshold(item.reorderThreshold !== undefined ? String(item.reorderThreshold) : "0");
       setIsActive(item.isActive ?? true);
+      setPackSize(item.packSize ? String(item.packSize) : "1000");
+      setDispenseUomId(item.dispenseUomId ? String(item.dispenseUomId) : "");
     }
   }, [item]);
 
   if (!isOpen || !item) return null;
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={`Edit Raw Material: ${item.name}`}>
+    <Modal isOpen={isOpen} onClose={onClose} title={`Edit Item: ${item.name}`}>
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -66,6 +72,8 @@ export const EditRawItemModal: React.FC<EditRawItemModalProps> = ({
             uomId: Number(uomId),
             reorderThreshold: Number(reorderThreshold),
             isActive,
+            packSize: item.itemType === "BAR_BEVERAGE" ? Number(packSize) || undefined : undefined,
+            dispenseUomId: item.itemType === "BAR_BEVERAGE" && dispenseUomId ? Number(dispenseUomId) : undefined,
           });
         }}
         className="space-y-4"
@@ -115,6 +123,33 @@ export const EditRawItemModal: React.FC<EditRawItemModalProps> = ({
             required
           />
         </div>
+
+        {item.itemType === "BAR_BEVERAGE" && (
+          <div className="p-3.5 rounded-2xl bg-cyan-50/60 dark:bg-cyan-950/20 border border-cyan-200/80 dark:border-cyan-900/40 space-y-3">
+            <span className="text-xs font-bold text-cyan-800 dark:text-cyan-300 block">
+              Dual-Unit Dispensing Configuration
+            </span>
+            <div className="grid grid-cols-2 gap-3">
+              <FormInput
+                label={`Capacity per ${item.uomSymbol || "Bottle"}`}
+                type="number"
+                step="1"
+                min="1"
+                value={packSize}
+                onChange={(e) => setPackSize(e.target.value)}
+                placeholder="1000"
+                required
+              />
+              <FormSelect
+                label="Dispense / Pour Unit"
+                value={dispenseUomId}
+                onChange={(e) => setDispenseUomId(e.target.value)}
+                options={uoms.map((u) => ({ value: u.id, label: `${u.name} (${u.symbol})` }))}
+                required
+              />
+            </div>
+          </div>
+        )}
 
         <div className="flex items-center gap-2 pt-2">
           <input

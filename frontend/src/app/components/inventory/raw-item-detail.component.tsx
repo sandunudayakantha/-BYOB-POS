@@ -17,6 +17,9 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   TrashIcon,
+  BuildingStorefrontIcon,
+  CakeIcon,
+  SparklesIcon,
 } from '@heroicons/react/24/outline';
 
 export interface RawItemDetailProps {
@@ -98,6 +101,24 @@ export const RawItemDetail: React.FC<RawItemDetailProps> = ({
           <div>
             <div className="flex items-center gap-2">
               <h3 className="text-xl font-extrabold text-stone-900 dark:text-white">{item.name}</h3>
+              {item.itemType === 'BAR_BEVERAGE' && (
+                <span className="flex items-center gap-1 text-[11px] font-bold text-cyan-600 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-950/60 px-2.5 py-0.5 rounded-full border border-cyan-200 dark:border-cyan-800">
+                  <BeakerIcon className="w-3.5 h-3.5" />
+                  Bar Beverage
+                </span>
+              )}
+              {item.itemType === 'DIRECT_RESALE' && (
+                <span className="flex items-center gap-1 text-[11px] font-bold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/60 px-2.5 py-0.5 rounded-full border border-amber-200 dark:border-amber-800">
+                  <BuildingStorefrontIcon className="w-3.5 h-3.5" />
+                  Direct Resale
+                </span>
+              )}
+              {(!item.itemType || item.itemType === 'RAW_MATERIAL') && (
+                <span className="flex items-center gap-1 text-[11px] font-bold text-stone-600 dark:text-stone-300 bg-stone-100 dark:bg-stone-800 px-2.5 py-0.5 rounded-full border border-stone-200 dark:border-stone-700">
+                  <CakeIcon className="w-3.5 h-3.5" />
+                  Kitchen Raw
+                </span>
+              )}
               {item.currentStock <= item.reorderThreshold && (
                 <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800">
                   Low Stock
@@ -108,6 +129,16 @@ export const RawItemDetail: React.FC<RawItemDetailProps> = ({
               {item.sku && <span>SKU: <strong className="text-stone-700 dark:text-stone-200">{item.sku}</strong></span>}
               <span>Supplier: <strong className="text-stone-700 dark:text-stone-200">{item.supplierName || 'Direct / None'}</strong></span>
               <span>Tracking Unit: <strong className="text-stone-700 dark:text-stone-200">{item.uomName || item.uomSymbol} ({item.uomSymbol})</strong></span>
+              {item.packSize && item.dispenseUomSymbol && (
+                <span className="text-cyan-600 dark:text-cyan-400 font-bold">
+                  • 1 {item.uomSymbol} = {item.packSize} {item.dispenseUomSymbol}
+                </span>
+              )}
+              {item.linkedProductName && (
+                <span className="text-amber-600 dark:text-amber-400 font-bold">
+                  • Linked POS Menu Item: {item.linkedProductName}
+                </span>
+              )}
             </div>
           </div>
         </div>
@@ -151,12 +182,39 @@ export const RawItemDetail: React.FC<RawItemDetailProps> = ({
           <span className="text-2xl font-black text-stone-900 dark:text-white mt-1 block">
             {Number(item.currentStock).toFixed(2)} <span className="text-xs font-bold text-stone-400">{item.uomSymbol}</span>
           </span>
+          {item.bottleBreakdown && item.itemType === 'BAR_BEVERAGE' ? (
+            <div className="mt-2 pt-2 border-t border-stone-100 dark:border-stone-800 space-y-1.5">
+              <div className="flex items-center justify-between text-xs">
+                <span className="font-bold text-stone-700 dark:text-stone-300">
+                  {item.bottleBreakdown.sealedUnits} Sealed
+                </span>
+                <span className="font-semibold text-cyan-600 dark:text-cyan-400">
+                  {item.bottleBreakdown.hasOpenUnit
+                    ? `1 Open: ${item.bottleBreakdown.openUnitRemaining.toFixed(0)} ${item.dispenseUomSymbol}`
+                    : 'No Open Bottle'}
+                </span>
+              </div>
+              {item.bottleBreakdown.hasOpenUnit && (
+                <div className="w-full h-1.5 rounded-full bg-stone-100 dark:bg-stone-800 overflow-hidden">
+                  <div
+                    className="h-full bg-gradient-to-r from-cyan-500 to-amber-500 rounded-full"
+                    style={{ width: `${Math.min(100, Math.max(0, item.bottleBreakdown.openUnitPercent))}%` }}
+                  />
+                </div>
+              )}
+            </div>
+          ) : null}
         </div>
         <div className="p-4 rounded-2xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 shadow-sm">
           <span className="text-xs font-semibold text-stone-400 block uppercase tracking-wider">Weighted Unit Cost</span>
           <span className="text-2xl font-black text-amber-600 dark:text-amber-400 mt-1 block">
             Rs. {Number(item.unitCost).toFixed(2)} <span className="text-xs font-bold text-stone-400">/ {item.uomSymbol}</span>
           </span>
+          {item.packSize && item.dispenseUomSymbol && (
+            <span className="text-[11px] text-stone-400 block mt-1">
+              Rs. {((item.unitCost || 0) / item.packSize).toFixed(3)} per {item.dispenseUomSymbol}
+            </span>
+          )}
         </div>
         <div className="p-4 rounded-2xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 shadow-sm">
           <span className="text-xs font-semibold text-stone-400 block uppercase tracking-wider">Reorder Threshold</span>

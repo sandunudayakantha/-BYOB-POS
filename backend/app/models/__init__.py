@@ -11,6 +11,7 @@ from app.models.enums import (
 )
 from app.models.featured import FeaturedSection, FeaturedSectionProduct
 from app.models.inventory import (
+    BarDispenseRule,
     InventoryItem,
     InventoryTransaction,
     KitchenPrepBatch,
@@ -55,6 +56,7 @@ __all__ = [
     "Supplier",
     "UnitOfMeasure",
     "InventoryItem",
+    "BarDispenseRule",
     "KitchenPrepDefinition",
     "KitchenPrepBatch",
     "ProductRecipeItem",
