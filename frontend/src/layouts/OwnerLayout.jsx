@@ -2,19 +2,15 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useBranch } from '../contexts/BranchContext';
-import { useTheme } from '../contexts/ThemeContext';
 import {
   Squares2X2Icon,
   BuildingOffice2Icon,
-  TagIcon,
   ShoppingBagIcon,
   DocumentTextIcon,
   FireIcon,
   QrCodeIcon,
   UserCircleIcon,
   ArchiveBoxIcon,
-  SunIcon,
-  MoonIcon,
   ArrowRightOnRectangleIcon,
   Bars3Icon,
   XMarkIcon,
@@ -24,7 +20,6 @@ import {
 const OwnerLayout = () => {
   const { user, logout } = useAuth();
   const { branches, activeBranch, switchBranch } = useBranch();
-  const { darkMode, toggleDarkMode } = useTheme();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [branchDropdownOpen, setBranchDropdownOpen] = useState(false);
   const branchDropdownRef = useRef(null);
@@ -88,35 +83,35 @@ const OwnerLayout = () => {
   ];
 
   return (
-    <div className="min-h-screen flex bg-stone-50 dark:bg-[#0c0a09] text-stone-900 dark:text-stone-100">
+    <div className="min-h-screen flex bg-slate-50 text-slate-900">
       {/* Mobile Backdrop */}
       {mobileOpen && (
         <div
           onClick={() => setMobileOpen(false)}
-          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm md:hidden"
+          className="fixed inset-0 z-40 bg-slate-900/40 backdrop-blur-sm md:hidden"
         />
       )}
 
       {/* Sidebar */}
       <aside
-        className={`fixed md:static inset-y-0 left-0 z-50 w-64 bg-white/80 dark:bg-[#0c0a09]/85 backdrop-blur-2xl border-r border-stone-200/70 dark:border-stone-800/50 flex flex-col justify-between transform transition-transform duration-200 ${
+        className={`fixed md:static inset-y-0 left-0 z-50 w-64 bg-white border-r border-slate-200 flex flex-col justify-between transform transition-transform duration-200 ${
           mobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
         }`}
       >
         <div className="overflow-y-auto">
           {/* Logo Header */}
-          <div className="h-16 px-6 flex items-center justify-between border-b border-stone-100 dark:border-stone-800/50 sticky top-0 bg-white/80 dark:bg-[#0c0a09]/80 backdrop-blur-xl z-10">
+          <div className="h-16 px-6 flex items-center justify-between border-b border-slate-100 sticky top-0 bg-white z-10">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-stone-950 font-black text-base shadow-lg shadow-amber-500/25">
+              <div className="w-9 h-9 rounded-xl bg-emerald-600 flex items-center justify-center text-white font-bold text-base shadow-sm">
                 QR
               </div>
-              <span className="font-extrabold text-base tracking-tight truncate text-stone-900 dark:text-white">
+              <span className="font-extrabold text-base tracking-tight truncate text-slate-900">
                 {user?.restaurant?.name || 'Restaurant Portal'}
               </span>
             </div>
             <button
               onClick={() => setMobileOpen(false)}
-              className="md:hidden text-stone-400 hover:text-stone-600 dark:hover:text-stone-200"
+              className="md:hidden text-slate-400 hover:text-slate-600"
             >
               <XMarkIcon className="w-6 h-6" />
             </button>
@@ -127,11 +122,11 @@ const OwnerLayout = () => {
             {navSections.map((section, idx) => (
               <div key={section.title || idx} className="space-y-1">
                 <div className="flex items-center justify-between px-3 pb-1.5">
-                  <span className="text-[10px] font-extrabold uppercase tracking-widest text-stone-400 dark:text-stone-500">
+                  <span className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">
                     {section.title}
                   </span>
                   {section.badge && (
-                    <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-amber-100/80 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 border border-amber-200/70 dark:border-amber-800/60">
+                    <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700 border border-emerald-200">
                       {section.badge}
                     </span>
                   )}
@@ -149,8 +144,8 @@ const OwnerLayout = () => {
                         className={({ isActive }) =>
                           `flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 ${
                             isActive
-                              ? 'bg-amber-500/10 dark:bg-amber-500/[0.12] text-amber-600 dark:text-amber-400 font-semibold shadow-sm border border-amber-500/20'
-                              : 'text-stone-600 dark:text-stone-400 hover:bg-stone-100/80 dark:hover:bg-stone-900/60 hover:text-stone-900 dark:hover:text-stone-100'
+                              ? 'bg-emerald-50 text-emerald-700 font-semibold shadow-sm border border-emerald-200'
+                              : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
                           }`
                         }
                       >
@@ -166,19 +161,19 @@ const OwnerLayout = () => {
         </div>
 
         {/* User Footer */}
-        <div className="p-4 border-t border-stone-100 dark:border-stone-800/50 space-y-2">
-          <div className="flex items-center gap-3 px-3 py-2 rounded-xl bg-stone-100/50 dark:bg-stone-900/40 border border-transparent dark:border-white/[0.04]">
-            <div className="w-9 h-9 rounded-full bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/20 flex items-center justify-center font-bold text-sm">
+        <div className="p-4 border-t border-slate-100 space-y-2">
+          <div className="flex items-center gap-3 px-3 py-2 rounded-xl bg-slate-50 border border-slate-200">
+            <div className="w-9 h-9 rounded-full bg-emerald-100 text-emerald-700 border border-emerald-200 flex items-center justify-center font-bold text-sm">
               {user?.name?.charAt(0) || 'O'}
             </div>
             <div className="overflow-hidden">
-              <p className="text-sm font-semibold truncate text-stone-900 dark:text-white">{user?.name}</p>
-              <p className="text-xs text-stone-500 truncate">{user?.email}</p>
+              <p className="text-sm font-semibold truncate text-slate-900">{user?.name}</p>
+              <p className="text-xs text-slate-500 truncate">{user?.email}</p>
             </div>
           </div>
           <button
             onClick={handleLogout}
-            className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-full border border-stone-200 dark:border-stone-800 text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition active:scale-95"
+            className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl border border-slate-200 text-xs font-semibold text-rose-600 hover:bg-rose-50 transition active:scale-95"
           >
             <ArrowRightOnRectangleIcon className="w-4 h-4" />
             Logout
@@ -189,11 +184,11 @@ const OwnerLayout = () => {
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Top Navbar */}
-        <header className="h-16 px-6 bg-white/75 dark:bg-[#0c0a09]/75 backdrop-blur-2xl border-b border-stone-200/70 dark:border-stone-800/50 flex items-center justify-between sticky top-0 z-30">
+        <header className="h-16 px-6 bg-white border-b border-slate-200 flex items-center justify-between sticky top-0 z-30">
           <div className="flex items-center gap-4">
             <button
               onClick={() => setMobileOpen(true)}
-              className="md:hidden p-2 rounded-full hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-600 dark:text-stone-300"
+              className="md:hidden p-2 rounded-lg hover:bg-slate-100 text-slate-600"
             >
               <Bars3Icon className="w-6 h-6" />
             </button>
@@ -203,16 +198,16 @@ const OwnerLayout = () => {
               <div ref={branchDropdownRef} className="relative">
                 <button
                   onClick={() => setBranchDropdownOpen(!branchDropdownOpen)}
-                  className="flex items-center gap-2 px-4 py-2 rounded-full border border-stone-200/80 dark:border-stone-800/80 bg-white/60 dark:bg-stone-900/50 backdrop-blur-md text-xs font-semibold text-stone-800 dark:text-stone-200 hover:border-amber-500/40 hover:bg-stone-50 dark:hover:bg-stone-900 transition shadow-sm active:scale-95"
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 bg-white text-xs font-semibold text-slate-800 hover:border-emerald-500/40 hover:bg-slate-50 transition shadow-sm active:scale-95"
                 >
-                  <BuildingOffice2Icon className="w-4 h-4 text-amber-500 shrink-0" />
+                  <BuildingOffice2Icon className="w-4 h-4 text-emerald-600 shrink-0" />
                   <span className="leading-none">{activeBranch ? activeBranch.name : 'Select Branch'}</span>
-                  <ChevronDownIcon className="w-3.5 h-3.5 text-stone-400 shrink-0" />
+                  <ChevronDownIcon className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                 </button>
 
                 {branchDropdownOpen && (
-                  <div className="absolute left-0 mt-2 w-56 bg-white/95 dark:bg-stone-900/95 backdrop-blur-2xl rounded-2xl shadow-2xl border border-stone-200 dark:border-stone-800 py-1.5 z-40">
-                    <div className="px-3 py-1 text-[10px] font-bold text-stone-400 uppercase tracking-wider">
+                  <div className="absolute left-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-slate-200 py-1.5 z-40">
+                    <div className="px-3 py-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
                       Select Active Location
                     </div>
                     {branches.map((b) => (
@@ -222,29 +217,18 @@ const OwnerLayout = () => {
                           switchBranch(b);
                           setBranchDropdownOpen(false);
                         }}
-                        className={`w-full text-left px-3 py-2 text-xs flex items-center justify-between hover:bg-stone-50 dark:hover:bg-stone-800/70 ${
-                          activeBranch?._id === b._id ? 'font-bold text-amber-600 dark:text-amber-400 bg-amber-500/10' : 'text-stone-700 dark:text-stone-300'
+                        className={`w-full text-left px-3 py-2 text-xs flex items-center justify-between hover:bg-slate-50 ${
+                          activeBranch?._id === b._id ? 'font-bold text-emerald-600 bg-emerald-50' : 'text-slate-700'
                         }`}
                       >
                         <span className="truncate">{b.name}</span>
-                        {b.isMain && <span className="text-[10px] bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/20 px-2 py-0.5 rounded-full font-bold">Main</span>}
+                        {b.isMain && <span className="text-[10px] bg-emerald-600 text-white px-2 py-0.5 rounded-full font-bold">Main</span>}
                       </button>
                     ))}
                   </div>
                 )}
               </div>
             )}
-          </div>
-
-          <div className="flex items-center gap-3">
-            {/* Theme Toggle */}
-            <button
-              onClick={toggleDarkMode}
-              className="p-2.5 rounded-full border border-stone-200/80 dark:border-stone-800/80 hover:bg-stone-100 dark:hover:bg-stone-900 text-stone-600 dark:text-stone-300 transition active:scale-95"
-              title="Toggle Theme"
-            >
-              {darkMode ? <SunIcon className="w-5 h-5 text-amber-400" /> : <MoonIcon className="w-5 h-5 text-stone-600" />}
-            </button>
           </div>
         </header>
 

@@ -63,7 +63,7 @@ export function buildQRColumns({
           href={`/q/${row.token}`}
           target="_blank"
           rel="noreferrer"
-          className="text-xs text-amber-600 dark:text-amber-400 font-semibold hover:underline flex items-center gap-1"
+          className="text-xs text-emerald-700 font-semibold hover:underline flex items-center gap-1"
         >
           <span>/q/{row.token}</span>
           <ArrowTopRightOnSquareIcon className="w-3.5 h-3.5" />
@@ -88,7 +88,7 @@ export function buildQRColumns({
           <button
             type="button"
             onClick={() => onView(row)}
-            className="p-1.5 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
+            className="p-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50"
             title="Preview & Print QR Code"
           >
             <QrCodeIcon className="w-4 h-4" />
@@ -98,12 +98,12 @@ export function buildQRColumns({
             onClick={() => onToggleStatus(row)}
             className={`p-1.5 rounded-lg border transition ${
               row.isActive
-                ? 'border-amber-500/30 text-amber-500 hover:bg-amber-500/10 dark:hover:bg-amber-500/10'
-                : 'border-stone-200 dark:border-stone-700 text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800'
+                ? 'border-amber-200 text-amber-700 hover:bg-amber-50'
+                : 'border-slate-200 text-slate-600 hover:bg-slate-100'
             }`}
             title={row.isActive ? 'Disable QR code' : 'Activate QR code'}
           >
-            {row.isActive ? <NoSymbolIcon className="w-4 h-4" /> : <CheckIcon className="w-4 h-4" />}
+            {row.isActive ? <NoSymbolIcon className="w-4 h-4" /> : <CheckIcon className="w-4 h-4 text-emerald-600" />}
           </button>
           <button
             type="button"

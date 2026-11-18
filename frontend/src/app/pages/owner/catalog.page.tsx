@@ -37,10 +37,10 @@ export const CatalogPage: React.FC = () => {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+          <h2 className="text-2xl font-extrabold text-slate-900 flex items-center gap-2">
             <span>Catalog & Menu Management</span>
             {activeBranch?.name && (
-              <span className="text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+              <span className="text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
                 {activeBranch.name}
               </span>
             )}
@@ -50,14 +50,14 @@ export const CatalogPage: React.FC = () => {
           </p>
         </div>
 
-        <div className="inline-flex p-1 bg-stone-200/70 dark:bg-stone-900/80 rounded-2xl border border-stone-300/50 dark:border-stone-800/60 self-start sm:self-auto shadow-inner">
+        <div className="inline-flex p-1 bg-slate-100 rounded-2xl border border-slate-200 self-start sm:self-auto shadow-sm">
           <button
             type="button"
             onClick={() => handleTabChange('products')}
             className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
               currentTab === 'products'
-                ? 'bg-white dark:bg-stone-950 text-amber-600 dark:text-amber-400 shadow-sm border border-stone-200/60 dark:border-stone-800'
-                : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white'
+                ? 'bg-white text-emerald-700 shadow-sm border border-slate-200'
+                : 'text-slate-600 hover:text-slate-900'
             }`}
           >
             <ShoppingBagIcon className="w-4 h-4" />
@@ -66,8 +66,8 @@ export const CatalogPage: React.FC = () => {
               <span
                 className={`px-1.5 py-0.5 rounded-full text-[10px] font-extrabold ${
                   currentTab === 'products'
-                    ? 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/20'
-                    : 'bg-stone-300 dark:bg-stone-800 text-stone-700 dark:text-stone-300'
+                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                    : 'bg-slate-200 text-slate-700'
                 }`}
               >
                 {productsTotal}
@@ -80,11 +80,11 @@ export const CatalogPage: React.FC = () => {
             onClick={() => handleTabChange('beverages')}
             className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
               currentTab === 'beverages'
-                ? 'bg-white dark:bg-stone-950 text-amber-600 dark:text-amber-400 shadow-sm border border-stone-200/60 dark:border-stone-800'
-                : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white'
+                ? 'bg-white text-emerald-700 shadow-sm border border-slate-200'
+                : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            <BeakerIcon className="w-4 h-4 text-cyan-500" />
+            <BeakerIcon className="w-4 h-4 text-emerald-600" />
             <span>Bar & Beverages</span>
           </button>
 
@@ -93,8 +93,8 @@ export const CatalogPage: React.FC = () => {
             onClick={() => handleTabChange('categories')}
             className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
               currentTab === 'categories'
-                ? 'bg-white dark:bg-stone-950 text-amber-600 dark:text-amber-400 shadow-sm border border-stone-200/60 dark:border-stone-800'
-                : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white'
+                ? 'bg-white text-emerald-700 shadow-sm border border-slate-200'
+                : 'text-slate-600 hover:text-slate-900'
             }`}
           >
             <TagIcon className="w-4 h-4" />
@@ -103,8 +103,8 @@ export const CatalogPage: React.FC = () => {
               <span
                 className={`px-1.5 py-0.5 rounded-full text-[10px] font-extrabold ${
                   currentTab === 'categories'
-                    ? 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/20'
-                    : 'bg-stone-300 dark:bg-stone-800 text-stone-700 dark:text-stone-300'
+                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                    : 'bg-slate-200 text-slate-700'
                 }`}
               >
                 {categories.length}

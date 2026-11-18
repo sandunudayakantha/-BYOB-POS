@@ -194,42 +194,42 @@ const PriceMatrixView = ({ branchId }) => {
     <div className="space-y-6">
       {/* Top Banner & Quick Metrics */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="p-5 rounded-2xl bg-white dark:bg-stone-900/60 border border-stone-200 dark:border-stone-800 shadow-sm flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-500 flex items-center justify-center font-extrabold text-lg">
+        <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm flex items-center gap-4">
+          <div className="w-12 h-12 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 flex items-center justify-center font-extrabold text-lg">
             {meta.total ?? products.length}
           </div>
           <div>
-            <p className="text-xs font-semibold text-stone-400 uppercase tracking-wider">Total Products</p>
-            <p className="text-sm font-bold text-stone-900 dark:text-white">Catalog Dishes Compared</p>
+            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Products</p>
+            <p className="text-sm font-bold text-slate-900">Catalog Dishes Compared</p>
           </div>
         </div>
 
-        <div className="p-5 rounded-2xl bg-white dark:bg-stone-900/60 border border-stone-200 dark:border-stone-800 shadow-sm flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-amber-500 flex items-center justify-center font-extrabold text-lg">
+        <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm flex items-center gap-4">
+          <div className="w-12 h-12 rounded-xl bg-slate-100 border border-slate-200 text-slate-700 flex items-center justify-center font-extrabold text-lg">
             {menus.length}
           </div>
           <div>
-            <p className="text-xs font-semibold text-stone-400 uppercase tracking-wider">Active Menus</p>
-            <p className="text-sm font-bold text-stone-900 dark:text-white">Channel Price Variants</p>
+            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Active Menus</p>
+            <p className="text-sm font-bold text-slate-900">Channel Price Variants</p>
           </div>
         </div>
 
-        <div className="p-5 rounded-2xl bg-white dark:bg-stone-900/60 border border-stone-200 dark:border-stone-800 shadow-sm flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-500 flex items-center justify-center font-extrabold text-base">
+        <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm flex items-center gap-4">
+          <div className="w-12 h-12 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 flex items-center justify-center font-extrabold text-base">
             ★
           </div>
           <div>
-            <p className="text-xs font-semibold text-stone-400 uppercase tracking-wider">Base Benchmark</p>
-            <p className="text-sm font-bold text-stone-900 dark:text-white">{baseMenu?.name || 'Standard Reference'}</p>
+            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Base Benchmark</p>
+            <p className="text-sm font-bold text-slate-900">{baseMenu?.name || 'Standard Reference'}</p>
           </div>
         </div>
       </div>
 
       {/* Average Menu % Markup Summary Banner */}
       {baseMenu && menus.length > 1 && (
-        <div className="p-3.5 rounded-2xl bg-stone-900/50 border border-stone-800 flex flex-wrap items-center justify-between gap-3 text-xs">
-          <div className="flex items-center gap-2 font-extrabold text-stone-200">
-            <StarSolidIcon className="w-4 h-4 text-amber-500" />
+        <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 flex flex-wrap items-center justify-between gap-3 text-xs">
+          <div className="flex items-center gap-2 font-extrabold text-slate-700">
+            <StarSolidIcon className="w-4 h-4 text-emerald-600" />
             <span>Average Menu Markups vs Base ({baseMenu.name}):</span>
           </div>
           <div className="flex flex-wrap items-center gap-2">
@@ -250,10 +250,10 @@ const PriceMatrixView = ({ branchId }) => {
               return (
                 <span
                   key={m._id}
-                  className="px-3 py-1 rounded-full bg-stone-900 border border-stone-800 text-[11px] font-bold flex items-center gap-1.5 shadow-sm text-stone-300"
+                  className="px-3 py-1 rounded-full bg-white border border-slate-200 text-[11px] font-bold flex items-center gap-1.5 shadow-sm text-slate-700"
                 >
-                  <span className="text-stone-400">{m.name}:</span>
-                  <span className={`font-black ${avg > 0 ? 'text-amber-400 font-extrabold' : avg < 0 ? 'text-rose-400' : 'text-stone-400'}`}>
+                  <span className="text-slate-500">{m.name}:</span>
+                  <span className={`font-black ${avg > 0 ? 'text-emerald-600 font-extrabold' : avg < 0 ? 'text-rose-600' : 'text-slate-500'}`}>
                     {avg > 0 ? `+${avg.toFixed(1)}%` : `${avg.toFixed(1)}%`}
                   </span>
                 </span>
@@ -264,15 +264,15 @@ const PriceMatrixView = ({ branchId }) => {
       )}
 
       {/* Filter & Toolbar Header */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 p-4 rounded-2xl bg-white dark:bg-stone-900/60 border border-stone-200 dark:border-stone-800 shadow-sm">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 p-4 rounded-2xl bg-white border border-slate-200 shadow-sm">
         <div className="relative w-full md:w-72">
-          <MagnifyingGlassIcon className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400" />
+          <MagnifyingGlassIcon className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
             placeholder="Search catalog products..."
-            className="w-full pl-9 pr-4 py-2 text-xs bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-full text-stone-900 dark:text-white placeholder-stone-400 focus:ring-2 focus:ring-amber-500 focus:outline-none"
+            className="w-full pl-9 pr-4 py-2 text-xs bg-slate-50 border border-slate-200 rounded-full text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
           />
         </div>
 
@@ -281,8 +281,8 @@ const PriceMatrixView = ({ branchId }) => {
             onClick={() => { setSelectedCategory('ALL'); setCurrentPage(1); }}
             className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition whitespace-nowrap ${
               selectedCategory === 'ALL'
-                ? 'bg-amber-500 text-stone-950 shadow-none'
-                : 'bg-stone-100 dark:bg-stone-800/80 text-stone-600 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-800 border border-stone-200/60 dark:border-stone-700/60'
+                ? 'bg-emerald-600 text-white shadow-sm'
+                : 'bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-50 border border-slate-200'
             }`}
           >
             All Categories
@@ -293,8 +293,8 @@ const PriceMatrixView = ({ branchId }) => {
               onClick={() => { setSelectedCategory(cat._id); setCurrentPage(1); }}
               className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition whitespace-nowrap ${
                 selectedCategory === cat._id
-                  ? 'bg-amber-500 text-stone-950 shadow-none'
-                  : 'bg-stone-100 dark:bg-stone-800/80 text-stone-600 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-800 border border-stone-200/60 dark:border-stone-700/60'
+                  ? 'bg-emerald-600 text-white shadow-sm'
+                  : 'bg-white text-slate-600 hover:text-slate-900 hover:bg-slate-50 border border-slate-200'
               }`}
             >
               {cat.name}
@@ -303,11 +303,11 @@ const PriceMatrixView = ({ branchId }) => {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <div className="p-1 bg-stone-100 dark:bg-stone-900 rounded-full border border-stone-200 dark:border-stone-800 flex items-center gap-1 text-[11px] font-bold">
+          <div className="p-1 bg-slate-100 rounded-full border border-slate-200 flex items-center gap-1 text-[11px] font-bold">
             <button
               onClick={() => setMatrixViewMode('COMBINED')}
               className={`px-3 py-1 rounded-full transition ${
-                matrixViewMode === 'COMBINED' ? 'bg-white dark:bg-stone-800 text-stone-900 dark:text-white shadow-sm' : 'text-stone-500 hover:text-stone-900 dark:hover:text-stone-200'
+                matrixViewMode === 'COMBINED' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-900'
               }`}
             >
               LKR + %
@@ -315,7 +315,7 @@ const PriceMatrixView = ({ branchId }) => {
             <button
               onClick={() => setMatrixViewMode('VARIANCE')}
               className={`px-3 py-1 rounded-full transition ${
-                matrixViewMode === 'VARIANCE' ? 'bg-amber-500 text-stone-950 shadow-sm' : 'text-stone-500 hover:text-stone-900 dark:hover:text-stone-200'
+                matrixViewMode === 'VARIANCE' ? 'bg-emerald-600 text-white shadow-sm' : 'text-slate-500 hover:text-slate-900'
               }`}
             >
               % Table
@@ -323,7 +323,7 @@ const PriceMatrixView = ({ branchId }) => {
             <button
               onClick={() => setMatrixViewMode('LKR')}
               className={`px-3 py-1 rounded-full transition ${
-                matrixViewMode === 'LKR' ? 'bg-white dark:bg-stone-800 text-stone-900 dark:text-white shadow-sm' : 'text-stone-500 hover:text-stone-900 dark:hover:text-stone-200'
+                matrixViewMode === 'LKR' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-900'
               }`}
             >
               LKR Only
@@ -338,29 +338,29 @@ const PriceMatrixView = ({ branchId }) => {
                 setAdjustPercentage('15');
                 setAdjustSourceMode('BASE_MENU');
               }}
-              className="py-2 px-3.5 rounded-full bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 font-bold text-xs border border-stone-200 dark:border-stone-700 transition flex items-center justify-center gap-1.5 shadow-none"
+              className="py-2 px-3.5 rounded-full bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs border border-slate-200 transition flex items-center justify-center gap-1.5 shadow-sm"
             >
-              <CalculatorIcon className="w-4 h-4 text-amber-500" />
+              <CalculatorIcon className="w-4 h-4 text-emerald-600" />
               <span>% Bulk Adjust</span>
             </button>
           )}
 
           <button
             onClick={downloadCSVReport}
-            className="py-2 px-4 rounded-full bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 font-bold text-xs border border-stone-200 dark:border-stone-700 transition flex items-center justify-center gap-2 shadow-none"
+            className="py-2 px-4 rounded-full bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs border border-slate-200 transition flex items-center justify-center gap-2 shadow-sm"
           >
-            <ArrowDownTrayIcon className="w-4 h-4 text-stone-500 dark:text-stone-400" />
+            <ArrowDownTrayIcon className="w-4 h-4 text-slate-500" />
             Export CSV
           </button>
         </div>
       </div>
 
       {/* Main Matrix Table */}
-      <div className="bg-white dark:bg-stone-900/60 rounded-2xl border border-stone-200 dark:border-stone-800 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         {isLoading ? (
           <div className="p-12 text-center space-y-4">
-            <div className="w-10 h-10 border-4 border-amber-500 border-t-transparent rounded-full animate-spin mx-auto" />
-            <p className="text-sm font-semibold text-stone-400">Fetching Paginated Price Matrix...</p>
+            <div className="w-10 h-10 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto" />
+            <p className="text-sm font-semibold text-slate-400">Fetching Paginated Price Matrix...</p>
           </div>
         ) : menus.length === 0 ? (
           <div className="p-12 text-center text-slate-500">
@@ -391,7 +391,7 @@ const PriceMatrixView = ({ branchId }) => {
               }}
             />
 
-            <div className="px-6 py-4 border-t border-stone-200 dark:border-stone-800 flex items-center justify-between text-xs text-stone-500">
+            <div className="px-6 py-4 border-t border-slate-200 flex items-center justify-between text-xs text-slate-500">
               <span>
                 Showing {(currentPage - 1) * pageSize + 1} to{' '}
                 {Math.min(currentPage * pageSize, meta.total || products.length)} of {meta.total || products.length} products
@@ -400,17 +400,17 @@ const PriceMatrixView = ({ branchId }) => {
                 <button
                   onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
                   disabled={currentPage === 1}
-                  className="p-1.5 rounded-lg border border-stone-200 dark:border-stone-700 disabled:opacity-40 hover:bg-stone-50 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-300"
+                  className="p-1.5 rounded-lg border border-slate-200 disabled:opacity-40 hover:bg-slate-50 text-slate-700"
                 >
                   <ChevronLeftIcon className="w-4 h-4" />
                 </button>
-                <span className="font-semibold text-stone-700 dark:text-stone-300">
+                <span className="font-semibold text-slate-700">
                   Page {currentPage} of {meta.totalPages || 1}
                 </span>
                 <button
                   onClick={() => setCurrentPage((p) => Math.min(p + 1, meta.totalPages || 1))}
                   disabled={currentPage >= (meta.totalPages || 1)}
-                  className="p-1.5 rounded-lg border border-stone-200 dark:border-stone-700 disabled:opacity-40 hover:bg-stone-50 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-300"
+                  className="p-1.5 rounded-lg border border-slate-200 disabled:opacity-40 hover:bg-slate-50 text-slate-700"
                 >
                   <ChevronRightIcon className="w-4 h-4" />
                 </button>

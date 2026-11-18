@@ -162,40 +162,40 @@ export const BeverageRecipeModal: React.FC<BeverageRecipeModalProps> = ({
       <div className="space-y-5">
         {/* Costing & Pour Metric Banner */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <div className="p-3.5 rounded-2xl bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center border border-amber-500/20 shrink-0">
+          <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-200 shrink-0">
               <CalculatorIcon className="w-5 h-5" />
             </div>
             <div>
-              <span className="text-[10px] uppercase font-bold text-stone-400 tracking-wider block">Pour Cost (COGS)</span>
-              <span className="text-lg font-black text-amber-500">Rs. {totalCost.toFixed(2)}</span>
+              <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider block">Pour Cost (COGS)</span>
+              <span className="text-lg font-black text-slate-900">Rs. {totalCost.toFixed(2)}</span>
             </div>
           </div>
 
-          <div className="p-3.5 rounded-2xl bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center border border-emerald-500/20 shrink-0">
+          <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-200 shrink-0">
               <BeakerIcon className="w-5 h-5" />
             </div>
             <div>
-              <span className="text-[10px] uppercase font-bold text-stone-400 tracking-wider block">Menu Selling Price</span>
-              <span className="text-lg font-black text-stone-900 dark:text-white">
+              <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider block">Menu Selling Price</span>
+              <span className="text-lg font-black text-slate-900">
                 Rs. {sellingPrice.toFixed(2)}
               </span>
             </div>
           </div>
 
-          <div className="p-3.5 rounded-2xl bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 flex items-center gap-3">
+          <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 flex items-center gap-3">
             <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border ${
               pourCostPercent > 35
-                ? 'bg-rose-500/10 text-rose-500 border-rose-500/20'
-                : 'bg-cyan-500/10 text-cyan-500 border-cyan-500/20'
+                ? 'bg-rose-50 text-rose-600 border-rose-200'
+                : 'bg-emerald-50 text-emerald-600 border-emerald-200'
             }`}>
               <SparklesIcon className="w-5 h-5" />
             </div>
             <div>
-              <span className="text-[10px] uppercase font-bold text-stone-400 tracking-wider block">Pour Cost %</span>
+              <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider block">Pour Cost %</span>
               <span className={`text-lg font-black ${
-                pourCostPercent > 35 ? 'text-rose-500' : 'text-cyan-500'
+                pourCostPercent > 35 ? 'text-rose-600' : 'text-emerald-600'
               }`}>
                 {pourCostPercent.toFixed(1)}%
               </span>
@@ -204,17 +204,17 @@ export const BeverageRecipeModal: React.FC<BeverageRecipeModalProps> = ({
         </div>
 
         {/* Bar Specs / Glassware & Ice */}
-        <div className="p-4 rounded-2xl bg-stone-50 dark:bg-stone-900/60 border border-stone-200 dark:border-stone-800 space-y-3">
-          <span className="text-xs font-bold uppercase tracking-wider text-stone-400 block">
+        <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+          <span className="text-xs font-bold uppercase tracking-wider text-slate-500 block">
             Bar Service Specifications
           </span>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
-              <label className="text-[11px] font-semibold text-stone-500 block mb-1">Recommended Glassware</label>
+              <label className="text-[11px] font-semibold text-slate-600 block mb-1">Recommended Glassware</label>
               <select
                 value={glassware}
                 onChange={(e) => setGlassware(e.target.value)}
-                className="w-full text-xs font-semibold p-2 rounded-xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 text-stone-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-amber-500"
+                className="w-full text-xs font-semibold p-2 rounded-xl bg-white border border-slate-300 text-slate-900 focus:outline-none focus:ring-1 focus:ring-emerald-500"
               >
                 <option value="Highball Glass (350ml)">Highball Glass (350ml)</option>
                 <option value="Rocks / Old Fashioned Glass (300ml)">Rocks Glass (300ml)</option>
@@ -227,11 +227,11 @@ export const BeverageRecipeModal: React.FC<BeverageRecipeModalProps> = ({
             </div>
 
             <div>
-              <label className="text-[11px] font-semibold text-stone-500 block mb-1">Ice Profile</label>
+              <label className="text-[11px] font-semibold text-slate-600 block mb-1">Ice Profile</label>
               <select
                 value={iceProfile}
                 onChange={(e) => setIceProfile(e.target.value)}
-                className="w-full text-xs font-semibold p-2 rounded-xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 text-stone-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-amber-500"
+                className="w-full text-xs font-semibold p-2 rounded-xl bg-white border border-slate-300 text-slate-900 focus:outline-none focus:ring-1 focus:ring-emerald-500"
               >
                 <option value="Cubed Ice (75% Fill)">Cubed Ice (75% Fill)</option>
                 <option value="Crushed Ice (Full Fill)">Crushed Ice (Full Fill)</option>
@@ -242,13 +242,13 @@ export const BeverageRecipeModal: React.FC<BeverageRecipeModalProps> = ({
             </div>
 
             <div>
-              <label className="text-[11px] font-semibold text-stone-500 block mb-1">Garnish & Serving Notes</label>
+              <label className="text-[11px] font-semibold text-slate-600 block mb-1">Garnish & Serving Notes</label>
               <input
                 type="text"
                 placeholder="e.g. Mint sprig & lime wheel"
                 value={garnish}
                 onChange={(e) => setGarnish(e.target.value)}
-                className="w-full text-xs font-semibold p-2 rounded-xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 text-stone-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-amber-500"
+                className="w-full text-xs font-semibold p-2 rounded-xl bg-white border border-slate-300 text-slate-900 focus:outline-none focus:ring-1 focus:ring-emerald-500"
               />
             </div>
           </div>
@@ -257,7 +257,7 @@ export const BeverageRecipeModal: React.FC<BeverageRecipeModalProps> = ({
         {/* Liquid Ingredients List */}
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-stone-400">
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
               Pour Ingredients & Mixers ({ingredients.length})
             </span>
             <Button
@@ -274,7 +274,7 @@ export const BeverageRecipeModal: React.FC<BeverageRecipeModalProps> = ({
           </div>
 
           {ingredients.length === 0 ? (
-            <div className="p-8 text-center bg-stone-50 dark:bg-stone-900/40 rounded-2xl border border-dashed border-stone-300 dark:border-stone-800 text-stone-400 text-xs">
+            <div className="p-8 text-center bg-slate-50 rounded-2xl border border-dashed border-slate-200 text-slate-500 text-xs">
               No pour ingredients added yet. Click "Add Liquid Ingredient" to link stocked bottles (e.g. Coca-Cola, Rum, Vodka, Tonic, Syrups).
             </div>
           ) : (
@@ -310,7 +310,7 @@ export const BeverageRecipeModal: React.FC<BeverageRecipeModalProps> = ({
                 return (
                   <div
                     key={idx}
-                    className="p-3 bg-stone-50 dark:bg-stone-900/60 rounded-2xl border border-stone-200 dark:border-stone-800 space-y-2.5"
+                    className="p-3 bg-slate-50 rounded-2xl border border-slate-200 space-y-2.5"
                   >
                     <div className="grid grid-cols-12 gap-2 items-center">
                       {/* Item Selector */}
@@ -333,7 +333,7 @@ export const BeverageRecipeModal: React.FC<BeverageRecipeModalProps> = ({
                               handleUpdateIngredient(idx, 'inventory_item_id', newId);
                             }
                           }}
-                          className="w-full appearance-none text-xs font-semibold pl-2.5 pr-7 py-2 rounded-xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 text-stone-900 dark:text-white cursor-pointer focus:outline-none focus:ring-1 focus:ring-amber-500"
+                          className="w-full appearance-none text-xs font-semibold pl-2.5 pr-7 py-2 rounded-xl bg-white border border-slate-300 text-slate-900 cursor-pointer focus:outline-none focus:ring-1 focus:ring-emerald-500"
                         >
                           {inventoryItems.map((item: any) => (
                             <option key={item.id} value={item.id}>
@@ -342,7 +342,7 @@ export const BeverageRecipeModal: React.FC<BeverageRecipeModalProps> = ({
                             </option>
                           ))}
                         </select>
-                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2 text-stone-400">
+                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2 text-slate-400">
                           <ChevronDownIcon className="w-3.5 h-3.5 stroke-[2]" />
                         </div>
                       </div>
@@ -355,7 +355,7 @@ export const BeverageRecipeModal: React.FC<BeverageRecipeModalProps> = ({
                           placeholder="Qty"
                           value={ing.quantity}
                           onChange={(e) => handleUpdateIngredient(idx, 'quantity', Number(e.target.value))}
-                          className="w-full text-xs font-semibold p-2 rounded-xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 text-stone-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-amber-500"
+                          className="w-full text-xs font-semibold p-2 rounded-xl bg-white border border-slate-300 text-slate-900 focus:outline-none focus:ring-1 focus:ring-emerald-500"
                         />
                       </div>
 
@@ -364,7 +364,7 @@ export const BeverageRecipeModal: React.FC<BeverageRecipeModalProps> = ({
                         <select
                           value={ing.uom_id}
                           onChange={(e) => handleUpdateIngredient(idx, 'uom_id', Number(e.target.value))}
-                          className="w-full appearance-none text-xs font-semibold pl-2.5 pr-7 py-2 rounded-xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 text-stone-900 dark:text-white cursor-pointer focus:outline-none focus:ring-1 focus:ring-amber-500"
+                          className="w-full appearance-none text-xs font-semibold pl-2.5 pr-7 py-2 rounded-xl bg-white border border-slate-300 text-slate-900 cursor-pointer focus:outline-none focus:ring-1 focus:ring-emerald-500"
                         >
                           {uoms.map((u: any) => (
                             <option key={u.id} value={u.id}>
@@ -372,7 +372,7 @@ export const BeverageRecipeModal: React.FC<BeverageRecipeModalProps> = ({
                             </option>
                           ))}
                         </select>
-                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2 text-stone-400">
+                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2 text-slate-400">
                           <ChevronDownIcon className="w-3.5 h-3.5 stroke-[2]" />
                         </div>
                       </div>
@@ -382,7 +382,7 @@ export const BeverageRecipeModal: React.FC<BeverageRecipeModalProps> = ({
                         <button
                           type="button"
                           onClick={() => handleRemoveIngredient(idx)}
-                          className="p-2 text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg transition"
+                          className="p-2 text-rose-500 hover:bg-rose-50 rounded-lg transition"
                           title="Remove ingredient"
                         >
                           <TrashIcon className="w-4 h-4" />
@@ -391,10 +391,10 @@ export const BeverageRecipeModal: React.FC<BeverageRecipeModalProps> = ({
                     </div>
 
                     {/* Active Bar Rule & Cost Preview Banner */}
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between text-[11px] text-stone-500 pt-1.5 border-t border-stone-200/50 dark:border-stone-800/50 gap-1.5">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between text-[11px] text-slate-500 pt-1.5 border-t border-slate-200 gap-1.5">
                       {matchedRule ? (
-                        <div className="flex items-center gap-1.5 text-cyan-700 dark:text-cyan-400 font-medium">
-                          <SparklesIcon className="w-3.5 h-3.5 text-cyan-500" />
+                        <div className="flex items-center gap-1.5 text-emerald-700 font-medium">
+                          <SparklesIcon className="w-3.5 h-3.5 text-emerald-600" />
                           <span>
                             Global Rule: Prioritizes <strong>{matchedRule.primaryItemName}</strong>
                             {matchedRule.primaryBottleBreakdown?.hasOpenUnit && (
@@ -403,12 +403,12 @@ export const BeverageRecipeModal: React.FC<BeverageRecipeModalProps> = ({
                           </span>
                         </div>
                       ) : (
-                        <span className="text-stone-400">
+                        <span className="text-slate-400">
                           Cost: Rs. {effectiveCostPerMl.toFixed(3)} / {selectedUom?.symbol || 'unit'}
                         </span>
                       )}
 
-                      <span className="font-extrabold text-amber-600 dark:text-amber-400 self-end sm:self-auto">
+                      <span className="font-extrabold text-emerald-700 self-end sm:self-auto">
                         Subtotal: Rs. {estimatedCost.toFixed(2)}
                       </span>
                     </div>
@@ -420,11 +420,11 @@ export const BeverageRecipeModal: React.FC<BeverageRecipeModalProps> = ({
         </div>
 
         {/* Action Buttons */}
-        <div className="flex justify-end gap-3 pt-3 border-t border-stone-200 dark:border-stone-800">
+        <div className="flex justify-end gap-3 pt-3 border-t border-slate-200">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 rounded-full border border-stone-200 dark:border-stone-700 text-xs font-bold text-stone-600 dark:text-stone-300"
+            className="px-4 py-2 rounded-full border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50"
           >
             Cancel
           </button>

@@ -233,7 +233,7 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({ embedded = false }) 
             <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white">
               Menu Products ({activeBranch?.name})
             </h2>
-            <p className="text-sm text-stone-500">Manage dishes, pricing, preparation standards, and recipes.</p>
+            <p className="text-sm text-slate-500">Manage dishes, pricing, preparation standards, and recipes.</p>
           </div>
           <Button
             type="button"
@@ -251,14 +251,14 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({ embedded = false }) 
 
       {embedded && (
         <div className="flex justify-between items-center gap-4">
-          <p className="text-xs font-semibold text-stone-400">Catalog inventory items for {activeBranch?.name}.</p>
+          <p className="text-xs font-semibold text-slate-400">Catalog inventory items for {activeBranch?.name}.</p>
           <Button
             type="button"
             variant="primary"
             size="md"
             rounded="full"
             onClick={() => handleOpenEdit(null)}
-            className="flex items-center justify-center gap-2 py-2.5 px-5 font-bold text-sm shadow-none transition active:scale-95"
+            className="flex items-center justify-center gap-2 py-2.5 px-5 font-bold text-sm shadow-sm transition active:scale-95"
           >
             <PlusIcon className="w-5 h-5 stroke-[2.5]" />
             <span>Add Product</span>
@@ -267,7 +267,7 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({ embedded = false }) 
       )}
 
       <div className="relative max-w-sm w-full">
-        <MagnifyingGlassIcon className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400 pointer-events-none" />
+        <MagnifyingGlassIcon className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
         <input
           type="text"
           placeholder="Search products by name..."
@@ -276,7 +276,7 @@ export const ProductsPage: React.FC<ProductsPageProps> = ({ embedded = false }) 
             setSearchTerm(e.target.value);
             setCurrentPage(1);
           }}
-          className="w-full pl-9 pr-4 py-2 rounded-full border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 text-xs text-stone-900 dark:text-white placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-500"
+          className="w-full pl-9 pr-4 py-2 rounded-full border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
         />
       </div>
 

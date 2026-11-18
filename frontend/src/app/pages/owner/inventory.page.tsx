@@ -203,27 +203,27 @@ export const InventoryPage: React.FC = () => {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-extrabold text-stone-900 dark:text-white flex items-center gap-2">
+          <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
             <span>Inventory & Kitchen Governance</span>
             {activeBranch?.name && (
-              <span className="text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+              <span className="text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
                 {activeBranch.name}
               </span>
             )}
           </h2>
-          <p className="text-sm text-stone-500 mt-1">
+          <p className="text-sm text-slate-500 mt-1">
             Manage raw materials, chef prep specifications, batch yields, photo evidence, and suppliers.
           </p>
         </div>
 
-        <div className="flex flex-wrap p-1 bg-stone-200/70 dark:bg-stone-900/80 rounded-2xl border border-stone-300/50 dark:border-stone-800/60 shadow-inner self-start sm:self-auto gap-1">
+        <div className="flex flex-wrap p-1 bg-slate-100 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm self-start sm:self-auto gap-1">
           <button
             type="button"
             onClick={() => handleTabChange('items')}
             className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${
               currentTab === 'items'
-                ? 'bg-white dark:bg-stone-950 text-amber-600 dark:text-amber-400 shadow-sm border border-stone-200/60 dark:border-stone-800'
-                : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white'
+                ? 'bg-white dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 shadow-sm border border-slate-200 dark:border-slate-700'
+                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
             <ArchiveBoxIcon className="w-4 h-4" />
@@ -235,8 +235,8 @@ export const InventoryPage: React.FC = () => {
             onClick={() => handleTabChange('preps')}
             className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${
               currentTab === 'preps'
-                ? 'bg-white dark:bg-stone-950 text-amber-600 dark:text-amber-400 shadow-sm border border-stone-200/60 dark:border-stone-800'
-                : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white'
+                ? 'bg-white dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 shadow-sm border border-slate-200 dark:border-slate-700'
+                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
             <BeakerIcon className="w-4 h-4" />
@@ -248,8 +248,8 @@ export const InventoryPage: React.FC = () => {
             onClick={() => handleTabChange('batches')}
             className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${
               currentTab === 'batches'
-                ? 'bg-white dark:bg-stone-950 text-amber-600 dark:text-amber-400 shadow-sm border border-stone-200/60 dark:border-stone-800'
-                : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white'
+                ? 'bg-white dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 shadow-sm border border-slate-200 dark:border-slate-700'
+                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
             <CameraIcon className="w-4 h-4" />
@@ -271,7 +271,7 @@ export const InventoryPage: React.FC = () => {
 
       {currentTab === 'items' && selectedItemId && (
         itemsLoading || isBranchLoading ? (
-          <div className="p-12 text-center text-xs text-stone-400">Loading raw material details...</div>
+          <div className="p-12 text-center text-xs text-slate-400">Loading raw material details...</div>
         ) : selectedItem ? (
           <RawItemDetail
             branchId={branchId}
@@ -292,12 +292,12 @@ export const InventoryPage: React.FC = () => {
             onDeleteItem={handleDeleteRawItem}
           />
         ) : (
-          <div className="p-8 text-center bg-stone-900 border border-stone-800 rounded-2xl text-stone-400 text-xs space-y-3">
+          <div className="p-8 text-center bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl text-slate-500 text-xs space-y-3">
             <p>Raw inventory item not found or may have been deleted.</p>
             <button
               type="button"
               onClick={handleBackFromDetail}
-              className="px-4 py-2 rounded-full bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold text-xs transition"
+              className="px-4 py-2 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition"
             >
               Return to Raw Materials
             </button>

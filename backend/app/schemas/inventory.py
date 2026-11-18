@@ -132,6 +132,15 @@ class InventoryItemUpdate(BaseModel):
     linked_product_id: Optional[int] = None
 
 
+class BottleBreakdownSchema(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    sealed_units: int = 0
+    has_open_unit: bool = False
+    open_unit_remaining: float = 0.0
+    open_unit_percent: float = 0.0
+
+
 class InventoryItemResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -155,7 +164,7 @@ class InventoryItemResponse(BaseModel):
     dispense_uom_symbol: Optional[str] = None
     linked_product_id: Optional[int] = None
     linked_product_name: Optional[str] = None
-    bottle_breakdown: Optional[dict] = None
+    bottle_breakdown: Optional[BottleBreakdownSchema] = None
 
 
 # ----------------- Kitchen Prep Definition Schemas -----------------

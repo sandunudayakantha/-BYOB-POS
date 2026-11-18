@@ -38,7 +38,7 @@ const Modal = ({ isOpen, onClose, title, children, maxWidth = 'max-w-xl' }) => {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.15, ease: 'easeOut' }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/70 backdrop-blur-sm will-change-[opacity]"
+            className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm will-change-[opacity]"
           />
 
           {/* Modal Card */}
@@ -48,17 +48,17 @@ const Modal = ({ isOpen, onClose, title, children, maxWidth = 'max-w-xl' }) => {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.96, y: 8 }}
             transition={{ duration: 0.15, ease: 'easeOut' }}
-            className={`relative w-full ${maxWidth} bg-white dark:bg-[#141210] rounded-3xl shadow-2xl shadow-black/60 border border-stone-200 dark:border-white/[0.08] z-10 overflow-hidden my-8 will-change-[opacity,transform]`}
+            className={`relative w-full ${maxWidth} bg-white rounded-2xl shadow-2xl border border-slate-200 z-10 overflow-hidden my-8 will-change-[opacity,transform]`}
           >
             {/* Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-stone-100 dark:border-stone-800/80">
-              <h3 className="text-lg font-bold text-stone-900 dark:text-white">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+              <h3 className="text-lg font-bold text-slate-900">
                 {title}
               </h3>
               <button
                 type="button"
                 onClick={onClose}
-                className="p-1.5 rounded-full text-stone-400 hover:text-stone-600 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-800 transition"
+                className="p-1.5 rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition"
               >
                 <XMarkIcon className="w-5 h-5" />
               </button>
@@ -78,4 +78,5 @@ const Modal = ({ isOpen, onClose, title, children, maxWidth = 'max-w-xl' }) => {
   return createPortal(modalNode, document.body);
 };
 
+export { Modal };
 export default Modal;

@@ -1,5 +1,5 @@
 import React from 'react';
-import Modal from '@/components/Modal';
+import { Modal } from '@/components/Modal';
 import { Button } from '@/atomic/atm.button';
 import { PencilSquareIcon } from '@heroicons/react/24/outline';
 
@@ -36,19 +36,19 @@ export const PriceEditCellModal: React.FC<PriceEditCellModalProps> = ({
     >
       {editingCell && (
         <form onSubmit={onSavePrice} className="space-y-4">
-          <div className="p-3 bg-stone-50 dark:bg-stone-900 rounded-xl text-xs space-y-1 border border-stone-200 dark:border-stone-800">
-            <p className="text-stone-500 dark:text-stone-400">
-              Menu Column: <strong className="text-stone-900 dark:text-stone-100">{editingCell.menuName}</strong>
+          <div className="p-3 bg-slate-50 rounded-xl text-xs space-y-1 border border-slate-200">
+            <p className="text-slate-500">
+              Menu Column: <strong className="text-slate-900">{editingCell.menuName}</strong>
             </p>
             {basePriceForCell !== undefined && baseMenu?._id !== editingCell.menuId && (
-              <p className="text-stone-500 dark:text-stone-400">
-                Base Menu Reference Price: <strong className="text-amber-600 dark:text-amber-400">LKR {Number(basePriceForCell).toFixed(2)}</strong>
+              <p className="text-slate-500">
+                Base Menu Reference Price: <strong className="text-emerald-700">LKR {Number(basePriceForCell).toFixed(2)}</strong>
               </p>
             )}
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-stone-700 dark:text-stone-300 uppercase tracking-wider mb-1">
+            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
               Menu Item Price (LKR)
             </label>
             <input
@@ -59,7 +59,7 @@ export const PriceEditCellModal: React.FC<PriceEditCellModalProps> = ({
               placeholder="e.g. 1250.00"
               value={editPriceInput}
               onChange={(e) => setEditPriceInput(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 dark:border-stone-700 bg-white dark:bg-stone-900 text-stone-900 dark:text-white font-bold text-base focus:ring-2 focus:ring-amber-500 focus:border-amber-500 focus:outline-none"
+              className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 font-bold text-base focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-none"
             />
           </div>
 
@@ -79,7 +79,7 @@ export const PriceEditCellModal: React.FC<PriceEditCellModalProps> = ({
                 type="button"
                 onClick={() => onRemoveItem(editingCell.menuItemId)}
                 disabled={isRemoving}
-                className="px-4 py-2.5 rounded-xl border border-rose-300 dark:border-rose-900/60 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 font-bold text-xs transition"
+                className="px-4 py-2.5 rounded-xl border border-rose-200 text-rose-600 hover:bg-rose-50 font-bold text-xs transition"
               >
                 Remove
               </button>

@@ -62,9 +62,9 @@ export const MenuFormModal: React.FC<MenuFormModalProps> = ({
             type="checkbox"
             checked={formData.isBaseMenu}
             onChange={(e) => setFormData({ ...formData, isBaseMenu: e.target.checked })}
-            className="w-4 h-4 rounded text-amber-500 accent-amber-500 focus:ring-amber-500"
+            className="w-4 h-4 rounded text-emerald-600 accent-emerald-600 focus:ring-emerald-500"
           />
-          <span className="text-xs font-semibold text-stone-700 dark:text-stone-300">
+          <span className="text-xs font-semibold text-slate-700">
             Set as Default Base Menu for this Branch
           </span>
         </label>

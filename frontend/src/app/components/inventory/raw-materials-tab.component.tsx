@@ -96,8 +96,8 @@ export const RawMaterialsTab: React.FC<RawMaterialsTabProps> = ({
             onClick={() => setTypeFilter('RAW_MATERIAL')}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition ${
               typeFilter === 'RAW_MATERIAL'
-                ? 'bg-white dark:bg-stone-800 text-amber-600 dark:text-amber-400 shadow-sm border border-stone-200/80 dark:border-stone-700'
-                : 'text-stone-500 hover:text-stone-900 dark:hover:text-white'
+                ? 'bg-white text-emerald-700 shadow-sm border border-slate-200'
+                : 'text-slate-500 hover:text-slate-900'
             }`}
           >
             <CakeIcon className="w-3.5 h-3.5" />
@@ -108,8 +108,8 @@ export const RawMaterialsTab: React.FC<RawMaterialsTabProps> = ({
             onClick={() => setTypeFilter('DIRECT_RESALE')}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition ${
               typeFilter === 'DIRECT_RESALE'
-                ? 'bg-white dark:bg-stone-800 text-amber-600 dark:text-amber-400 shadow-sm border border-stone-200/80 dark:border-stone-700'
-                : 'text-stone-500 hover:text-stone-900 dark:hover:text-white'
+                ? 'bg-white text-emerald-700 shadow-sm border border-slate-200'
+                : 'text-slate-500 hover:text-slate-900'
             }`}
           >
             <BuildingStorefrontIcon className="w-3.5 h-3.5" />
@@ -120,8 +120,8 @@ export const RawMaterialsTab: React.FC<RawMaterialsTabProps> = ({
             onClick={() => setTypeFilter('BAR_BEVERAGE')}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition ${
               typeFilter === 'BAR_BEVERAGE'
-                ? 'bg-white dark:bg-stone-800 text-cyan-600 dark:text-cyan-400 shadow-sm border border-stone-200/80 dark:border-stone-700'
-                : 'text-stone-500 hover:text-stone-900 dark:hover:text-white'
+                ? 'bg-white text-emerald-700 shadow-sm border border-slate-200'
+                : 'text-slate-500 hover:text-slate-900'
             }`}
           >
             <BeakerIcon className="w-3.5 h-3.5" />
@@ -131,13 +131,13 @@ export const RawMaterialsTab: React.FC<RawMaterialsTabProps> = ({
 
         {/* Search Input */}
         <div className="relative max-w-xs w-full">
-          <MagnifyingGlassIcon className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400 pointer-events-none" />
+          <MagnifyingGlassIcon className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
           <input
             type="text"
             placeholder="Search items, SKU, suppliers..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 rounded-full border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900/90 text-xs text-stone-900 dark:text-white placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-500"
+            className="w-full pl-9 pr-4 py-2 rounded-full border border-slate-200 bg-white text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
           />
         </div>
       </div>
@@ -270,7 +270,7 @@ export const RawMaterialsTab: React.FC<RawMaterialsTabProps> = ({
                             e.stopPropagation();
                             onOpenStockModal(row);
                           }}
-                          className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold text-xs shadow-none transition active:scale-95"
+                          className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-none transition active:scale-95"
                           title="Add stock inward"
                         >
                           <PlusIcon className="w-3.5 h-3.5 stroke-[2.5]" />

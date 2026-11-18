@@ -195,7 +195,7 @@ export const BranchesPage: React.FC = () => {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white">
+          <h2 className="text-2xl font-extrabold text-slate-900">
             Restaurant Branches & Branding
           </h2>
           <p className="text-sm text-slate-500">
@@ -219,9 +219,9 @@ export const BranchesPage: React.FC = () => {
                 });
                 setImportModalOpen(true);
               }}
-              className="flex items-center justify-center gap-2 py-2.5 px-4 font-bold text-sm shadow-sm hover:border-amber-400/40 active:scale-95"
+              className="flex items-center justify-center gap-2 py-2.5 px-4 font-bold text-sm shadow-sm hover:border-emerald-500/40 active:scale-95"
             >
-              <ArrowPathIcon className="w-5 h-5 text-amber-500" />
+              <ArrowPathIcon className="w-5 h-5 text-emerald-600" />
               <span>Import Catalog</span>
             </Button>
           )}

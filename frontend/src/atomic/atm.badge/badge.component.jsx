@@ -12,24 +12,25 @@ export const Badge = ({
   const baseStyles = 'inline-flex items-center font-semibold rounded-full tracking-wide';
 
   const variants = {
-    default: 'bg-stone-100 text-stone-700 dark:bg-stone-800 dark:text-stone-300',
-    primary: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20',
-    active: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20',
-    amber: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20',
-    success: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20',
-    warning: 'bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400 border border-amber-200 dark:border-amber-800/40',
-    danger: 'bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-400 border border-rose-200 dark:border-rose-800/40',
-    info: 'bg-stone-100 text-stone-700 dark:bg-stone-800 dark:text-stone-300 border border-stone-200 dark:border-stone-700',
+    default: 'bg-slate-100 text-slate-700 border border-slate-200',
+    primary: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
+    active: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
+    success: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
+    emerald: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
+    warning: 'bg-amber-50 text-amber-700 border border-amber-200',
+    danger: 'bg-rose-50 text-rose-700 border border-rose-200',
+    info: 'bg-sky-50 text-sky-700 border border-sky-200',
   };
 
   const sizes = {
     sm: 'text-[10px] px-2 py-0.5',
     md: 'text-xs px-2.5 py-1',
+    lg: 'text-sm px-3 py-1.5',
   };
 
   return (
     <span
-      className={twMerge(clsx(baseStyles, variants[variant], sizes[size], className))}
+      className={twMerge(clsx(baseStyles, variants[variant] || variants.default, sizes[size], className))}
       {...props}
     >
       {children}

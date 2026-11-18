@@ -33,40 +33,40 @@ export const ProfilePage: React.FC = () => {
   return (
     <div className="max-w-2xl mx-auto space-y-8">
       <div>
-        <h2 className="text-2xl font-extrabold text-stone-900 dark:text-white">
+        <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white">
           Account Profile & Security
         </h2>
-        <p className="text-sm text-stone-500">
+        <p className="text-sm text-slate-500">
           Manage your account credentials and security settings.
         </p>
       </div>
 
-      <div className="p-6 bg-white/75 dark:bg-stone-900/40 rounded-3xl border border-stone-200/80 dark:border-white/[0.07] backdrop-blur-xl shadow-xl shadow-black/5 space-y-4">
-        <div className="flex items-center gap-4 border-b border-stone-100 dark:border-stone-800/80 pb-4">
-          <div className="w-14 h-14 rounded-2xl bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 font-extrabold text-xl flex items-center justify-center">
+      <div className="p-6 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+        <div className="flex items-center gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div className="w-14 h-14 rounded-2xl bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20 font-extrabold text-xl flex items-center justify-center">
             {user?.name?.charAt(0) || 'U'}
           </div>
           <div>
-            <h3 className="font-bold text-lg text-stone-900 dark:text-white">{user?.name}</h3>
-            <p className="text-sm text-stone-400">{user?.email}</p>
-            <span className="inline-block mt-1 text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+            <h3 className="font-bold text-lg text-slate-900 dark:text-white">{user?.name}</h3>
+            <p className="text-sm text-slate-400">{user?.email}</p>
+            <span className="inline-block mt-1 text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60">
               Role: {user?.role}
             </span>
           </div>
         </div>
 
         {user?.restaurant && (
-          <div className="text-sm text-stone-600 dark:text-stone-300">
+          <div className="text-sm text-slate-600 dark:text-slate-300">
             <span className="font-semibold">Associated Restaurant: </span>
             <span>{user.restaurant.name}</span>
           </div>
         )}
       </div>
 
-      <div className="p-6 bg-white/75 dark:bg-stone-900/40 rounded-3xl border border-stone-200/80 dark:border-white/[0.07] backdrop-blur-xl shadow-xl shadow-black/5 space-y-6">
+      <div className="p-6 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
         <div className="flex items-center gap-3">
-          <KeyIcon className="w-6 h-6 text-amber-500" />
-          <h3 className="font-bold text-lg text-stone-900 dark:text-white">Change Account Password</h3>
+          <KeyIcon className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+          <h3 className="font-bold text-lg text-slate-900 dark:text-white">Change Account Password</h3>
         </div>
 
         <form onSubmit={handlePasswordChange} className="space-y-4">

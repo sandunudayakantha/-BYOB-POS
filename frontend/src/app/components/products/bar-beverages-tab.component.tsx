@@ -263,17 +263,17 @@ export const BarBeveragesTab: React.FC<BarBeveragesTabProps> = ({ branchId }) =>
   return (
     <div className="space-y-6">
       {/* Top Banner & Bar Rules Callout */}
-      <div className="p-6 rounded-3xl bg-gradient-to-r from-amber-500/10 via-cyan-500/10 to-amber-500/5 border border-amber-300/40 dark:border-amber-500/20 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <div className="p-6 rounded-3xl bg-emerald-50/70 border border-emerald-200/80 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <span className="p-1.5 rounded-xl bg-amber-500/20 text-amber-500">
+            <span className="p-1.5 rounded-xl bg-emerald-600/10 text-emerald-700">
               <BeakerIcon className="w-5 h-5" />
             </span>
-            <h3 className="text-xl font-extrabold text-stone-900 dark:text-white">
+            <h3 className="text-xl font-extrabold text-slate-900">
               Bar & Mixology Recipe Studio
             </h3>
           </div>
-          <p className="text-xs text-stone-600 dark:text-stone-300 max-w-2xl">
+          <p className="text-xs text-slate-600 max-w-2xl">
             Separate recipe workspace for cocktails, mocktails, single/double shots, and mixers. Global Bar Dispense Rules automatically determine which bottle capacity (e.g. 1L vs 500ml) opens during POS billing.
           </p>
         </div>
@@ -312,8 +312,8 @@ export const BarBeveragesTab: React.FC<BarBeveragesTabProps> = ({ branchId }) =>
             onClick={() => setSelectedCategory('ALL')}
             className={`px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition ${
               selectedCategory === 'ALL'
-                ? 'bg-stone-900 dark:bg-white text-white dark:text-stone-900 shadow-sm'
-                : 'bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white'
+                ? 'bg-slate-900 text-white shadow-sm'
+                : 'bg-white text-slate-600 border border-slate-200 hover:text-slate-900 hover:bg-slate-50'
             }`}
           >
             All Beverages ({filteredProducts.length})
@@ -330,8 +330,8 @@ export const BarBeveragesTab: React.FC<BarBeveragesTabProps> = ({ branchId }) =>
                   onClick={() => setSelectedCategory(catId)}
                   className={`px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition ${
                     isSelected
-                      ? 'bg-amber-500 text-stone-950 shadow-sm'
-                      : 'bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white'
+                      ? 'bg-emerald-600 text-white shadow-sm'
+                      : 'bg-white text-slate-600 border border-slate-200 hover:text-slate-900 hover:bg-slate-50'
                   }`}
                 >
                   {cat.name}
@@ -342,26 +342,26 @@ export const BarBeveragesTab: React.FC<BarBeveragesTabProps> = ({ branchId }) =>
 
         {/* Search */}
         <div className="relative max-w-xs w-full">
-          <MagnifyingGlassIcon className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400 pointer-events-none" />
+          <MagnifyingGlassIcon className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
           <input
             type="text"
             placeholder="Search cocktails, mocktails, shots..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 rounded-full border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900/90 text-xs text-stone-900 dark:text-white placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-500"
+            className="w-full pl-9 pr-4 py-2 rounded-full border border-slate-200 bg-white text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
           />
         </div>
       </div>
 
       {/* Drinks Table Container */}
       {isProductsLoading ? (
-        <div className="p-12 text-center text-xs text-stone-400">Loading beverage items...</div>
+        <div className="p-12 text-center text-xs text-slate-400">Loading beverage items...</div>
       ) : filteredProducts.length === 0 ? (
-        <div className="p-12 text-center bg-stone-50 dark:bg-stone-900/40 rounded-3xl border border-dashed border-stone-300 dark:border-stone-800 text-stone-400 text-xs space-y-3">
-          <BeakerIcon className="w-10 h-10 text-stone-300 dark:text-stone-700 mx-auto" />
+        <div className="p-12 text-center bg-white rounded-3xl border border-dashed border-slate-200 text-slate-400 text-xs space-y-3">
+          <BeakerIcon className="w-10 h-10 text-slate-300 mx-auto" />
           <div className="space-y-1">
-            <p className="font-bold text-stone-700 dark:text-stone-300 text-sm">No beverage items found</p>
-            <p className="text-xs text-stone-500 max-w-sm mx-auto">
+            <p className="font-bold text-slate-700 text-sm">No beverage items found</p>
+            <p className="text-xs text-slate-500 max-w-sm mx-auto">
               Add drinks in categories like "Mocktails", "Cocktails", or "Bar Drinks" to manage their recipes and bottle dispense rules.
             </p>
           </div>
@@ -379,9 +379,9 @@ export const BarBeveragesTab: React.FC<BarBeveragesTabProps> = ({ branchId }) =>
           </div>
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-3xl border border-stone-200/80 dark:border-white/[0.07] bg-white/75 dark:bg-stone-900/40 backdrop-blur-xl shadow-xl shadow-black/5">
+        <div className="overflow-x-auto rounded-3xl border border-slate-200 bg-white shadow-sm">
           <table className="w-full text-left text-xs">
-            <thead className="bg-stone-100/80 dark:bg-stone-950/80 border-b border-stone-200/80 dark:border-white/[0.06] text-stone-600 dark:text-stone-300 font-bold uppercase text-[10px] tracking-wider">
+            <thead className="bg-slate-50 border-b border-slate-200 text-slate-600 font-bold uppercase text-[10px] tracking-wider">
               <tr>
                 <th className="py-3.5 px-4">Beverage / Drink</th>
                 <th className="py-3.5 px-4">Category</th>
@@ -390,7 +390,7 @@ export const BarBeveragesTab: React.FC<BarBeveragesTabProps> = ({ branchId }) =>
                 <th className="py-3.5 px-4 text-center">Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-stone-100 dark:divide-white/[0.05]">
+            <tbody className="divide-y divide-slate-100">
               {filteredProducts.map((product) => {
                 const cat = categories.find((c) => String(c.id || (c as any)._id) === String(product.categoryId || (product as any).category_id));
                 const price = Number(product.price || (product as any).selling_price || 0);
@@ -398,11 +398,11 @@ export const BarBeveragesTab: React.FC<BarBeveragesTabProps> = ({ branchId }) =>
                 return (
                   <tr
                     key={product.id || (product as any)._id}
-                    className="hover:bg-stone-50/80 dark:hover:bg-stone-800/40 transition group"
+                    className="hover:bg-slate-50 transition group"
                   >
                     <td className="py-3.5 px-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center shrink-0 border border-amber-500/20 font-bold">
+                        <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 border border-emerald-200 font-bold">
                           {product.imageUrl || product.image ? (
                             <img
                               src={product.imageUrl || product.image}
@@ -414,10 +414,10 @@ export const BarBeveragesTab: React.FC<BarBeveragesTabProps> = ({ branchId }) =>
                           )}
                         </div>
                         <div>
-                          <span className="font-bold text-stone-900 dark:text-white block group-hover:text-amber-500 transition">
+                          <span className="font-bold text-slate-900 block group-hover:text-emerald-600 transition">
                             {product.name}
                           </span>
-                          <span className="text-[11px] text-stone-400 line-clamp-1">
+                          <span className="text-[11px] text-slate-400 line-clamp-1">
                             {product.description || 'Bar signature drink'}
                           </span>
                         </div>
@@ -425,24 +425,24 @@ export const BarBeveragesTab: React.FC<BarBeveragesTabProps> = ({ branchId }) =>
                     </td>
 
                     <td className="py-3.5 px-4">
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 border border-stone-200 dark:border-stone-700">
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-100 text-slate-700 border border-slate-200">
                         {cat?.name || 'Beverage'}
                       </span>
                     </td>
 
-                    <td className="py-3.5 px-4 text-right font-extrabold text-stone-900 dark:text-white">
+                    <td className="py-3.5 px-4 text-right font-extrabold text-slate-900">
                       Rs. {price.toFixed(2)}
                     </td>
 
                     <td className="py-3.5 px-4 text-center">
-                      <span className="text-[11px] font-semibold text-stone-500 dark:text-stone-400">
+                      <span className="text-[11px] font-semibold text-slate-500">
                         {product.recipeItemCount && product.recipeItemCount > 0 ? (
-                          <span className="inline-flex items-center gap-1 text-cyan-600 dark:text-cyan-400 font-bold bg-cyan-50 dark:bg-cyan-950/40 px-2 py-0.5 rounded-full border border-cyan-200 dark:border-cyan-800">
-                            <CheckCircleIcon className="w-3.5 h-3.5" />
+                          <span className="inline-flex items-center gap-1 text-emerald-700 font-bold bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+                            <CheckCircleIcon className="w-3.5 h-3.5 text-emerald-600" />
                             {product.recipeItemCount} Pour Ingredients
                           </span>
                         ) : (
-                          <span className="text-stone-400">No recipe defined</span>
+                          <span className="text-slate-400">No recipe defined</span>
                         )}
                       </span>
                     </td>
@@ -455,15 +455,15 @@ export const BarBeveragesTab: React.FC<BarBeveragesTabProps> = ({ branchId }) =>
                           size="sm"
                           rounded="full"
                           onClick={() => setSelectedProductForRecipe(product)}
-                          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold border-amber-500/30 text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/40"
+                          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold border-emerald-200 text-emerald-700 hover:bg-emerald-50"
                         >
-                          <BookOpenIcon className="w-3.5 h-3.5" />
+                          <BookOpenIcon className="w-3.5 h-3.5 text-emerald-600" />
                           <span>Mixology Recipe</span>
                         </Button>
                         <button
                           type="button"
                           onClick={() => handleOpenAddBeverage(product)}
-                          className="w-7 h-7 flex items-center justify-center rounded-full border border-stone-200 dark:border-stone-700 text-stone-600 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800 transition shrink-0"
+                          className="w-7 h-7 flex items-center justify-center rounded-full border border-slate-200 text-slate-600 hover:bg-slate-100 transition shrink-0"
                           title="Edit Beverage Details"
                         >
                           <PencilIcon className="w-3.5 h-3.5" />
@@ -471,7 +471,7 @@ export const BarBeveragesTab: React.FC<BarBeveragesTabProps> = ({ branchId }) =>
                         <button
                           type="button"
                           onClick={() => handleDeleteProduct(product)}
-                          className="w-7 h-7 flex items-center justify-center rounded-full border border-rose-200 dark:border-rose-900/50 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition shrink-0"
+                          className="w-7 h-7 flex items-center justify-center rounded-full border border-rose-200 text-rose-600 hover:bg-rose-50 transition shrink-0"
                           title="Delete Beverage"
                         >
                           <TrashIcon className="w-3.5 h-3.5" />

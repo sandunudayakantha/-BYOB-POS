@@ -188,28 +188,28 @@ export const MenusPage: React.FC = () => {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-extrabold text-stone-900 dark:text-white flex items-center gap-2">
+          <h2 className="text-2xl font-extrabold text-slate-900 flex items-center gap-2">
             <span>Branch Menus & Price Matrix</span>
             {activeBranch?.name && (
-              <span className="text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+              <span className="text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
                 {activeBranch.name}
               </span>
             )}
           </h2>
-          <p className="text-sm text-stone-500 mt-1">
+          <p className="text-sm text-slate-500 mt-1">
             Compare prices across channels, adjust percentage markups, and configure catalog items.
           </p>
         </div>
 
         <div className="flex items-center gap-3 self-start sm:self-auto">
-          <div className="flex p-1 bg-stone-200/70 dark:bg-stone-900/80 rounded-2xl border border-stone-300/50 dark:border-stone-800/60 shadow-inner">
+          <div className="flex p-1 bg-slate-100 rounded-2xl border border-slate-200 shadow-sm">
             <button
               type="button"
               onClick={() => setActiveTab('MATRIX')}
               className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
                 activeTab === 'MATRIX'
-                  ? 'bg-white dark:bg-stone-950 text-amber-600 dark:text-amber-400 shadow-sm border border-stone-200/60 dark:border-stone-800'
-                  : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white'
+                  ? 'bg-white text-emerald-700 shadow-sm border border-slate-200'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               <TableCellsIcon className="w-4 h-4" />
@@ -220,8 +220,8 @@ export const MenusPage: React.FC = () => {
               onClick={() => setActiveTab('LIST')}
               className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
                 activeTab === 'LIST'
-                  ? 'bg-white dark:bg-stone-950 text-amber-600 dark:text-amber-400 shadow-sm border border-stone-200/60 dark:border-stone-800'
-                  : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white'
+                  ? 'bg-white text-emerald-700 shadow-sm border border-slate-200'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               <QueueListIcon className="w-4 h-4" />
@@ -234,7 +234,7 @@ export const MenusPage: React.FC = () => {
             variant="primary"
             rounded="full"
             onClick={() => handleOpen()}
-            className="flex items-center justify-center gap-2 py-2.5 px-5 font-bold text-sm shadow-none transition active:scale-95"
+            className="flex items-center justify-center gap-2 py-2.5 px-5 font-bold text-sm shadow-sm transition active:scale-95"
           >
             <PlusIcon className="w-5 h-5 stroke-[2.5]" />
             <span>Create Menu</span>

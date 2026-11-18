@@ -349,7 +349,7 @@ export const RawItemDetail: React.FC<RawItemDetailProps> = ({
                 <button
                   type="button"
                   onClick={() => { setBatchStatusFilter('ACTIVE'); setBatchesPage(1); }}
-                  className={`px-2 py-0.5 rounded-md transition ${batchStatusFilter === 'ACTIVE' ? 'bg-amber-500 text-stone-950 font-bold shadow-xs' : 'text-stone-500'}`}
+                  className={`px-2 py-0.5 rounded-md transition ${batchStatusFilter === 'ACTIVE' ? 'bg-emerald-600 text-white font-bold shadow-xs' : 'text-slate-500'}`}
                 >
                   Active ({batches.filter((b) => b.status === 'ACTIVE' && b.quantityRemaining > 0).length})
                 </button>

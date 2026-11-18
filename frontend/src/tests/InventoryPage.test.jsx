@@ -222,8 +222,10 @@ describe('InventoryPage Component & Workflows', () => {
     expect(screen.getByText(/⚖️ 120 g \/ portion/i)).toBeInTheDocument();
 
     // Check Preparation Wastage & Trimmings Log table
-    expect(screen.getByText(/Preparation Wastage & Trimmings Log/i)).toBeInTheDocument();
-    expect(screen.getByText('Skin and excessive fat trimmed off')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText(/Preparation Wastage & Trimmings Log/i)).toBeInTheDocument();
+      expect(screen.getByText('Skin and excessive fat trimmed off')).toBeInTheDocument();
+    });
     expect(screen.getAllByText('1.60 kg').length).toBeGreaterThan(0);
   });
 

@@ -136,23 +136,23 @@ export const ProductRecipeModal: React.FC<ProductRecipeModalProps> = ({
     <Modal isOpen={isOpen} onClose={onClose} title={`Recipe & Food Costing: ${product.name}`}>
       <div className="space-y-5">
         {/* Cost Summary Banner */}
-        <div className="p-4 rounded-2xl bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 flex items-center justify-between">
+        <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center border border-amber-500/20">
+            <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center border border-emerald-200">
               <CalculatorIcon className="w-5 h-5" />
             </div>
             <div>
-              <span className="text-[10px] uppercase font-bold text-stone-400 tracking-wider block">Calculated Food Cost (COGS)</span>
-              <span className="text-xl font-black text-amber-500">Rs. {totalCost.toFixed(2)}</span>
+              <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider block">Calculated Food Cost (COGS)</span>
+              <span className="text-xl font-black text-emerald-700">Rs. {totalCost.toFixed(2)}</span>
             </div>
           </div>
-          <span className="text-xs text-stone-400 font-semibold">{ingredients.length} Ingredients</span>
+          <span className="text-xs text-slate-500 font-semibold">{ingredients.length} Ingredients</span>
         </div>
 
         {/* Recipe Ingredients List */}
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-stone-400">Ingredients & Prepped Items</span>
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Ingredients & Prepped Items</span>
             <Button
               type="button"
               variant="primary"
@@ -167,7 +167,7 @@ export const ProductRecipeModal: React.FC<ProductRecipeModalProps> = ({
           </div>
 
           {ingredients.length === 0 ? (
-            <div className="p-8 text-center bg-stone-50 dark:bg-stone-900/40 rounded-2xl border border-dashed border-stone-300 dark:border-stone-800 text-stone-400 text-xs">
+            <div className="p-8 text-center bg-slate-50 rounded-2xl border border-dashed border-slate-200 text-slate-500 text-xs">
               No recipe ingredients defined yet. Click "Add Ingredient" to connect raw stock or kitchen preps (e.g. Diced Chicken, Eggs, Rice).
             </div>
           ) : (
@@ -192,7 +192,7 @@ export const ProductRecipeModal: React.FC<ProductRecipeModalProps> = ({
                   (1 + Number(ing.wastage_factor_percent || 0) / 100);
 
                 return (
-                  <div key={idx} className="p-3 bg-stone-50 dark:bg-stone-900/60 rounded-2xl border border-stone-200 dark:border-stone-800 space-y-2">
+                  <div key={idx} className="p-3 bg-slate-50 rounded-2xl border border-slate-200 space-y-2">
                     <div className="grid grid-cols-12 gap-2 items-center">
                       {/* Item Selector */}
                       <div className="col-span-5 relative">
@@ -215,10 +215,10 @@ export const ProductRecipeModal: React.FC<ProductRecipeModalProps> = ({
                               handleUpdateIngredient(idx, 'inventory_item_id', newId);
                             }
                           }}
-                          className="w-full appearance-none text-xs font-semibold pl-2.5 pr-7 py-2 rounded-xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 text-stone-900 dark:text-white cursor-pointer focus:outline-none focus:ring-1 focus:ring-amber-500"
+                          className="w-full appearance-none text-xs font-semibold pl-2.5 pr-7 py-2 rounded-xl bg-white border border-slate-300 text-slate-900 cursor-pointer focus:outline-none focus:ring-1 focus:ring-emerald-500"
                         >
                           {inventoryItems.map((item: any) => (
-                            <option key={item.id} value={item.id} className="bg-white dark:bg-stone-900 text-stone-900 dark:text-white">
+                            <option key={item.id} value={item.id} className="bg-white text-slate-900">
                               {item.name} (
                               {item.item_type === 'BAR_BEVERAGE'
                                 ? 'Bar Liquid'
@@ -231,7 +231,7 @@ export const ProductRecipeModal: React.FC<ProductRecipeModalProps> = ({
                             </option>
                           ))}
                         </select>
-                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2 text-stone-400">
+                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2 text-slate-400">
                           <ChevronDownIcon className="w-3.5 h-3.5 stroke-[2]" />
                         </div>
                       </div>
@@ -244,7 +244,7 @@ export const ProductRecipeModal: React.FC<ProductRecipeModalProps> = ({
                           placeholder="Qty"
                           value={ing.quantity}
                           onChange={(e) => handleUpdateIngredient(idx, 'quantity', Number(e.target.value))}
-                          className="w-full text-xs font-semibold p-2 rounded-xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 text-stone-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-amber-500"
+                          className="w-full text-xs font-semibold p-2 rounded-xl bg-white border border-slate-300 text-slate-900 focus:outline-none focus:ring-1 focus:ring-emerald-500"
                         />
                       </div>
 
@@ -253,15 +253,15 @@ export const ProductRecipeModal: React.FC<ProductRecipeModalProps> = ({
                         <select
                           value={ing.uom_id}
                           onChange={(e) => handleUpdateIngredient(idx, 'uom_id', Number(e.target.value))}
-                          className="w-full appearance-none text-xs font-semibold pl-2.5 pr-7 py-2 rounded-xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 text-stone-900 dark:text-white cursor-pointer focus:outline-none focus:ring-1 focus:ring-amber-500"
+                          className="w-full appearance-none text-xs font-semibold pl-2.5 pr-7 py-2 rounded-xl bg-white border border-slate-300 text-slate-900 cursor-pointer focus:outline-none focus:ring-1 focus:ring-emerald-500"
                         >
                           {uoms.map((u: any) => (
-                            <option key={u.id} value={u.id} className="bg-white dark:bg-stone-900 text-stone-900 dark:text-white">
+                            <option key={u.id} value={u.id} className="bg-white text-slate-900">
                               {u.symbol} ({u.name})
                             </option>
                           ))}
                         </select>
-                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2 text-stone-400">
+                        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2 text-slate-400">
                           <ChevronDownIcon className="w-3.5 h-3.5 stroke-[2]" />
                         </div>
                       </div>
@@ -271,7 +271,7 @@ export const ProductRecipeModal: React.FC<ProductRecipeModalProps> = ({
                         <button
                           type="button"
                           onClick={() => handleRemoveIngredient(idx)}
-                          className="p-2 text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-lg transition"
+                          className="p-2 text-rose-500 hover:bg-rose-50 rounded-lg transition"
                           title="Remove ingredient"
                         >
                           <TrashIcon className="w-4 h-4" />
@@ -279,11 +279,11 @@ export const ProductRecipeModal: React.FC<ProductRecipeModalProps> = ({
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between text-[11px] text-stone-400 pt-1 border-t border-stone-200/50 dark:border-stone-800/50">
+                    <div className="flex items-center justify-between text-[11px] text-slate-500 pt-1 border-t border-slate-200">
                       <span>
                         Cost Rate: Rs. {itemEffectiveCost.toFixed(3)} / {selectedUom?.symbol || 'unit'}
                       </span>
-                      <span className="font-bold text-amber-500">Subtotal: Rs. {estimatedCost.toFixed(2)}</span>
+                      <span className="font-bold text-emerald-700">Subtotal: Rs. {estimatedCost.toFixed(2)}</span>
                     </div>
                   </div>
                 );
